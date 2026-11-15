@@ -1,0 +1,403 @@
+[
+  {
+    "id": "sun",
+    "name": "Sun",
+    "aliases": ["Sol", "our star", "the star"],
+    "type": "G-type main-sequence star (G2V)",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 695500,
+    "orbit_au": 0,
+    "facts": {
+      "Radius": "695,500 km",
+      "Surface temperature": "5,777 K (photosphere)",
+      "Age": "4.6 billion years",
+      "Distance from Earth": "1 AU (about 149.6 million km)"
+    },
+    "summary": "The Sun is the star at the centre of our Solar System, a huge ball of hot plasma powered by nuclear fusion in its core. Its light and heat make life on Earth possible.",
+    "suggested_questions": ["How does the Sun make its energy?", "How hot is the Sun's core?", "What will happen to the Sun in the future?"],
+    "sources": ["https://en.wikipedia.org/wiki/Sun", "https://science.nasa.gov/sun/"]
+  },
+  {
+    "id": "mercury",
+    "name": "Mercury",
+    "aliases": ["closest planet to the Sun", "smallest planet", "the swift planet"],
+    "type": "Rocky planet",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 2439.4,
+    "orbit_au": 0.387,
+    "facts": {
+      "Radius": "2,439.4 km",
+      "Distance from Sun": "0.387 AU",
+      "Day length (sunrise to sunrise)": "176 Earth days",
+      "Highest temperature": "427 °C"
+    },
+    "summary": "Mercury is the smallest planet and the closest to the Sun. It has almost no atmosphere, so its surface swings between scorching days and freezing nights.",
+    "suggested_questions": ["Why does Mercury have no atmosphere?", "Is there ice on Mercury?", "Which spacecraft have visited Mercury?"],
+    "sources": ["https://en.wikipedia.org/wiki/Mercury_(planet)", "https://science.nasa.gov/mercury/"]
+  },
+  {
+    "id": "venus",
+    "name": "Venus",
+    "aliases": ["morning star", "evening star", "Earth's twin", "Earth's sister planet"],
+    "type": "Rocky planet",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 6051.8,
+    "orbit_au": 0.723,
+    "facts": {
+      "Radius": "6,051.8 km",
+      "Distance from Sun": "0.723 AU",
+      "Average surface temperature": "464 °C (737 K)",
+      "Day length (sunrise to sunrise)": "116.75 Earth days, spinning backwards"
+    },
+    "summary": "Venus is a rocky planet almost the same size as Earth, wrapped in thick clouds of sulfuric acid. Its carbon dioxide atmosphere traps heat, making it the hottest planet in the Solar System.",
+    "suggested_questions": ["Why is Venus hotter than Mercury?", "Why does Venus spin backwards?", "Could there be life in Venus's clouds?"],
+    "sources": ["https://en.wikipedia.org/wiki/Venus", "https://science.nasa.gov/venus/"]
+  },
+  {
+    "id": "earth",
+    "name": "Earth",
+    "aliases": ["the blue planet", "home planet", "our home", "Terra"],
+    "type": "Rocky planet",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 6371.0,
+    "orbit_au": 1.0,
+    "facts": {
+      "Radius": "6,371 km",
+      "Distance from Sun": "1 AU (about 149.6 million km)",
+      "Average surface temperature": "14.76 °C",
+      "Moons": "1 (the Moon)"
+    },
+    "summary": "Earth is our home and the only planet known to support life. Liquid water covers most of its surface, and its atmosphere and magnetic field shield life from harmful radiation.",
+    "suggested_questions": ["Why is Earth the only planet with known life?", "What protects Earth from solar radiation?", "How old is Earth?"],
+    "sources": ["https://en.wikipedia.org/wiki/Earth", "https://science.nasa.gov/earth/"]
+  },
+  {
+    "id": "moon",
+    "name": "Moon",
+    "aliases": ["Luna", "our moon", "Earth's moon"],
+    "type": "Natural satellite of Earth",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 1737.4,
+    "parent": "earth",
+    "orbit_km": 384399,
+    "facts": {
+      "Radius": "1,737.4 km",
+      "Distance from Earth": "384,399 km",
+      "Orbit": "27.3 days, always showing the same face",
+      "First crewed landing": "Apollo 11"
+    },
+    "summary": "The Moon is Earth's only natural satellite and the brightest object in our night sky after the Sun. It always shows the same face to Earth, and it is the only other world humans have walked on.",
+    "suggested_questions": ["Why do we always see the same side of the Moon?", "How did the Moon form?", "What causes the phases of the Moon?"],
+    "sources": ["https://en.wikipedia.org/wiki/Moon", "https://science.nasa.gov/moon/"]
+  },
+  {
+    "id": "mars",
+    "name": "Mars",
+    "aliases": ["red planet", "the red planet"],
+    "type": "Rocky planet",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 3389.5,
+    "orbit_au": 1.524,
+    "facts": {
+      "Radius": "3,389.5 km",
+      "Distance from Sun": "1.524 AU",
+      "Year length": "687 Earth days",
+      "Moons": "2 (Phobos and Deimos)"
+    },
+    "summary": "Mars is a cold, dusty desert world whose iron-rich soil gives it a red colour. It has the tallest volcano in the Solar System, Olympus Mons, and signs that liquid water once flowed on its surface.",
+    "suggested_questions": ["Why is Mars red?", "Was there ever water on Mars?", "How big is Olympus Mons?"],
+    "sources": ["https://en.wikipedia.org/wiki/Mars", "https://science.nasa.gov/mars/"]
+  },
+  {
+    "id": "jupiter",
+    "name": "Jupiter",
+    "aliases": ["largest planet", "biggest planet", "the gas giant", "Great Red Spot planet"],
+    "type": "Gas giant",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 69886,
+    "orbit_au": 5.204,
+    "facts": {
+      "Radius": "69,886 km",
+      "Distance from Sun": "5.204 AU",
+      "Day length": "9.93 hours",
+      "Moons": "115 (as of 2026)"
+    },
+    "summary": "Jupiter is the largest planet, with a mass nearly 2.5 times that of all the other planets combined. Its striped clouds include the Great Red Spot, a giant storm larger than Earth.",
+    "suggested_questions": ["What is the Great Red Spot?", "Does Jupiter have a solid surface?", "Which of Jupiter's moons could have an ocean?"],
+    "sources": ["https://en.wikipedia.org/wiki/Jupiter", "https://science.nasa.gov/jupiter/"]
+  },
+  {
+    "id": "saturn",
+    "name": "Saturn",
+    "aliases": ["ringed planet", "the planet with rings"],
+    "type": "Gas giant",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 58232,
+    "orbit_au": 9.583,
+    "facts": {
+      "Radius": "58,232 km",
+      "Distance from Sun": "9.583 AU",
+      "Day length": "10.54 hours",
+      "Moons": "293 with formal designations (as of 2026)"
+    },
+    "summary": "Saturn is a gas giant famous for its bright rings, made of countless pieces of ice and rock. It is the second-largest planet and has more known moons than any other planet.",
+    "suggested_questions": ["What are Saturn's rings made of?", "Could Saturn float in water?", "What is special about the moon Titan?"],
+    "sources": ["https://en.wikipedia.org/wiki/Saturn", "https://science.nasa.gov/saturn/"]
+  },
+  {
+    "id": "uranus",
+    "name": "Uranus",
+    "aliases": ["sideways planet", "the tilted planet"],
+    "type": "Ice giant",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 25362,
+    "orbit_au": 19.19,
+    "facts": {
+      "Radius": "25,362 km",
+      "Distance from Sun": "19.19 AU",
+      "Axial tilt": "82.23° (it rolls around the Sun on its side)",
+      "Day length": "17.25 hours, spinning backwards"
+    },
+    "summary": "Uranus is an ice giant that spins tipped over on its side, probably after a huge collision long ago. Methane in its atmosphere gives it a pale blue-green colour.",
+    "suggested_questions": ["Why is Uranus tilted on its side?", "What is an ice giant?", "Why is Uranus blue-green?"],
+    "sources": ["https://en.wikipedia.org/wiki/Uranus", "https://science.nasa.gov/uranus/"]
+  },
+  {
+    "id": "neptune",
+    "name": "Neptune",
+    "aliases": ["farthest planet", "outermost planet", "the windy planet"],
+    "type": "Ice giant",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 24622,
+    "orbit_au": 30.07,
+    "facts": {
+      "Radius": "24,622 km",
+      "Distance from Sun": "30.07 AU",
+      "Day length": "16.11 hours",
+      "Temperature": "72 K (−201 °C) at the cloud tops"
+    },
+    "summary": "Neptune is the farthest planet from the Sun, a deep-blue ice giant with the fastest winds in the Solar System. It was the first planet found by mathematical prediction rather than by simply looking.",
+    "suggested_questions": ["How was Neptune discovered?", "Why are Neptune's winds so strong?", "What is Neptune's moon Triton like?"],
+    "sources": ["https://en.wikipedia.org/wiki/Neptune", "https://science.nasa.gov/neptune/"]
+  },
+  {
+    "id": "orion_nebula",
+    "name": "Orion Nebula",
+    "aliases": ["M42", "Messier 42", "NGC 1976", "Great Orion Nebula"],
+    "type": "Diffuse emission nebula",
+    "group": "nebula",
+    "scene_mode": "deep_space",
+    "constellation": "Orion",
+    "ra_deg": 83.8201,
+    "dec_deg": -5.3876,
+    "distance_ly": 1267,
+    "facts": {
+      "Distance": "1,267 light-years",
+      "Brightness": "Magnitude 4.0, visible to the naked eye",
+      "Size on the sky": "65 × 60 arcminutes",
+      "Constellation": "Orion, in the 'sword' below the belt"
+    },
+    "summary": "The Orion Nebula is a vast cloud of gas and dust where new stars are being born, and it is the closest large star-forming region to Earth. It is bright enough to see without a telescope as a fuzzy patch in Orion's sword.",
+    "suggested_questions": ["How are stars born in the Orion Nebula?", "Can I see it with my own eyes?", "What makes the nebula glow?"],
+    "sources": ["https://en.wikipedia.org/wiki/Orion_Nebula", "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-42/"]
+  },
+  {
+    "id": "crab_nebula",
+    "name": "Crab Nebula",
+    "aliases": ["M1", "Messier 1", "NGC 1952", "Taurus A", "crab"],
+    "type": "Supernova remnant",
+    "group": "nebula",
+    "scene_mode": "deep_space",
+    "constellation": "Taurus",
+    "ra_deg": 83.6324,
+    "dec_deg": 22.0174,
+    "distance_ly": 6500,
+    "facts": {
+      "Distance": "6,500 light-years",
+      "Supernova seen": "AD 1054",
+      "Brightness": "Magnitude 8.4 (needs binoculars or a telescope)",
+      "At its centre": "A pulsar, a rapidly spinning neutron star"
+    },
+    "summary": "The Crab Nebula is the glowing wreck of a star that exploded as a supernova, seen from Earth in AD 1054. At its heart spins a pulsar, the crushed core of the dead star.",
+    "suggested_questions": ["How did the Crab Nebula form?", "What is the pulsar inside it?", "Who recorded the supernova in 1054?"],
+    "sources": ["https://en.wikipedia.org/wiki/Crab_Nebula", "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-1/"]
+  },
+  {
+    "id": "ring_nebula",
+    "name": "Ring Nebula",
+    "aliases": ["M57", "Messier 57", "NGC 6720", "ring"],
+    "type": "Planetary nebula",
+    "group": "nebula",
+    "scene_mode": "deep_space",
+    "constellation": "Lyra",
+    "ra_deg": 283.3962,
+    "dec_deg": 33.0291,
+    "distance_ly": 2570,
+    "facts": {
+      "Distance": "2,570 light-years",
+      "Brightness": "Magnitude 8.8",
+      "Size on the sky": "58.8 × 84 arcseconds",
+      "At its centre": "A white dwarf, the leftover core of the star"
+    },
+    "summary": "The Ring Nebula is a shell of glowing gas thrown off by a dying Sun-like star. The hot core left behind, now a white dwarf, lights up the gas so it looks like a smoke ring.",
+    "suggested_questions": ["What is a planetary nebula?", "Will our Sun make a nebula like this?", "Why does it look like a ring?"],
+    "sources": ["https://en.wikipedia.org/wiki/Ring_Nebula", "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-57/"]
+  },
+  {
+    "id": "eagle_nebula",
+    "name": "Eagle Nebula",
+    "aliases": ["M16", "Messier 16", "NGC 6611", "Pillars of Creation", "Star Queen Nebula"],
+    "type": "Emission nebula (H II region) with a young star cluster",
+    "group": "nebula",
+    "scene_mode": "deep_space",
+    "constellation": "Serpens",
+    "ra_deg": 274.688,
+    "dec_deg": -13.792,
+    "distance_ly": 5700,
+    "facts": {
+      "Distance": "5,700 light-years",
+      "Brightness": "Magnitude 6.4",
+      "Famous for": "The Pillars of Creation photographed by Hubble",
+      "Constellation": "Serpens"
+    },
+    "summary": "The Eagle Nebula is a star-forming cloud lit up by a cluster of young, hot stars. It contains the Pillars of Creation, towering columns of gas and dust made famous by the Hubble Space Telescope.",
+    "suggested_questions": ["What are the Pillars of Creation?", "Are new stars forming inside the pillars?", "How did Hubble and JWST images differ?"],
+    "sources": ["https://en.wikipedia.org/wiki/Eagle_Nebula", "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-16/"]
+  },
+  {
+    "id": "carina_nebula",
+    "name": "Carina Nebula",
+    "aliases": ["NGC 3372", "Great Nebula in Carina", "Eta Carinae Nebula"],
+    "type": "Emission nebula",
+    "group": "nebula",
+    "scene_mode": "deep_space",
+    "constellation": "Carina",
+    "ra_deg": 161.2593,
+    "dec_deg": -59.6999,
+    "distance_ly": 8500,
+    "facts": {
+      "Distance": "About 8,500 light-years",
+      "Brightness": "Magnitude 1.0",
+      "Radius": "About 230 light-years",
+      "Home of": "Eta Carinae, one of the most massive stars known"
+    },
+    "summary": "The Carina Nebula is one of the largest and brightest nebulae in our sky, visible from the southern hemisphere. It holds some of the most massive and luminous stars known, including Eta Carinae.",
+    "suggested_questions": ["What is Eta Carinae?", "Why is the Carina Nebula so bright?", "What did JWST see in the Carina Nebula?"],
+    "sources": ["https://en.wikipedia.org/wiki/Carina_Nebula"]
+  },
+  {
+    "id": "horsehead_nebula",
+    "name": "Horsehead Nebula",
+    "aliases": ["Barnard 33", "B33", "horsehead", "horse head"],
+    "type": "Dark nebula",
+    "group": "nebula",
+    "scene_mode": "deep_space",
+    "constellation": "Orion",
+    "ra_deg": 85.2458,
+    "dec_deg": -2.4583,
+    "distance_ly": 1375,
+    "facts": {
+      "Distance": "1,375 light-years",
+      "Radius": "About 3.5 light-years",
+      "Size on the sky": "8 × 6 arcminutes",
+      "Constellation": "Orion, just below the belt star Alnitak"
+    },
+    "summary": "The Horsehead Nebula is a cloud of cold, dark dust shaped like a horse's head. It shows up as a silhouette because it blocks the glowing red gas behind it.",
+    "suggested_questions": ["Why is the Horsehead Nebula dark?", "What is the red glow behind it?", "Will the horse shape last forever?"],
+    "sources": ["https://en.wikipedia.org/wiki/Horsehead_Nebula"]
+  },
+  {
+    "id": "pleiades",
+    "name": "Pleiades",
+    "aliases": ["M45", "Messier 45", "Seven Sisters", "Subaru", "Melotte 22"],
+    "type": "Open star cluster",
+    "group": "star_cluster",
+    "scene_mode": "deep_space",
+    "constellation": "Taurus",
+    "ra_deg": 56.6583,
+    "dec_deg": 24.1781,
+    "distance_ly": 444,
+    "facts": {
+      "Distance": "444 light-years (average)",
+      "Age": "About 125 million years",
+      "Stars": "Over 1,000; 6 or 7 visible to the naked eye",
+      "Brightness": "Magnitude 1.6"
+    },
+    "summary": "The Pleiades, or Seven Sisters, is a cluster of young, hot blue stars that is one of the nearest star clusters to Earth. Its brightest stars are easy to spot with the naked eye in the constellation Taurus.",
+    "suggested_questions": ["Why are they called the Seven Sisters?", "Why do the stars look blue?", "How old are the Pleiades?"],
+    "sources": ["https://en.wikipedia.org/wiki/Pleiades", "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-45/"]
+  },
+  {
+    "id": "beehive_cluster",
+    "name": "Beehive Cluster",
+    "aliases": ["M44", "Messier 44", "Praesepe", "NGC 2632", "beehive"],
+    "type": "Open star cluster",
+    "group": "star_cluster",
+    "scene_mode": "deep_space",
+    "constellation": "Cancer",
+    "ra_deg": 129.9933,
+    "dec_deg": 19.6092,
+    "distance_ly": 610,
+    "facts": {
+      "Distance": "610 light-years",
+      "Age": "600 to 700 million years",
+      "Stars": "Around 1,000",
+      "Brightness": "Magnitude 3.7"
+    },
+    "summary": "The Beehive Cluster is one of the nearest open star clusters to Earth, in the constellation Cancer. Under dark skies it looks like a small fuzzy cloud, and binoculars reveal a swarm of stars like bees around a hive.",
+    "suggested_questions": ["Why is it called the Beehive?", "Can I see it without a telescope?", "Have planets been found in the Beehive Cluster?"],
+    "sources": ["https://en.wikipedia.org/wiki/Beehive_Cluster", "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-44/"]
+  },
+  {
+    "id": "hercules_cluster",
+    "name": "Hercules Cluster (M13)",
+    "aliases": ["M13", "Messier 13", "NGC 6205", "Great Globular Cluster in Hercules", "Hercules globular cluster"],
+    "type": "Globular star cluster",
+    "group": "star_cluster",
+    "scene_mode": "deep_space",
+    "constellation": "Hercules",
+    "ra_deg": 250.4235,
+    "dec_deg": 36.4613,
+    "distance_ly": 24100,
+    "facts": {
+      "Distance": "24,100 light-years",
+      "Age": "11.65 billion years",
+      "Stars": "Several hundred thousand",
+      "Brightness": "Magnitude 5.8"
+    },
+    "summary": "M13 is a globular cluster, a tightly packed ball of several hundred thousand very old stars in the constellation Hercules. It is one of the best-known clusters in the northern sky.",
+    "suggested_questions": ["What is a globular cluster?", "Why are the stars in M13 so old?", "What was the Arecibo message sent to M13?"],
+    "sources": ["https://en.wikipedia.org/wiki/Messier_13", "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-13/"]
+  },
+  {
+    "id": "omega_centauri",
+    "name": "Omega Centauri",
+    "aliases": ["NGC 5139", "Omega Cen", "ω Centauri"],
+    "type": "Globular star cluster",
+    "group": "star_cluster",
+    "scene_mode": "deep_space",
+    "constellation": "Centaurus",
+    "ra_deg": 201.697,
+    "dec_deg": -47.4795,
+    "distance_ly": 15800,
+    "facts": {
+      "Distance": "15,800 light-years",
+      "Age": "11.52 billion years",
+      "Stars": "About 10 million",
+      "Diameter": "Roughly 150 light-years, the largest globular cluster in the Milky Way"
+    },
+    "summary": "Omega Centauri is the largest known globular cluster in the Milky Way, holding about 10 million stars. Some astronomers think it is the leftover core of a small galaxy swallowed by our own.",
+    "suggested_questions": ["Why is Omega Centauri so big?", "Is it really the core of another galaxy?", "Can I see it from the northern hemisphere?"],
+    "sources": ["https://en.wikipedia.org/wiki/Omega_Centauri"]
+  }
+]

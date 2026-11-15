@@ -1,0 +1,6 @@
+"""Shared test setup: lets tests import the backend's `app` package."""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
