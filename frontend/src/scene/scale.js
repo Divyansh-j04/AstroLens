@@ -1,0 +1,118 @@
+/**
+ * Display-scale maths for the 3D scene.
+ *
+ * Every real number about an object (radius, orbit, RA, Dec, distance) comes from
+ * objects.json. This file only decides how to squeeze those numbers onto one screen,
+ * which is why the page says "not to scale".
+ *
+ * Axes: three.js treats y as "up". We put the celestial north pole on +y and
+ * right ascension 0h on +x, the same frame as the HYG star file.
+ */
+import { OBJECTS, OBJECTS_BY_ID } from '../objects'
+
+const DEG = Math.PI / 180
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)) // spreads planets round the Sun so none line up
+
+// Solar-system mode (square-root compression of sizes and distances)
+export const SUN_RADIUS = 3 // the Sun is shrunk the most, so it does not swallow Mercury
+const RADIUS_PER_SQRT_KM = 0.0075 // radius = 0.0075 x sqrt(radius_km): Earth 0.6, Jupiter 2.0
+const ORBIT_START = 6 // orbit = 6 + 10 x sqrt(AU): Mercury 12, Earth 16, Neptune 61
+const ORBIT_PER_SQRT_AU = 10
+const MOON_ORBIT_PER_SQRT_KM = 0.004 // Moon gap above Earth's surface = 0.004 x sqrt(orbit_km)
+const MOON_ANGLE = 2.0 // where the Moon sits on its orbit (radians), a display choice
+
+// Deep-space mode
+export const LY_SCALE = 4 // distance = 4 x sqrt(light-years): Pleiades 84, M13 621
+export const SPRITE_SIZE = 14 // size of a nebula or cluster picture up close
+export const DEEP_VIEW_DISTANCE = 35 // a fly-to stops this far in front of a nebula or cluster
+
+// Sky and camera
+export const STAR_SPHERE_RADIUS = 4000 // stars sit on a far sphere that moves with the camera
+export const CAMERA_FAR = 10000
+export const MODE_SWITCH_SECONDS = 2.5
+
+export const HOME_VIEWS = {
+  solar_system: { position: [0, 55, 105], target: [0, 0, 0] },
+  deep_space: { position: [0, 700, 1250], target: [0, 0, 0] },
+}
+
+/** Equatorial x, y, z (x to RA 0h, y to RA 6h, z to the north pole) to scene x, y, z (y up). */
+export function equatorialToScene(x, y, z) {
+  return [x, z, -y]
+}
+
+/** Right ascension and declination (degrees) plus a distance to scene x, y, z. */
+export function skyToScene(raDeg, decDeg, distance) {
+  const ra = raDeg * DEG
+  const dec = decDeg * DEG
+  return equatorialToScene(
+    distance * Math.cos(dec) * Math.cos(ra),
+    distance * Math.cos(dec) * Math.sin(ra),
+    distance * Math.sin(dec),
+  )
+}
+
+/** Sphere radius on screen for a Solar-system body. */
+export function displayRadius(obj) {
+  return obj.orbit_au === 0 ? SUN_RADIUS : RADIUS_PER_SQRT_KM * Math.sqrt(obj.radius_km)
+}
+
+/** Radius of the orbit ring: around the Sun, or around the parent planet for a moon. */
+export function orbitRadius(obj) {
+  if (obj.parent) {
+    return displayRadius(OBJECTS_BY_ID[obj.parent]) + MOON_ORBIT_PER_SQRT_KM * Math.sqrt(obj.orbit_km)
+  }
+  return ORBIT_START + ORBIT_PER_SQRT_AU * Math.sqrt(obj.orbit_au)
+}
+
+const SUN_ORBITERS = OBJECTS.filter((o) => o.scene_mode === 'solar_system' && o.orbit_au > 0).sort(
+  (a, b) => a.orbit_au - b.orbit_au,
+)
+
+function solarPosition(obj) {
+  if (obj.parent) {
+    const [px, py, pz] = solarPosition(OBJECTS_BY_ID[obj.parent])
+    const d = orbitRadius(obj)
+    return [px + d * Math.cos(MOON_ANGLE), py, pz - d * Math.sin(MOON_ANGLE)]
+  }
+  if (!obj.orbit_au) return [0, 0, 0] // the Sun sits at the centre
+  const angle = (SUN_ORBITERS.indexOf(obj) + 1) * GOLDEN_ANGLE
+  const r = orbitRadius(obj)
+  return [r * Math.cos(angle), 0, -r * Math.sin(angle)]
+}
+
+function deepPosition(obj) {
+  return skyToScene(obj.ra_deg, obj.dec_deg, LY_SCALE * Math.sqrt(obj.distance_ly))
+}
+
+/** Scene position of every object, by id. */
+export const POSITIONS = Object.fromEntries(
+  OBJECTS.map((o) => [o.id, o.scene_mode === 'deep_space' ? deepPosition(o) : solarPosition(o)]),
+)
+
+/** Where the camera stops (position) and what it looks at (target) for one object. */
+export function objectView(id) {
+  const obj = OBJECTS_BY_ID[id]
+  const [x, y, z] = POSITIONS[id]
+  if (obj.scene_mode === 'deep_space') {
+    // Stop on the line from Earth to the object, so the stars behind it are its real constellation.
+    const k = 1 - DEEP_VIEW_DISTANCE / Math.hypot(x, y, z)
+    return { position: [x * k, y * k, z * k], target: [x, y, z] }
+  }
+  const d = displayRadius(obj) * 4 + 2
+  const flat = Math.hypot(x, z)
+  const [dx, dz] = flat > 0 ? [x / flat, z / flat] : [0, -1]
+  // Sit on the Sun-facing side, a little above the orbit plane, so the lit half is in view.
+  return { position: [x - dx * d * 0.85, y + d * 0.45, z - dz * d * 0.85], target: [x, y, z] }
+}
+
+/** Fly-to duration grows with distance: 1.2 s for short hops, at most 3 s. */
+export function flightSeconds(from, to) {
+  const dist = Math.hypot(to[0] - from[0], to[1] - from[1], to[2] - from[2])
+  return Math.min(3, Math.max(1.2, 1 + dist / 400))
+}
+
+/** Deep-space pictures grow when the camera is far away, so they stay visible in the overview. */
+export function spriteSize(cameraDistance) {
+  return SPRITE_SIZE * Math.max(1, cameraDistance / (DEEP_VIEW_DISTANCE * 4))
+}
