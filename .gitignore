@@ -1,0 +1,26 @@
+# Secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+frontend/dist/
+
+# Model weights and datasets (too large, or licence-restricted)
+backend/weights/*
+!backend/weights/.gitkeep
+*.pt
+*.pth
+ml/data/raw/
+ml/data/processed/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
