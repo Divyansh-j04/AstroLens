@@ -103,7 +103,7 @@ _Phase 4. Source: `ml/results/rag_eval.csv`._
 | 0 | `hyg_stars.json`: 8,834 naked-eye stars from the HYG catalogue | Done |
 | 0 | Server with `/health` and `/objects`, CORS, request timing log | Done |
 | 0 | React + Vite page with Tailwind, React Three Fiber, drei, GSAP, Zustand installed | Done |
-| 0 | Groq language model test call | _Waiting for API key_ |
+| 0 | Groq language model test call (`ml/scripts/check_llm.py`, model `openai/gpt-oss-20b`) | Done |
 
 **Table E: time taken per step (deployed, median of 10 runs)**
 
@@ -146,7 +146,8 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Tailwind CSS | Styling written as short class names, such as `flex` or `text-slate-300`, directly in the markup | Phase 0 |
 | HYG Database | A free catalogue of about 120,000 stars with positions, brightness and colour | Phase 0 |
 | SIMBAD | The standard astronomy database of named objects outside the Solar System, used for sky coordinates | Phase 0 |
-| Groq | A free-tier service that runs open language models (Llama) over the internet | Phase 0 (test call) |
+| Groq | A free-tier service that runs open language models over the internet | Phase 0 (test call) |
+| gpt-oss-20b | An open-weight language model released by OpenAI, run on Groq; it writes the chat answers from the paragraphs we give it | Phase 0 (test call) |
 
 ## Decisions
 
@@ -158,8 +159,9 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Nov 16, 2026 | `objects.json` lives only in `backend/app/data/`; the page imports that same file through a Vite alias (`@data`) | One copy of the facts, so nothing is typed twice |
 | Nov 16, 2026 | Project lives at `C:\Users\Divyansh\Projects\astrolens`, outside OneDrive | OneDrive syncing `node_modules` and `.venv` is slow and can lock files |
 | Nov 16, 2026 | Install ML libraries in the phase that needs them, not in Phase 0 | Faster setup; requirements.txt only lists what is actually used |
+| Nov 16, 2026 | Language model: `openai/gpt-oss-20b` on Groq, set by `GROQ_MODEL` in `.env` | Groq no longer offers Llama chat models (the planned `llama-3.1-8b-instant` returned "model not found"); gpt-oss-20b is open-weight, fast and free-tier; `gpt-oss-120b` is the stronger fallback |
 | Nov 16, 2026 | Star positions kept in parsecs as given by HYG; deep-space objects in light-years from objects.json | Each file keeps its source's units; the scene converts both in Phase 1 |
 
 ## Progress log
 
-- **Nov 16, 2026 (Phase 0):** Project set up outside OneDrive with git. objects.json written for all 20 objects (coordinates from SIMBAD, facts from Wikipedia and NASA), validated by 9 passing tests. Star file built with 8,834 stars. Server answers /health; page builds and serves with all frontend libraries. Remaining: Groq key for the test call.
+- **Nov 16, 2026 (Phase 0):** Project set up outside OneDrive with git. objects.json written for all 20 objects (coordinates from SIMBAD, facts from Wikipedia and NASA), validated by 9 passing tests. Star file built with 8,834 stars. Server answers /health; page builds and serves with all frontend libraries. Groq test call answered in 616 ms with gpt-oss-20b. Phase 0 complete.
