@@ -27,6 +27,34 @@ Notes:
 
 Built with `python ml/scripts/build_stars.py ml/data/raw/hyg/hyg.csv frontend/public/data/hyg_stars.json`.
 
+## Scene images (`frontend/public/textures/`)
+
+Retrieved Nov 16, 2026 with `python ml/scripts/fetch_scene_images.py`, which also printed this table. Planet, Sun and Moon maps are by Solar System Scope (solarsystemscope.com), mirrored on Wikimedia Commons. Each nebula and cluster picture is the lead image of the Wikipedia article linked in that object's `sources`. All are free licences; CC BY and CC BY-SA images need the credit below, which the README links to.
+
+| File | Commons source | Author | Licence |
+| --- | --- | --- | --- |
+| `sun.jpg` | [Solarsystemscope texture 2k sun.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_sun.jpg) | Solar System Scope | CC BY 4.0 |
+| `mercury.jpg` | [Solarsystemscope texture 2k mercury.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_mercury.jpg) | Solar System Scope | CC BY 4.0 |
+| `venus.jpg` | [Solarsystemscope texture 2k venus atmosphere.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_venus_atmosphere.jpg) | Solar System Scope | CC BY 4.0 |
+| `earth.jpg` | [Solarsystemscope texture 2k earth daymap.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_earth_daymap.jpg) | Solar System Scope | CC BY 4.0 |
+| `moon.jpg` | [Solarsystemscope texture 2k moon.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_moon.jpg) | Solar System Scope | CC BY 4.0 |
+| `mars.jpg` | [Solarsystemscope texture 2k mars.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_mars.jpg) | Solar System Scope | CC BY 4.0 |
+| `jupiter.jpg` | [Solarsystemscope texture 2k jupiter.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_jupiter.jpg) | Solar System Scope | CC BY 4.0 |
+| `saturn.jpg` | [Solarsystemscope texture 2k saturn.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_saturn.jpg) | Solar System Scope | CC BY 4.0 |
+| `uranus.jpg` | [Solarsystemscope texture 2k uranus.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_uranus.jpg) | Solar System Scope | CC BY 4.0 |
+| `neptune.jpg` | [Solarsystemscope texture 2k neptune.jpg](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_neptune.jpg) | Solar System Scope | CC BY 4.0 |
+| `orion_nebula.jpg` | [Orion Nebula - Hubble 2006 mosaic 18000.jpg](https://commons.wikimedia.org/wiki/File:Orion_Nebula_-_Hubble_2006_mosaic_18000.jpg) | NASA, ESA, M. Robberto (Space Telescope Science Institute/ESA) and the Hubble Space Telescope Orion Treasury Project Tea | Public domain |
+| `crab_nebula.jpg` | [Crab Nebula.jpg](https://commons.wikimedia.org/wiki/File:Crab_Nebula.jpg) | NASA, ESA, J. Hester and A. Loll (Arizona State University) | Public domain |
+| `ring_nebula.jpg` | [Webb captures detailed beauty of Ring Nebula (NIRCam image) (weic2320b).jpg](https://commons.wikimedia.org/wiki/File:Webb_captures_detailed_beauty_of_Ring_Nebula_(NIRCam_image)_(weic2320b).jpg) | ESA/Webb, NASA, CSA, M. Barlow, N. Cox, R. Wesson | CC BY 4.0 |
+| `eagle_nebula.jpg` | [Eagle Nebula from ESO.jpg](https://commons.wikimedia.org/wiki/File:Eagle_Nebula_from_ESO.jpg) | ESO | CC BY 4.0 |
+| `carina_nebula.jpg` | [Carina Nebula by Harel Boren (151851961, modified).jpg](https://commons.wikimedia.org/wiki/File:Carina_Nebula_by_Harel_Boren_(151851961,_modified).jpg) | Harel Boren | CC BY-SA 4.0 |
+| `horsehead_nebula.jpg` | [Nebulosa testa di cavallo con SPECULOOS.jpg](https://commons.wikimedia.org/wiki/File:Nebulosa_testa_di_cavallo_con_SPECULOOS.jpg) | ESO | CC BY 4.0 |
+| `pleiades.jpg` | [Pleiades large.jpg](https://commons.wikimedia.org/wiki/File:Pleiades_large.jpg) | NASA, ESA, AURA/Caltech, Palomar Observatory  The science team consists of: D. Soderblom and E. Nelan (STScI), F. Benedi | Public domain |
+| `beehive_cluster.jpg` | [M44-Star-Cluster.png](https://commons.wikimedia.org/wiki/File:M44-Star-Cluster.png) | Chuck Ayoub | CC0 |
+| `hercules_cluster.jpg` | [M13-Globular-Cluster.png](https://commons.wikimedia.org/wiki/File:M13-Globular-Cluster.png) | Chuck Ayoub | CC0 |
+| `omega_centauri.jpg` | [Omega Centauri Stars.png](https://commons.wikimedia.org/wiki/File:Omega_Centauri_Stars.png) | Chuck Ayoub | CC0 |
+| `saturn_ring.png` | [Solarsystemscope texture 2k saturn ring alpha.png](https://commons.wikimedia.org/wiki/File:Solarsystemscope_texture_2k_saturn_ring_alpha.png) | Solar System Scope | CC BY 4.0 |
+
 ## Training images (Phase 2)
 
 To be filled in Phase 2: one row per image source, with licence.
