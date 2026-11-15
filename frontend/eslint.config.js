@@ -29,10 +29,16 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
+      'react/prop-types': 'off', // plain JavaScript project, no prop type declarations
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
     },
+  },
+  {
+    // React Three Fiber elements take Three.js props (args, attach, position...) that are not HTML attributes.
+    files: ['src/scene/**/*.jsx'],
+    rules: { 'react/no-unknown-property': 'off' },
   },
 ]
