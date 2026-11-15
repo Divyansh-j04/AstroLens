@@ -168,6 +168,7 @@ The last two sky rows show that the nebula pictures and the HYG stars share one 
 - Orion Nebula and Horsehead Nebula are only 3° apart on the sky, so their pictures overlap. That is true to the sky, but it can make one hard to click.
 - The frame rates were measured on one laptop with a fast GPU (RTX 4060). Slower machines, and phones in particular, have not been measured yet (Phase 5).
 - The chat view is a placeholder until Phase 4. "Top-3 guesses" stays disabled until the classifier exists (Phase 3).
+- Future work (stretch goal after Phase 4): draw star clusters as 3D balls of star points instead of one picture, and give nebulae depth with a particle cloud built from the bright pixels of their photo.
 
 ## 12. References
 
