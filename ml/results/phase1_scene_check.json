@@ -1,0 +1,545 @@
+{
+  "generated_at": "2026-11-15T20:40:11.963Z",
+  "script": "frontend/scripts/check-phase1.mjs",
+  "browser": "Microsoft Edge 157.0.4341.60 (headless)",
+  "webgl_renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Laptop GPU (0x000028E0) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "stars_rendered": 8834,
+  "load_ms": 2226,
+  "fps_idle_solar_overview": 144,
+  "objects_checked": 20,
+  "objects_passed": 20,
+  "mode_switches": 19,
+  "flights": [
+    {
+      "id": "sun",
+      "scene_mode": "solar_system",
+      "mode_switch": false,
+      "flight_seconds": 1.29,
+      "fade_seconds": null,
+      "fps_during_flight": 135.5,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "orion_nebula",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.52,
+      "fade_seconds": 2.52,
+      "fps_during_flight": 143.9,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "mercury",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.82,
+      "fade_seconds": 2.52,
+      "fps_during_flight": 144.1,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "crab_nebula",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.51,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "venus",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.79,
+      "fade_seconds": 2.52,
+      "fps_during_flight": 144.1,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "ring_nebula",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.51,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 143.6,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "earth",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.83,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "eagle_nebula",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.51,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "moon",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.84,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 143.5,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "carina_nebula",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.51,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "mars",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.81,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "horsehead_nebula",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.51,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 143.8,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "jupiter",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.78,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "pleiades",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.52,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 143.9,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "saturn",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.87,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "beehive_cluster",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.51,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "uranus",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.73,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 143.8,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "hercules_cluster",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.51,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "neptune",
+      "scene_mode": "solar_system",
+      "mode_switch": true,
+      "flight_seconds": 3.87,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    },
+    {
+      "id": "omega_centauri",
+      "scene_mode": "deep_space",
+      "mode_switch": true,
+      "flight_seconds": 5.51,
+      "fade_seconds": 2.51,
+      "fps_during_flight": 144,
+      "camera_error": 0,
+      "checks": {
+        "card_name": true,
+        "card_summary": true,
+        "mode": true,
+        "camera_at_viewpoint": true,
+        "looking_at_object": true,
+        "object_on_screen": true,
+        "panel_open": true,
+        "controls_unlocked_after": true,
+        "fade_finished": true
+      },
+      "pass": true
+    }
+  ],
+  "first_mode_switch_planet_visibility_every_100ms": [
+    1,
+    0.99,
+    0.97,
+    0.95,
+    0.92,
+    0.89,
+    0.85,
+    0.8,
+    0.75,
+    0.69,
+    0.62,
+    0.55,
+    0.47,
+    0.4,
+    0.33,
+    0.27,
+    0.21,
+    0.16,
+    0.12,
+    0.09,
+    0.05,
+    0.03,
+    0.01,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "panel": {
+    "width_fraction": 0.26,
+    "collapse": true,
+    "reopen": true,
+    "chat_view": true,
+    "back_to_card": true
+  },
+  "home_button": {
+    "mode": "solar_system",
+    "camera_error": 0,
+    "panel_hidden": true,
+    "pass": true
+  },
+  "scene_clicks": {
+    "labels": {
+      "sun": true,
+      "mercury": true,
+      "venus": true,
+      "earth": true,
+      "moon": true,
+      "mars": true,
+      "jupiter": true,
+      "saturn": true,
+      "uranus": true,
+      "neptune": true
+    },
+    "sun_sphere": true
+  },
+  "sky_alignment": {
+    "pleiades_to_crab_deg": 24.9,
+    "nearest_star_brighter_than_mag4": {
+      "orion_nebula": {
+        "nearest_bright_star_deg": 0.52,
+        "star_mag": 2.75
+      },
+      "crab_nebula": {
+        "nearest_bright_star_deg": 1.14,
+        "star_mag": 2.97
+      },
+      "ring_nebula": {
+        "nearest_bright_star_deg": 0.81,
+        "star_mag": 3.52
+      },
+      "eagle_nebula": {
+        "nearest_bright_star_deg": 6.28,
+        "star_mag": 3.32
+      },
+      "carina_nebula": {
+        "nearest_bright_star_deg": 1.37,
+        "star_mag": 3.78
+      },
+      "horsehead_nebula": {
+        "nearest_bright_star_deg": 0.52,
+        "star_mag": 1.74
+      },
+      "pleiades": {
+        "nearest_bright_star_deg": 0.21,
+        "star_mag": 2.85
+      },
+      "beehive_cluster": {
+        "nearest_bright_star_deg": 1.83,
+        "star_mag": 3.94
+      },
+      "hercules_cluster": {
+        "nearest_bright_star_deg": 2.47,
+        "star_mag": 3.48
+      },
+      "omega_centauri": {
+        "nearest_bright_star_deg": 4.87,
+        "star_mag": 2.55
+      }
+    }
+  },
+  "console_errors": [],
+  "all_passed": true
+}
