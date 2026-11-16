@@ -9,7 +9,7 @@
 - **Courses:** CSE471 Computer Vision, CSE472 Natural Language Processing
 - **Date:** _to add at submission_
 - **Live link:** _Phase 5_
-- **Repository:** _Phase 5_
+- **Repository:** https://github.com/Divyansh-j04/Astro-Lens
 
 ## 2. Abstract
 
