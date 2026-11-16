@@ -170,6 +170,7 @@ The last two sky rows show that the nebula pictures and the HYG stars share one 
 - The chat view is a placeholder until Phase 4. "Top-3 guesses" stays disabled until the classifier exists (Phase 3).
 - Future work (beyond this project): draw star clusters as 3D balls of star points instead of one picture, and give nebulae depth with a particle cloud built from the bright pixels of their photo.
 - Future work (beyond this project): planets move along their orbits from the moment the page loads. Speeds come from each planet's period, run on a sped-up clock, because real speed is too slow to see (Earth moves about 1° a day). The motion pauses in deep-space mode, so the page does no orbit work while the planets are hidden, and resumes on return. The fly-to must then follow a moving planet: the camera keeps tracking it after landing.
+- Future work (beyond this project): an OpenCV auto-crop before classification. It would find the bright disc in photos where the Moon or a planet is small in the frame (thresholding or circle detection) and classify the crop. This adds a classic computer-vision step in front of the deep model.
 
 ## 12. References
 
@@ -233,6 +234,13 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Nov 16, 2026 | Store has one extra field, `flyRequest`, a counter | Lets Home or the same object be requested twice; the six planned fields are unchanged |
 | Nov 16, 2026 | Planet and nebula fades live in a plain shared object (`scene/fade.js`), not in Zustand | They change 60 times a second during a switch; putting them in the store would re-render the page every frame |
 | Nov 16, 2026 | Fly-to evidence collected with playwright-core driving the installed Edge | No browser download; it checks the real page and the real GPU, and writes a results file instead of relying on screenshots alone |
+| Nov 16, 2026 | Training runs locally on the author's RTX 4060 GPU instead of Google Colab | Same script, no uploading data or downloading weights; `train.py` still runs unchanged on Colab |
+| Nov 16, 2026 | The train/validation/test split is one list (`ml/data/split.csv`) rather than three image folders | Nothing is copied, the split is committed and reproducible (fixed seed), and anyone can check no image is in two parts |
+| Nov 16, 2026 | Training images come from Wikimedia Commons categories, sampled per source with a cap | Commons gives a licence and author for every file; the cap stops one huge source (2,211 JunoCam frames) crowding out whole-planet photos |
+| Nov 16, 2026 | Keep identifiable close-ups (Great Red Spot, Saturn's rings, Pillars of Creation, sunspots), tagged as "close-up", at most 30% of a class; drop ambiguous ones (crater fields, featureless haze) | Users often share a famous feature rather than the whole object; capping and tagging keeps whole-object accuracy measurable |
+| Nov 16, 2026 | Zoom-in augmentation: random crops keep 25-100% of the image (wider than the planned 60-100%) | Turns whole-object photos into close-up-like training views at no data cost |
+| Nov 16, 2026 | Test accuracy reported separately for whole objects, close-ups and all images | A single blended number would hide whether close-ups lowered accuracy on whole objects |
+| Nov 16, 2026 | Near-duplicates found with a 64-bit difference hash written in a few lines (Pillow + NumPy), not the `imagehash` library | One fewer dependency, and the method is short enough to explain line by line |
 
 ## Progress log
 
