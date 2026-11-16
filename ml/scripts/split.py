@@ -35,6 +35,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from licences import licence_ok  # ml/scripts/licences.py: the agreed licence allowlist
+
 ROOT = Path(__file__).resolve().parents[2]
 IMAGES = ROOT / "ml" / "data" / "raw" / "images"
 MANIFEST = ROOT / "ml" / "data" / "manifest.csv"
@@ -118,8 +120,11 @@ def main() -> None:
     counts: dict[str, dict[str, int]] = defaultdict(dict)
     for r in rows:
         counts[r["class"]]["candidates"] = counts[r["class"]].get("candidates", 0) + 1
+    licence_rejected = [r for r in rows if not licence_ok(r["licence"], r.get("author", ""))]
+    for r in licence_rejected:
+        counts[r["class"]]["excluded_licence"] = counts[r["class"]].get("excluded_licence", 0) + 1
     kept = [r for r in rows if r["file"] in reviewed and r["file"] not in excluded
-            and (IMAGES / r["class"] / r["file"]).exists()]
+            and licence_ok(r["licence"], r.get("author", "")) and (IMAGES / r["class"] / r["file"]).exists()]
     for cls in counts:
         counts[cls]["after_review"] = sum(r["class"] == cls for r in kept)
 
@@ -216,6 +221,8 @@ def main() -> None:
         "max_per_class": MAX_PER_CLASS,
         "max_closeup_share": MAX_CLOSEUP_SHARE,
         "seed": SEED,
+        "licence_rule": "allowed: public domain, CC0, CC BY, CC BY-SA, NASA works (ml/scripts/licences.py)",
+        "excluded_by_licence": len(licence_rejected),
         "duplicates_removed": len(kept) - len(unique),
         "cross_class_duplicates_dropped": cross_class,
         "totals": totals,

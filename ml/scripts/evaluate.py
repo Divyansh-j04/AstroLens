@@ -32,6 +32,8 @@ from sklearn.metrics import classification_report, confusion_matrix, f1_score  #
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
 from app.cv.classifier import IMAGE_SIZE, MEAN, RESIZE, STD, build_model, eval_transform  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from licences import licence_ok  # noqa: E402
 
 RAW = ROOT / "ml" / "data" / "raw"
 SPLIT = ROOT / "ml" / "data" / "split.csv"
@@ -86,7 +88,8 @@ def main() -> None:
     for manifest in (MANIFEST, MANIFEST.with_name("manifest_unknown.csv")):  # Wikimedia, then archive unknowns
         if manifest.exists():
             with manifest.open(encoding="utf-8") as fh:
-                unknown_rows += [r for r in csv.DictReader(fh) if r["set"] == "unknown" and r["file"] not in excluded]
+                unknown_rows += [r for r in csv.DictReader(fh) if r["set"] == "unknown" and r["file"] not in excluded
+                                 and licence_ok(r["licence"], r.get("author", ""))]
     unknown_paths = [RAW / "unknown" / r["file"] for r in unknown_rows]
 
     def slice_scores(p: np.ndarray) -> dict:
