@@ -1,0 +1,91 @@
+{
+  "script": "frontend/scripts/check-phase4.mjs",
+  "command_red_planet": {
+    "flew_to": "mars",
+    "card": "Mars",
+    "round_trip_ms": 278,
+    "pass": true
+  },
+  "chat": {
+    "chips": [
+      "Why is Mars red?",
+      "Was there ever water on Mars?",
+      "How big is Olympus Mons?"
+    ],
+    "first": {
+      "question": "Why is Mars red?",
+      "ms": 2886,
+      "text": "Mars looks red because iron in its rocks, dust, and regolith oxidizes, or rusts, giving the surface a reddish hue. The iron minerals in the Martian dirt react with the thin atmosphere, creating iron oxide that spreads across the planet’s surface and dust storms. This rusting process is why the planet is called the “Red Planet” 125.",
+      "refused": false,
+      "sources": [
+        "[1]Mars · Overview (simple.wikipedia.org)",
+        "[2]Mars: Facts · Overview (science.nasa.gov)",
+        "[5]Mars · Overview (en.wikipedia.org)"
+      ],
+      "source_links": [
+        "https://simple.wikipedia.org/wiki/Mars",
+        "https://science.nasa.gov/mars/facts/",
+        "https://en.wikipedia.org/wiki/Mars"
+      ]
+    },
+    "follow_up": {
+      "question": "How long is a day there?",
+      "ms": 797,
+      "text": "A day on Mars, called a sol, lasts about 24.6 hours 12. This is only slightly longer than an Earth day, which is 24 hours. The extra 39 minutes come from Mars’s slower rotation relative to its orbit around the Sun.",
+      "refused": false,
+      "sources": [
+        "[1]Mars: Facts · Namesake (science.nasa.gov)",
+        "[2]Mars · Orbital motion (en.wikipedia.org)"
+      ],
+      "source_links": [
+        "https://science.nasa.gov/mars/facts/",
+        "https://en.wikipedia.org/wiki/Mars"
+      ]
+    },
+    "pass": true
+  },
+  "unanswerable": {
+    "question": "Who won the 2022 football World Cup?",
+    "ms": 732,
+    "text": "I don't know from my sources.",
+    "refused": true,
+    "sources": [],
+    "source_links": [],
+    "pass": true
+  },
+  "command_ambiguous": {
+    "text": "nebula",
+    "options": [
+      "Eagle Nebula",
+      "Ring Nebula"
+    ],
+    "flew_to": "eagle_nebula",
+    "pass": true
+  },
+  "command_typo": {
+    "text": "jupitr",
+    "flew_to": "jupiter",
+    "pass": true
+  },
+  "command_question": {
+    "text": "Venus’ surface temperature averages about 735 K (462 °C; 864 °F) 2.\nThat makes it hotter than Mercury, even though Venus receives only about a quarter of Mercury’s solar energy 2.\nThe extreme heat is caused by a runaway greenhouse effect from its thick CO₂ atmosphere 13.",
+    "flew_to": "venus",
+    "panel": "chat",
+    "ms": 1094,
+    "refused": false,
+    "sources": [
+      "[1]Venus · Overview (en.wikipedia.org)",
+      "[2]Venus · Atmosphere and climate (en.wikipedia.org)",
+      "[3]Venus: Facts · Our Solar System (science.nasa.gov)"
+    ],
+    "source_links": [
+      "https://en.wikipedia.org/wiki/Venus",
+      "https://en.wikipedia.org/wiki/Venus",
+      "https://science.nasa.gov/venus/facts/"
+    ],
+    "pass": true
+  },
+  "console_errors": [],
+  "pass": true,
+  "date": "2026-11-16T17:01:32.801Z"
+}

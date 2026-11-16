@@ -1,6 +1,6 @@
 """AstroLens API server.
 
-Phase 0: /health and /objects. Phase 3: /classify. Phase 4 adds /navigate and /chat.
+Phase 0: /health and /objects. Phase 3: /classify. Phase 4: /chat and /navigate.
 Run from the backend folder:  uvicorn app.main:app --reload
 """
 
@@ -16,7 +16,19 @@ from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from app.schemas import ClassifyResponse, ErrorResponse, Guess, HealthResponse, ObjectCatalogue, SpaceObject
+from app.schemas import (
+    Candidate,
+    ChatRequest,
+    ChatResponse,
+    ClassifyResponse,
+    ErrorResponse,
+    Guess,
+    HealthResponse,
+    NavigateRequest,
+    NavigateResponse,
+    ObjectCatalogue,
+    SpaceObject,
+)
 
 DATA_DIR = Path(__file__).parent / "data"
 MAX_UPLOAD_BYTES = 8 * 1024 * 1024  # 8 MB
@@ -51,9 +63,22 @@ def get_classifier():
     return clf
 
 
+def object_tuple() -> tuple:
+    """(id, name, nicknames) for every object, hashable so the nickname vectors are built once."""
+    return tuple((o.id, o.name, tuple(o.aliases)) for o in load_objects())
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     get_classifier()  # load at startup, not on the first upload
+    from app.nlp.navigator import alias_table
+    from app.nlp.retriever import index_ready, load_index
+
+    alias_table(object_tuple())  # loads MiniLM and embeds every nickname once
+    if index_ready():
+        load_index()
+    else:
+        log.warning("no chat index: run ml/scripts/build_index.py")
     yield
 
 
@@ -136,5 +161,47 @@ def classify(file: UploadFile = File(...)) -> ClassifyResponse:
         threshold=clf.threshold,
         known_classes=len(clf.classes),
         gradcam_png_base64=gradcam,
+        latency_ms=latency_ms,
+    )
+
+
+@app.post("/chat", response_model=ChatResponse, responses={400: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+def chat(req: ChatRequest) -> ChatResponse:
+    """Answer a question from the collected texts only, with numbered sources."""
+    from app.nlp.chat import ChatUnavailable, answer_question
+    from app.nlp.retriever import index_ready
+
+    start = time.perf_counter()
+    names = {o.id: o.name for o in load_objects()}
+    if req.object_id is not None and req.object_id not in names:
+        raise HTTPException(400, f"Unknown object '{req.object_id}'.")
+    if not index_ready():
+        raise HTTPException(503, "The chat's search index is not built on the server.")
+    try:
+        result = answer_question(req.message.strip(), req.object_id, names.get(req.object_id),
+                                 [t.model_dump() for t in req.history])
+    except ChatUnavailable as err:
+        raise HTTPException(503, str(err)) from None
+    latency_ms = round((time.perf_counter() - start) * 1000, 1)
+    log.info("chat: %s | refused=%s | search %.0f ms, model %.0f ms", req.object_id, result["refused"],
+             result["retrieval_ms"], result["llm_ms"])
+    return ChatResponse(**result, latency_ms=latency_ms)
+
+
+@app.post("/navigate", response_model=NavigateResponse)
+def navigate(req: NavigateRequest) -> NavigateResponse:
+    """Match typed text to an object's name or nickname: fly there, ask which one, or hand over to the chat."""
+    from app.nlp.navigator import navigate as match
+
+    start = time.perf_counter()
+    names = {o.id: o.name for o in load_objects()}
+    result = match(req.text, object_tuple())
+    latency_ms = round((time.perf_counter() - start) * 1000, 1)
+    return NavigateResponse(
+        intent=result["intent"],
+        object_id=result["object_id"],
+        score=result["score"],
+        needs_clarification=result["intent"] == "clarify",
+        candidates=[Candidate(id=c["id"], name=names[c["id"]], score=c["score"]) for c in result["candidates"]],
         latency_ms=latency_ms,
     )

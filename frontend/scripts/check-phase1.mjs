@@ -4,7 +4,7 @@
  *
  * Starts its own Vite dev server, opens the page in the installed Microsoft Edge
  * (through playwright-core, so no browser download), and for every object in objects.json:
- * picks it in the dropdown, waits for the flight to end, then checks the card text, the
+ * picks it (selectObject, as the dropdown did until Phase 4), waits for the flight to end, then checks the card text, the
  * scene mode, the camera position and that the object is on screen. Saves a screenshot each.
  * Objects are visited alternating Solar System / deep space, so every flight is a mode switch.
  *
@@ -120,7 +120,8 @@ async function main() {
       }
       const fA = await frames()
       const start = Date.now()
-      await page.selectOption('[data-testid=object-select]', obj.id)
+      // Phase 4 replaced the dropdown with the command bar; this calls the same store action it used.
+      await page.evaluate((id) => window.astrolens.store.getState().selectObject(id), obj.id)
       let fadeSeconds = null
       if (switching) {
         const key = obj.scene_mode === 'deep_space' ? 'deep' : 'solar'
@@ -186,7 +187,7 @@ async function main() {
 
     // ---- Home button (from deep space, so it is also a mode switch) ----
     if ((await page.evaluate(() => window.astrolens.store.getState().mode)) !== 'deep_space') {
-      await page.selectOption('[data-testid=object-select]', deep[0].id)
+      await page.evaluate((id) => window.astrolens.store.getState().selectObject(id), deep[0].id)
       await waitForFlight()
     }
     await page.click('[data-testid=home-button]')

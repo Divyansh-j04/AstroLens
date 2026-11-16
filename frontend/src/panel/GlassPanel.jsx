@@ -1,33 +1,9 @@
 import { OBJECTS_BY_ID } from '../objects'
 import { useStore } from '../store'
 import BriefCard from './BriefCard'
+import ChatPanel from './ChatPanel'
 import TopGuesses from './TopGuesses'
 import UnknownCard from './UnknownCard'
-
-/** Placeholder for the chat view; the real chat (RAG with sources) arrives in Phase 4. */
-function ChatPlaceholder({ obj }) {
-  const setPanelView = useStore((s) => s.setPanelView)
-  return (
-    <div data-testid="chat-placeholder" className="flex flex-col gap-4">
-      <button
-        type="button"
-        onClick={() => setPanelView('card')}
-        className="self-start text-xs text-slate-400 hover:text-white"
-      >
-        ‹ Back to card
-      </button>
-      <h2 className="text-xl font-semibold text-white">Ask about {obj.name}</h2>
-      <p className="text-sm text-slate-400">The chat is not built yet (Phase 4). It will start from these questions:</p>
-      <ul className="flex flex-col gap-2">
-        {obj.suggested_questions.map((q) => (
-          <li key={q} className="rounded-2xl border border-white/15 px-3 py-2 text-sm text-slate-300">
-            {q}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
 
 /** See-through panel on the right (26% wide on desktop) with a blurred background. Collapsible. */
 export default function GlassPanel() {
@@ -37,12 +13,13 @@ export default function GlassPanel() {
   const setPanelOpen = useStore((s) => s.setPanelOpen)
   const prediction = useStore((s) => s.prediction)
   const obj = currentObjectId ? OBJECTS_BY_ID[currentObjectId] : null
-  // The upload views ('unknown', 'guesses') can show without an object; card and chat need one.
-  const view = ['unknown', 'guesses'].includes(panelView) && prediction ? panelView : obj ? panelView : null
+  // The upload views ('unknown', 'guesses') and the chat can show without an object; the card needs one.
+  const view =
+    (['unknown', 'guesses'].includes(panelView) && prediction) || panelView === 'chat' ? panelView : obj ? panelView : null
   if (!view) return null
   const body = {
     card: () => <BriefCard obj={obj} />,
-    chat: () => <ChatPlaceholder obj={obj} />,
+    chat: () => <ChatPanel obj={obj} />,
     guesses: () => <TopGuesses />,
     unknown: () => <UnknownCard />,
   }[view]
@@ -76,7 +53,7 @@ export default function GlassPanel() {
           onClick={() => setPanelOpen(true)}
           className="absolute right-0 top-1/2 z-30 -translate-y-1/2 rounded-l-lg border border-r-0 border-white/15 bg-slate-950/40 px-2 py-4 text-xs tracking-wider text-slate-200 backdrop-blur-[14px] [writing-mode:vertical-rl] hover:bg-slate-900/60"
         >
-          {view === 'unknown' ? 'Show result' : 'Show card'}
+          {{ unknown: 'Show result', chat: 'Show chat' }[view] ?? 'Show card'}
         </button>
       )}
     </>

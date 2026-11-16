@@ -98,3 +98,55 @@ class ClassifyResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
+
+
+class ChatTurn(BaseModel):
+    """One earlier message in the conversation."""
+
+    role: Literal["user", "assistant"]
+    content: str = Field(max_length=4000)
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=500)
+    object_id: str | None = None  # the object the user is looking at, so "it" makes sense
+    history: list[ChatTurn] = Field(default_factory=list, max_length=20)
+
+
+class Citation(BaseModel):
+    n: int  # the number used in the answer, e.g. [2]
+    title: str
+    url: str
+    section: str
+    object_id: str
+    snippet: str  # the start of the paragraph given to the language model
+    score: float  # similarity to the question (plus the current-object bonus)
+    cited: bool  # True if the answer actually cites it
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    refused: bool  # True when the answer is "I don't know from my sources."
+    citations: list[Citation]
+    retrieval_ms: float
+    llm_ms: float
+    latency_ms: float
+
+
+class NavigateRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=200)
+
+
+class Candidate(BaseModel):
+    id: str
+    name: str
+    score: float
+
+
+class NavigateResponse(BaseModel):
+    intent: Literal["fly_to", "clarify", "chat"]
+    object_id: str | None  # where to fly (fly_to), or the object a question is about (chat)
+    score: float  # best similarity between the text and an object's name or nickname
+    needs_clarification: bool
+    candidates: list[Candidate]  # best matches; for "clarify", the two options to offer
+    latency_ms: float

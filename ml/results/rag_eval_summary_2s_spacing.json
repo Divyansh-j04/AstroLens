@@ -1,0 +1,81 @@
+{
+  "script": "ml/scripts/eval_rag.py",
+  "retrieval": {
+    "question only": {
+      "tagged_doc_at_1": 14,
+      "tagged_doc_at_3": 22,
+      "tagged_doc_at_5": 22,
+      "answer_found_at_1": 17,
+      "answer_found_at_3": 24,
+      "answer_found_at_5": 28,
+      "questions": 30
+    },
+    "app (card open)": {
+      "tagged_doc_at_1": 14,
+      "tagged_doc_at_3": 21,
+      "tagged_doc_at_5": 22,
+      "answer_found_at_1": 15,
+      "answer_found_at_3": 24,
+      "answer_found_at_5": 28,
+      "questions": 30
+    }
+  },
+  "answers": {
+    "language_model": "openai/gpt-oss-20b",
+    "answerable": 30,
+    "contains_expected_fact": 24,
+    "cites_at_least_one_source": 30,
+    "cites_the_right_document": 17,
+    "wrongly_refused": 0,
+    "unanswerable": 10,
+    "correctly_refused": 10,
+    "median_search_ms": 103.6,
+    "median_model_ms": 9533.6,
+    "median_total_s": 9.65
+  },
+  "commands": {
+    "MiniLM only": {
+      "exact_correct": 15,
+      "nickname_correct": 12,
+      "typo_correct": 3,
+      "exact_phrases": 15,
+      "nickname_phrases": 15,
+      "typo_phrases": 10,
+      "all_correct": 30,
+      "phrases": 40,
+      "clarification_asked": 4,
+      "median_ms": 30.5
+    },
+    "MiniLM + spelling": {
+      "exact_correct": 15,
+      "nickname_correct": 12,
+      "typo_correct": 9,
+      "exact_phrases": 15,
+      "nickname_phrases": 15,
+      "typo_phrases": 10,
+      "all_correct": 36,
+      "phrases": 40,
+      "clarification_asked": 1,
+      "median_ms": 32.2
+    },
+    "MiniLM + spelling + margin (app)": {
+      "exact_correct": 15,
+      "nickname_correct": 12,
+      "typo_correct": 9,
+      "exact_phrases": 15,
+      "nickname_phrases": 15,
+      "typo_phrases": 10,
+      "all_correct": 36,
+      "phrases": 40,
+      "clarification_asked": 2,
+      "median_ms": 34.1
+    }
+  },
+  "command_thresholds": {
+    "fly": 0.6,
+    "ask": 0.45,
+    "margin": 0.05
+  },
+  "refusal_text": "I don't know from my sources.",
+  "note": "language model temperature 0.2, so answers can differ slightly between runs"
+}

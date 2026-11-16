@@ -1,0 +1,33 @@
+{
+  "script": "ml/scripts/build_index.py",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "dimensions": 384,
+  "chunk_words": 180,
+  "overlap_words": 40,
+  "documents": 76,
+  "chunks": 1385,
+  "embedding_minutes_cpu": 1.23,
+  "chunks_per_object": {
+    "sun": 106,
+    "mercury": 76,
+    "venus": 92,
+    "earth": 132,
+    "moon": 119,
+    "mars": 102,
+    "jupiter": 87,
+    "saturn": 65,
+    "uranus": 84,
+    "neptune": 80,
+    "orion_nebula": 31,
+    "crab_nebula": 97,
+    "ring_nebula": 31,
+    "eagle_nebula": 16,
+    "carina_nebula": 78,
+    "horsehead_nebula": 9,
+    "pleiades": 66,
+    "beehive_cluster": 40,
+    "hercules_cluster": 24,
+    "omega_centauri": 50
+  }
+}

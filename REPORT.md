@@ -229,28 +229,103 @@ What the heatmaps show:
 
 ## 8. Chat and command matching
 
-_Phase 4: texts used, chunk size, embedding model, index, language model, prompt rules._
+The chat uses retrieval-augmented generation (RAG). It looks up the paragraphs most related to the question, and the language model may only answer from those. Nothing is trained in this phase: both models are used as they are, and this phase's work is the texts, the search, the prompt rules and the evaluation.
+
+- **Texts** (`ml/scripts/collect_texts.py`, `ml/data/SOURCES.md`):
+  - 76 documents, 195,241 words, 3 to 5 per object.
+  - Sources: the English Wikipedia article, the Simple English Wikipedia article (a plain-language explainer), the NASA Science page and, for planets, its "facts" page. Deep-sky objects also get related Wikipedia articles, such as "Pillars of Creation" for the Eagle Nebula and "Arecibo message" for M13.
+  - Saved as text files with the title, link, licence and date at the top (`backend/app/data/corpus/`).
+- **Chunks:**
+  - 180 words each, overlapping by 40 words, so a fact on a boundary is whole in one chunk. That gives 1,385 chunks (`ml/results/index_summary.json`).
+  - The plan said about 300 words, but MiniLM reads only the first 256 word pieces (about 190 words) and ignores the rest. 300-word chunks would be only partly searchable.
+  - Each chunk keeps its object, title, link and section heading.
+- **Embeddings:**
+  - `all-MiniLM-L6-v2` (sentence-transformers, 384 numbers per text), pinned to one exact model version.
+  - The text embedded is "object name - section: chunk", so a chunk about "its rings" still says which object it is about.
+  - Building the index took 1.23 min on the CPU (`ml/scripts/build_index.py`).
+- **Search** (`backend/app/nlp/retriever.py`):
+  - The question becomes a vector, and its cosine similarity with all 1,385 chunk vectors is one NumPy matrix product. This is the same computation as FAISS's basic "flat" index.
+  - The top 5 chunks are kept. Chunks about the object on screen get +0.10, and the object's name is put in front of the question, so "how far is it?" on the Venus card searches as "Venus: how far is it?".
+- **Language model:**
+  - `openai/gpt-oss-20b` on Groq, temperature 0.2, reasoning effort "low" (`backend/app/nlp/chat.py`).
+  - The prompt holds rules, the 5 numbered chunks, the last 4 messages of the conversation and the question.
+  - The rules: answer only from the numbered sources; put [n] after every fact; if the sources do not contain the answer, reply exactly "I don't know from my sources."; 2 to 4 plain sentences; "it" means the object on screen.
+  - The server marks which sources the answer actually cites, and the page lists those under the answer as links.
+- **Commands** (`backend/app/nlp/navigator.py`, `POST /navigate`):
+  1. Command words such as "take me to" or "show me" are removed.
+  2. The rest is compared with every object's name and nicknames from `objects.json`. The score is the higher of the MiniLM similarity (meaning) and a letter-by-letter spelling similarity (Python's difflib, for typos MiniLM cannot read, such as "jupitr").
+  3. The decision:
+     - a question ("how hot is Venus?") goes to the chat, and the page flies to the object it names;
+     - a score of at least 0.60 and at least 0.05 ahead of the next object flies there;
+     - a score from 0.45 to 0.60, or two objects within 0.05 of each other (such as just "nebula"), shows "Did you mean" with two buttons;
+     - anything lower is passed to the chat as a question.
 
 ## 9. Chat results
 
-_Phase 4. Source: `ml/results/rag_eval.csv`._
+Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/results/navigate_eval.csv`, written by `ml/scripts/eval_rag.py`. The test sets are `ml/data/eval/rag_questions.json` and `ml/data/eval/commands.json`.
+- **Chat test set:** 30 questions, each tagged with the document that holds its answer and a short phrase the answer must contain, plus 10 questions the texts cannot answer.
+- **Command test set:** 40 phrases. 10 of the 15 nicknames are listed in `objects.json`; the other 5 ("the hottest planet", "our nearest star", ...) are paraphrases the matcher has never seen.
 
 **Table C: chat retrieval and answers**
 
 | Measure | Result |
 | --- | --- |
-| Questions where the right source was in the top 5 (of 30) |  |
-| Answers fully supported by the sources, manual check (of 10) |  |
-| Unanswerable questions correctly refused (of 10) |  |
-| Median answer time (seconds) |  |
+| Questions where the right source was in the top 5 (of 30): the tagged document / any chunk containing the answer | 22 / 28 |
+| Answers fully supported by the sources, manual check (of 10) | _author to check: `ml/results/rag_manual_check.csv`_ |
+| Answers containing the expected fact, automatic check (of 30) | 29 |
+| Answers citing at least one source (of 30) | 29 |
+| Answers citing the tagged document (of 30) | 17 |
+| Answerable questions wrongly refused (of 30) | 0 |
+| Unanswerable questions correctly refused (of 10) | 10 |
+| Median answer time (seconds; search 46.8 ms + language model 812.2 ms) | 0.91 |
+
+**Search detail (of 30 questions).**
+- "Tagged document" means a chunk from the document tagged as holding the answer.
+- "Answer found" means any chunk that contains the expected answer. The same fact is often in Wikipedia and in NASA, so this is the fairer test.
+
+| Setting | Tagged doc @1 / @3 / @5 | Answer found @1 / @3 / @5 |
+| --- | --- | --- |
+| Question only (no object context) | 14 / 22 / 22 | 17 / 24 / 28 |
+| App: object name in front + current-object bonus | 14 / 21 / 22 | 15 / 24 / 28 |
+
+**Reading the results:**
+- **Object context:** it makes no difference on these 30 questions, because each one already names its object or a distinctive topic. It is there for follow-ups that do not name the object. The browser check's follow-up "How long is a day there?" was answered about Mars, and the tests check that the current object's texts come first.
+- **The automatic fact check:** it is strict. After the first run, three equivalent values that are in the sources were added to the answer key (4.5 billion years for the Sun, 70.8% for Earth's water, 9.9 hours for Jupiter's day). No-break spaces the model writes inside numbers ("15 million") are now treated as normal spaces. The saved answers were then re-checked without asking the model again (`eval_rag.py --rescore`). The one remaining miss quotes Wikipedia's 2,200 km/h for Neptune's winds rather than NASA's 1,200 mph in the key, so the key is stricter than the answer. One correct answer (how Neptune was discovered) has no [n] markers and so counts as uncited.
+- **Timing:** the evaluation waits 15 s between questions. In a first run with only 2 s between them, the free Groq tier slowed back-to-back calls to a median of 9533.6 ms (`ml/results/rag_eval_summary_2s_spacing.json`), which measures the free tier's limit, not one user's wait.
+- **Repeat runs:** the language model runs at temperature 0.2, so a repeat run can word answers differently.
 
 **Table D: command matching**
 
 | Phrase type | Phrases | Accuracy % |
 | --- | --- | --- |
-| Exact names | 15 |  |
-| Nicknames | 15 |  |
-| Typos or extra words | 10 |  |
+| Exact names | 15 | 100 (15 of 15) |
+| Nicknames | 15 | 80 (12 of 15) |
+| Typos or extra words | 10 | 90 (9 of 10) |
+| **All** | 40 | **90** (36 of 40) |
+
+**What each part adds (same 40 phrases):**
+
+| Setting | Exact | Nicknames | Typos | All | Asked "did you mean" | Median time (ms) |
+| --- | --- | --- | --- | --- | --- | --- |
+| MiniLM only | 15/15 | 12/15 | 3/10 | 30/40 | 4 | 11.9 |
+| MiniLM + spelling | 15/15 | 12/15 | 9/10 | 36/40 | 1 | 13.8 |
+| MiniLM + spelling + margin (app) | 15/15 | 12/15 | 9/10 | 36/40 | 2 | 14.1 |
+
+The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated word pieces). The margin makes a bare "nebula" ask instead of guessing; it changes no answer in this set. The phrases the app still gets wrong: "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (fly_to neptune, expected jupiter); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula).
+
+**Phase 4 browser check.** Source: `ml/results/phase4_chat_check.json`, written by `node scripts/check-phase4.mjs` (run from `frontend/`), with the real server and language model in Microsoft Edge. Screenshots are in `ml/results/phase4_screens/`.
+
+| Check | Result |
+| --- | --- |
+| Command "take me to the red planet" | flew to mars, card "Mars" |
+| "Chat more": suggested questions shown | 3 |
+| First suggested question: "Why is Mars red?" | answered with 3 cited sources, all links https |
+| Follow-up "How long is a day there?" (no object named) | answered about Mars: "A day on Mars, called a sol, lasts about 24.6 hours 12. This is only slightly longer than …" |
+| "Who won the 2022 football World Cup?" | "I don't know from my sources.", no sources listed |
+| Command "nebula" | asked "Did you mean": Eagle Nebula / Ring Nebula; clicking the first flew to eagle_nebula |
+| Command "jupitr" | flew to jupiter |
+| Command "how hot is Venus?" | flew to venus and answered in the chat with 3 cited sources |
+| Browser console errors | 0 |
 
 ## 10. Features delivered
 
@@ -287,6 +362,14 @@ _Phase 4. Source: `ml/results/rag_eval.csv`._
 | 3 | Unknown message with the closest 3 guesses; the camera stays put | Done |
 | 3 | Error messages on the page: server unreachable, too large, not an image, server error | Done |
 | 3 | API tests (`tests/test_api.py`) and browser check (`frontend/scripts/check-phase3.mjs`) | Done |
+| 4 | Chat texts: 76 documents from Wikipedia, Simple English Wikipedia and NASA, with titles, links and licences (`collect_texts.py`) | Done |
+| 4 | Search index: 1,385 chunks embedded with MiniLM (`build_index.py`) | Done |
+| 4 | `POST /chat`: top-5 search preferring the current object, answers only from the sources with [n] citations, "I don't know from my sources." otherwise | Done |
+| 4 | `POST /navigate`: names, nicknames and typos; fly, "did you mean" with two buttons, or hand over to the chat | Done |
+| 4 | Chat panel: 3 suggested questions, numbered source links, typing indicator, one conversation per object, follow-ups keep the object | Done |
+| 4 | Command bar replaces the temporary dropdown (object names offered while typing); a typed question flies to its object and answers there | Done |
+| 4 | Evaluation: 30 questions + 10 unanswerable, 40 command phrases (`eval_rag.py`); manual-check sheet for 10 answers | Done (manual check: author) |
+| 4 | Tests (`tests/test_chat_navigate.py`, language model faked) and browser check (`frontend/scripts/check-phase4.mjs`) | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -360,10 +443,13 @@ The times are on the author's laptop, with the server on the same machine; the d
 - Stars are drawn at their real direction, but not at their real distance (they sit on a far sphere). The 3D view therefore does not show stars at different depths.
 - Orion Nebula and Horsehead Nebula are only 3° apart on the sky, so their pictures overlap. That is true to the sky, but it can make one hard to click.
 - The frame rates were measured on one laptop with a fast GPU (RTX 4060). Slower machines, and phones in particular, have not been measured yet (Phase 5).
-- The chat view is a placeholder until Phase 4.
 - Grad-CAM is coarse: the network's last feature maps are 7 x 7 cells, so the heatmap shows roughly where the model looked, not exact outlines. It covers the centre crop the model saw, so the edges of a wide photo are not part of it.
 - The 'server waking up' message was tested by holding a request back for 6.5 s, not with a real sleeping server (that comes with deployment in Phase 5).
-- The temporary "Go to" dropdown stays until the typed commands of Phase 4.
+- The chat knows only its 76 documents. Questions about anything else get "I don't know from my sources.", even when the language model itself would know the answer. That is intended.
+- The answers depend on an outside service (Groq's free tier). If it is slow or down, the chat shows an error, and many fast questions in a row are slowed down by its limits.
+- The automatic fact check in Table C only looks for a key phrase. Whether each sentence is supported by its cited source needs the manual check (`ml/results/rag_manual_check.csv`).
+- The command matcher does not understand descriptions it was not given, such as "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (fly_to neptune, expected jupiter); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula). More nicknames in `objects.json` would fix these one by one.
+- Search uses one embedding model and no re-ranking step (the full plan's BM25 and cross-encoder were left out to keep it simple). Wikipedia articles are long, so they supply most chunks.
 - Future work (beyond this project): draw star clusters as 3D balls of star points instead of one picture, and give nebulae depth with a particle cloud built from the bright pixels of their photo.
 - Future work (beyond this project): planets move along their orbits from the moment the page loads. Speeds come from each planet's period, run on a sped-up clock, because real speed is too slow to see (Earth moves about 1° a day). The motion pauses in deep-space mode, so the page does no orbit work while the planets are hidden, and resumes on return. The fly-to must then follow a moving planet: the camera keeps tracking it after landing.
 - Future work (beyond this project): an OpenCV auto-crop before classification. It would find the bright disc in photos where the Moon or a planet is small in the frame (thresholding or circle detection) and classify the crop. This adds a classic computer-vision step in front of the deep model.
@@ -419,6 +505,16 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | HTTP status codes | Numbers that say how a request went: 200 OK, 400 bad request, 413 too large, 415 wrong file type, 503 not ready | Phase 3 |
 | fetch, FormData and AbortController | The browser's built-in tools to send the photo, package it as a form, and give up after 90 s | Phase 3 |
 | EXIF orientation | A tag in phone photos saying which way is up; the server applies it so a sideways-stored photo is classified upright | Phase 3 |
+| RAG (retrieval-augmented generation) | First find the paragraphs that answer a question, then let the language model answer only from them, so it can cite sources and say when it does not know | Phase 4 |
+| sentence-transformers | The Python library that loads MiniLM and turns text into embeddings | Phase 4 |
+| all-MiniLM-L6-v2 (MiniLM) | A small (22 million weights) pretrained model that turns a sentence into 384 numbers, so texts with similar meaning get similar numbers | Phase 4 |
+| Hugging Face Hub | The website the MiniLM model is downloaded from, pinned to one exact version | Phase 4 |
+| Cosine similarity | How alike two embeddings are, from -1 to 1; with vectors of length 1 it is just the dot product | Phase 4 |
+| Chunking | Cutting long texts into short overlapping pieces, so the search can return just the paragraph that answers | Phase 4 |
+| NumPy search (instead of FAISS) | One matrix product compares the question with all chunks at once; FAISS's "flat" index does the same, and is only needed for millions of chunks | Phase 4 |
+| Prompt rules | The fixed instructions sent with every question: answer only from the sources, cite [n], say "I don't know from my sources." | Phase 4 |
+| difflib (spelling similarity) | Python's built-in tool that scores how alike two strings are letter by letter; catches typos such as "jupitr" | Phase 4 |
+| datalist | A built-in browser feature that offers suggestions (here the object names) while typing in a box | Phase 4 |
 | AdamW, cosine schedule, label smoothing, early stopping | The optimiser that adjusts the weights; a learning rate that slowly falls; slightly softened targets so the model is not over-confident; and keeping the epoch with the best validation loss | Phase 2 |
 | Cosine similarity of deep features | Two images are compared by the angle between their EfficientNet feature vectors; near 1 means the same picture, which is how duplicates were found | Phase 2 |
 | scikit-learn | A standard machine-learning library; used here only to compute precision, recall, F1 and the confusion matrix | Phase 2 |
@@ -472,6 +568,15 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Nov 16, 2026 | The unknown message names how many objects the classifier knows (14, sent by the server), not "20" | Six objects are not in the classifier, so "20" would be wrong |
 | Nov 16, 2026 | A third badge colour, red, below 55% | The plan only gave green (above 80%) and amber (55-80%), but answers between the 46% threshold and 55% also need a colour |
 | Nov 16, 2026 | The temporary "Go to" dropdown is kept until Phase 4 | Until typed commands exist, it is the only way to reach an object without a photo |
+| Nov 16, 2026 | New packages: sentence-transformers and its dependencies (15 in all), each pinned to a release at least 4 weeks old (`pip --uploaded-prior-to 2026-10-15`), binary wheels only; the list was approved by the author before installing | A recent supply-chain scare on PyPI; old, pinned releases avoid freshly uploaded versions |
+| Nov 16, 2026 | NumPy matrix product instead of FAISS (author's choice) | At about 1,400 chunks it is the same computation as FAISS's flat index and takes milliseconds; one compiled package fewer |
+| Nov 16, 2026 | Chunks of 180 words with 40 words of overlap, not about 300 | MiniLM reads only 256 word pieces (about 190 words); longer chunks would be only partly searchable |
+| Nov 16, 2026 | Simple English Wikipedia as the "explainer" source, plus related Wikipedia articles for deep-sky objects | Same free licence and API as Wikipedia, plain language; NASA has no pages for some nebulae |
+| Nov 16, 2026 | The object on screen is put in front of the question and its chunks get +0.10 | Follow-ups such as "how far is it?" need to know what "it" is; a question naming another object can still win |
+| Nov 16, 2026 | Spelling similarity (difflib) next to MiniLM in the command matcher, and a 0.05 margin that asks "did you mean" | MiniLM alone got only 3 of 10 typos right (Table D); the margin stops a vague word such as "nebula" flying to one of several matches |
+| Nov 16, 2026 | Text typed in the command bar that is a question goes to the chat; if it names an object, the page flies there first | One box for both commands and questions, as the plan's flow describes |
+| Nov 16, 2026 | The command bar replaces the dropdown, with the object names offered as suggestions | Typed commands now exist; the suggestions keep "pick from a list" possible |
+| Nov 16, 2026 | Evaluation calls spaced 15 s apart; answer key widened once for equivalent values, with the answers re-checked, not re-generated | Back-to-back calls measure the free tier's limit; the widening is listed in Section 9 so the change is visible |
 | Nov 16, 2026 | The app uses the model **without** augmentation, chosen on the validation set: clean photos plus 10 altered versions (`ml/scripts/robustness.py`); Table A reports both models | It scored higher on clean validation photos (92.6% against 88.0%) and on average over the altered ones (80.6% against 79.1%). Choosing on validation, not test, keeps the test scores fair. The augmented model was the original plan |
 
 ## Progress log
@@ -492,3 +597,14 @@ _Phase 4: the 30 test questions and 40 command phrases._
   - **Browser check** (`ml/results/phase3_upload_check.json`): the Saturn photo flew to Saturn (78%), the cat photo showed the unknown message with the camera unmoved, and all 5 error cases showed the right message. Classifying took a median of 362.7 ms on the CPU.
   - **Grad-CAM:** 6 examples in `ml/results/gradcam/`.
   - **Tests:** pytest, 38 passed. Phase 3 complete.
+- **Nov 16, 2026 (Phase 4):**
+  - **Texts and index:** 76 documents (195,241 words) from Wikipedia, Simple English Wikipedia and NASA, cut into 1,385 chunks and embedded with MiniLM.
+  - **Server:** `/chat` answers only from the top 5 chunks, with [n] citations; `/navigate` handles names, nicknames and typos.
+  - **Page:** chat panel and command bar.
+  - **Evaluation** (`ml/results/rag_eval_summary.json`):
+    - answer found in the top 5 for 28 of 30 questions;
+    - 10 of 10 unanswerable questions refused, and 0 answerable ones wrongly refused;
+    - commands 36 of 40 right.
+  - **Browser check:** passed (`ml/results/phase4_chat_check.json`).
+  - **Still to do:** the manual check of 10 answers is left for the author.
+  - **Tests:** pytest, 52 passed. Phase 4 complete.

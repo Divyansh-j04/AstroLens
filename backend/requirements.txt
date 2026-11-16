@@ -13,3 +13,20 @@ pillow==11.1.0
 torch==2.8.0
 torchvision==0.23.0
 numpy==2.3.2
+# Chat and commands (Phase 4): MiniLM sentence embeddings. Pinned to releases at least 4 weeks old;
+# install with: pip install -r backend/requirements.txt --only-binary=:all:
+sentence-transformers==6.1.0
+transformers==5.18.0
+huggingface-hub==1.33.0
+tokenizers==0.23.2
+hf-xet==1.7.0
+regex==2026.9.29
+safetensors==0.8.0
+tqdm==4.70.1
+typer==0.27.3
+annotated-doc==0.0.5
+rich==15.0.0
+Pygments==2.21.0
+markdown-it-py==4.2.0
+mdurl==0.1.2
+shellingham==1.5.4

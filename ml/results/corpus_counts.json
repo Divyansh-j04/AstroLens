@@ -1,0 +1,586 @@
+{
+  "script": "ml/scripts/collect_texts.py",
+  "retrieved_on": "2026-11-16",
+  "documents": 76,
+  "words": 195241,
+  "failures": [
+    "ring_nebula: Ring Nebula: no simple Wikipedia article 'Ring Nebula'",
+    "eagle_nebula: Eagle Nebula: no simple Wikipedia article 'Eagle Nebula'",
+    "beehive_cluster: Beehive Cluster: no simple Wikipedia article 'Beehive Cluster'",
+    "hercules_cluster: Messier 13: no simple Wikipedia article 'Messier 13'"
+  ],
+  "per_object": {
+    "sun": [
+      {
+        "file": "wikipedia.md",
+        "title": "Sun",
+        "url": "https://en.wikipedia.org/wiki/Sun",
+        "source": "Wikipedia",
+        "words": 9982
+      },
+      {
+        "file": "nasa.md",
+        "title": "Sun",
+        "url": "https://science.nasa.gov/sun/",
+        "source": "NASA Science",
+        "words": 462
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Sun",
+        "url": "https://simple.wikipedia.org/wiki/Sun",
+        "source": "Simple English Wikipedia",
+        "words": 1996
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Sun: Facts",
+        "url": "https://science.nasa.gov/sun/facts/",
+        "source": "NASA Science",
+        "words": 2500
+      }
+    ],
+    "mercury": [
+      {
+        "file": "wikipedia.md",
+        "title": "Mercury (planet)",
+        "url": "https://en.wikipedia.org/wiki/Mercury_(planet)",
+        "source": "Wikipedia",
+        "words": 8177
+      },
+      {
+        "file": "nasa.md",
+        "title": "Mercury",
+        "url": "https://science.nasa.gov/mercury/",
+        "source": "NASA Science",
+        "words": 219
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Mercury (planet)",
+        "url": "https://simple.wikipedia.org/wiki/Mercury_(planet)",
+        "source": "Simple English Wikipedia",
+        "words": 1301
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Mercury: Facts",
+        "url": "https://science.nasa.gov/mercury/facts/",
+        "source": "NASA Science",
+        "words": 1030
+      }
+    ],
+    "venus": [
+      {
+        "file": "wikipedia.md",
+        "title": "Venus",
+        "url": "https://en.wikipedia.org/wiki/Venus",
+        "source": "Wikipedia",
+        "words": 9501
+      },
+      {
+        "file": "nasa.md",
+        "title": "Venus",
+        "url": "https://science.nasa.gov/venus/",
+        "source": "NASA Science",
+        "words": 223
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Venus",
+        "url": "https://simple.wikipedia.org/wiki/Venus",
+        "source": "Simple English Wikipedia",
+        "words": 813
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Venus: Facts",
+        "url": "https://science.nasa.gov/venus/facts/",
+        "source": "NASA Science",
+        "words": 2332
+      }
+    ],
+    "earth": [
+      {
+        "file": "wikipedia.md",
+        "title": "Earth",
+        "url": "https://en.wikipedia.org/wiki/Earth",
+        "source": "Wikipedia",
+        "words": 9183
+      },
+      {
+        "file": "nasa.md",
+        "title": "Earth",
+        "url": "https://science.nasa.gov/earth/",
+        "source": "NASA Science",
+        "words": 788
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Earth",
+        "url": "https://simple.wikipedia.org/wiki/Earth",
+        "source": "Simple English Wikipedia",
+        "words": 7139
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Facts About Earth",
+        "url": "https://science.nasa.gov/earth/facts/",
+        "source": "NASA Science",
+        "words": 1574
+      }
+    ],
+    "moon": [
+      {
+        "file": "wikipedia.md",
+        "title": "Moon",
+        "url": "https://en.wikipedia.org/wiki/Moon",
+        "source": "Wikipedia",
+        "words": 13477
+      },
+      {
+        "file": "nasa.md",
+        "title": "Earth's Moon",
+        "url": "https://science.nasa.gov/moon/",
+        "source": "NASA Science",
+        "words": 697
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Moon",
+        "url": "https://simple.wikipedia.org/wiki/Moon",
+        "source": "Simple English Wikipedia",
+        "words": 1458
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Moon Facts",
+        "url": "https://science.nasa.gov/moon/facts/",
+        "source": "NASA Science",
+        "words": 1427
+      }
+    ],
+    "mars": [
+      {
+        "file": "wikipedia.md",
+        "title": "Mars",
+        "url": "https://en.wikipedia.org/wiki/Mars",
+        "source": "Wikipedia",
+        "words": 9153
+      },
+      {
+        "file": "nasa.md",
+        "title": "Mars",
+        "url": "https://science.nasa.gov/mars/",
+        "source": "NASA Science",
+        "words": 1317
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Mars",
+        "url": "https://simple.wikipedia.org/wiki/Mars",
+        "source": "Simple English Wikipedia",
+        "words": 2627
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Mars: Facts",
+        "url": "https://science.nasa.gov/mars/facts/",
+        "source": "NASA Science",
+        "words": 1421
+      }
+    ],
+    "jupiter": [
+      {
+        "file": "wikipedia.md",
+        "title": "Jupiter",
+        "url": "https://en.wikipedia.org/wiki/Jupiter",
+        "source": "Wikipedia",
+        "words": 7582
+      },
+      {
+        "file": "nasa.md",
+        "title": "Jupiter",
+        "url": "https://science.nasa.gov/jupiter/",
+        "source": "NASA Science",
+        "words": 335
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Jupiter",
+        "url": "https://simple.wikipedia.org/wiki/Jupiter",
+        "source": "Simple English Wikipedia",
+        "words": 2493
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Jupiter Facts",
+        "url": "https://science.nasa.gov/jupiter/facts/",
+        "source": "NASA Science",
+        "words": 1858
+      }
+    ],
+    "saturn": [
+      {
+        "file": "wikipedia.md",
+        "title": "Saturn",
+        "url": "https://en.wikipedia.org/wiki/Saturn",
+        "source": "Wikipedia",
+        "words": 5032
+      },
+      {
+        "file": "nasa.md",
+        "title": "Saturn",
+        "url": "https://science.nasa.gov/saturn/",
+        "source": "NASA Science",
+        "words": 296
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Saturn",
+        "url": "https://simple.wikipedia.org/wiki/Saturn",
+        "source": "Simple English Wikipedia",
+        "words": 2590
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Saturn: Facts",
+        "url": "https://science.nasa.gov/saturn/facts/",
+        "source": "NASA Science",
+        "words": 1287
+      }
+    ],
+    "uranus": [
+      {
+        "file": "wikipedia.md",
+        "title": "Uranus",
+        "url": "https://en.wikipedia.org/wiki/Uranus",
+        "source": "Wikipedia",
+        "words": 8610
+      },
+      {
+        "file": "nasa.md",
+        "title": "Uranus",
+        "url": "https://science.nasa.gov/uranus/",
+        "source": "NASA Science",
+        "words": 294
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Uranus",
+        "url": "https://simple.wikipedia.org/wiki/Uranus",
+        "source": "Simple English Wikipedia",
+        "words": 1747
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Uranus: Facts",
+        "url": "https://science.nasa.gov/uranus/facts/",
+        "source": "NASA Science",
+        "words": 1102
+      }
+    ],
+    "neptune": [
+      {
+        "file": "wikipedia.md",
+        "title": "Neptune",
+        "url": "https://en.wikipedia.org/wiki/Neptune",
+        "source": "Wikipedia",
+        "words": 6975
+      },
+      {
+        "file": "nasa.md",
+        "title": "Neptune",
+        "url": "https://science.nasa.gov/neptune/",
+        "source": "NASA Science",
+        "words": 284
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Neptune",
+        "url": "https://simple.wikipedia.org/wiki/Neptune",
+        "source": "Simple English Wikipedia",
+        "words": 2601
+      },
+      {
+        "file": "nasa-facts.md",
+        "title": "Neptune: Facts",
+        "url": "https://science.nasa.gov/neptune/facts/",
+        "source": "NASA Science",
+        "words": 1304
+      }
+    ],
+    "orion_nebula": [
+      {
+        "file": "wikipedia.md",
+        "title": "Orion Nebula",
+        "url": "https://en.wikipedia.org/wiki/Orion_Nebula",
+        "source": "Wikipedia",
+        "words": 3137
+      },
+      {
+        "file": "nasa.md",
+        "title": "Messier 42 (The Orion Nebula)",
+        "url": "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-42/",
+        "source": "NASA Science",
+        "words": 500
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Orion nebula",
+        "url": "https://simple.wikipedia.org/wiki/Orion_nebula",
+        "source": "Simple English Wikipedia",
+        "words": 285
+      },
+      {
+        "file": "wikipedia-trapezium-cluster.md",
+        "title": "Trapezium Cluster",
+        "url": "https://en.wikipedia.org/wiki/Trapezium_Cluster",
+        "source": "Wikipedia",
+        "words": 360
+      }
+    ],
+    "crab_nebula": [
+      {
+        "file": "wikipedia.md",
+        "title": "Crab Nebula",
+        "url": "https://en.wikipedia.org/wiki/Crab_Nebula",
+        "source": "Wikipedia",
+        "words": 3411
+      },
+      {
+        "file": "nasa.md",
+        "title": "Messier 1 (The Crab Nebula)",
+        "url": "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-1/",
+        "source": "NASA Science",
+        "words": 521
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Crab Nebula",
+        "url": "https://simple.wikipedia.org/wiki/Crab_Nebula",
+        "source": "Simple English Wikipedia",
+        "words": 614
+      },
+      {
+        "file": "wikipedia-crab-pulsar.md",
+        "title": "Crab Pulsar",
+        "url": "https://en.wikipedia.org/wiki/Crab_Pulsar",
+        "source": "Wikipedia",
+        "words": 1193
+      },
+      {
+        "file": "wikipedia-sn-1054.md",
+        "title": "SN 1054",
+        "url": "https://en.wikipedia.org/wiki/SN_1054",
+        "source": "Wikipedia",
+        "words": 7708
+      }
+    ],
+    "ring_nebula": [
+      {
+        "file": "wikipedia.md",
+        "title": "Ring Nebula",
+        "url": "https://en.wikipedia.org/wiki/Ring_Nebula",
+        "source": "Wikipedia",
+        "words": 890
+      },
+      {
+        "file": "nasa.md",
+        "title": "Messier 57 (The Ring Nebula)",
+        "url": "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-57/",
+        "source": "NASA Science",
+        "words": 417
+      },
+      {
+        "file": "wikipedia-planetary-nebula.md",
+        "title": "Planetary nebula",
+        "url": "https://en.wikipedia.org/wiki/Planetary_nebula",
+        "source": "Wikipedia",
+        "words": 3135
+      }
+    ],
+    "eagle_nebula": [
+      {
+        "file": "wikipedia.md",
+        "title": "Eagle Nebula",
+        "url": "https://en.wikipedia.org/wiki/Eagle_Nebula",
+        "source": "Wikipedia",
+        "words": 665
+      },
+      {
+        "file": "nasa.md",
+        "title": "Messier 16 (The Eagle Nebula)",
+        "url": "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-16/",
+        "source": "NASA Science",
+        "words": 480
+      },
+      {
+        "file": "wikipedia-pillars-of-creation.md",
+        "title": "Pillars of Creation",
+        "url": "https://en.wikipedia.org/wiki/Pillars_of_Creation",
+        "source": "Wikipedia",
+        "words": 1115
+      }
+    ],
+    "carina_nebula": [
+      {
+        "file": "wikipedia.md",
+        "title": "Carina Nebula",
+        "url": "https://en.wikipedia.org/wiki/Carina_Nebula",
+        "source": "Wikipedia",
+        "words": 2028
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Carina nebula",
+        "url": "https://simple.wikipedia.org/wiki/Carina_nebula",
+        "source": "Simple English Wikipedia",
+        "words": 247
+      },
+      {
+        "file": "wikipedia-eta-carinae.md",
+        "title": "Eta Carinae",
+        "url": "https://en.wikipedia.org/wiki/Eta_Carinae",
+        "source": "Wikipedia",
+        "words": 8566
+      },
+      {
+        "file": "wikipedia-mystic-mountain.md",
+        "title": "Mystic Mountain",
+        "url": "https://en.wikipedia.org/wiki/Mystic_Mountain",
+        "source": "Wikipedia",
+        "words": 114
+      }
+    ],
+    "horsehead_nebula": [
+      {
+        "file": "wikipedia.md",
+        "title": "Horsehead Nebula",
+        "url": "https://en.wikipedia.org/wiki/Horsehead_Nebula",
+        "source": "Wikipedia",
+        "words": 450
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Horsehead nebula",
+        "url": "https://simple.wikipedia.org/wiki/Horsehead_nebula",
+        "source": "Simple English Wikipedia",
+        "words": 262
+      },
+      {
+        "file": "wikipedia-ic-434.md",
+        "title": "IC 434",
+        "url": "https://en.wikipedia.org/wiki/IC_434",
+        "source": "Wikipedia",
+        "words": 246
+      },
+      {
+        "file": "wikipedia-dark-nebula.md",
+        "title": "Dark nebula",
+        "url": "https://en.wikipedia.org/wiki/Dark_nebula",
+        "source": "Wikipedia",
+        "words": 313
+      }
+    ],
+    "pleiades": [
+      {
+        "file": "wikipedia.md",
+        "title": "Pleiades",
+        "url": "https://en.wikipedia.org/wiki/Pleiades",
+        "source": "Wikipedia",
+        "words": 3255
+      },
+      {
+        "file": "nasa.md",
+        "title": "Messier 45 (The Pleiades)",
+        "url": "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-45/",
+        "source": "NASA Science",
+        "words": 465
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Pleiades",
+        "url": "https://simple.wikipedia.org/wiki/Pleiades",
+        "source": "Simple English Wikipedia",
+        "words": 115
+      },
+      {
+        "file": "wikipedia-pleiades-in-folklore-and-literature.md",
+        "title": "Pleiades in folklore and literature",
+        "url": "https://en.wikipedia.org/wiki/Pleiades_in_folklore_and_literature",
+        "source": "Wikipedia",
+        "words": 5665
+      }
+    ],
+    "beehive_cluster": [
+      {
+        "file": "wikipedia.md",
+        "title": "Beehive Cluster",
+        "url": "https://en.wikipedia.org/wiki/Beehive_Cluster",
+        "source": "Wikipedia",
+        "words": 1059
+      },
+      {
+        "file": "nasa.md",
+        "title": "Messier 44",
+        "url": "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-44/",
+        "source": "NASA Science",
+        "words": 480
+      },
+      {
+        "file": "wikipedia-open-cluster.md",
+        "title": "Open cluster",
+        "url": "https://en.wikipedia.org/wiki/Open_cluster",
+        "source": "Wikipedia",
+        "words": 4041
+      }
+    ],
+    "hercules_cluster": [
+      {
+        "file": "wikipedia.md",
+        "title": "Messier 13",
+        "url": "https://en.wikipedia.org/wiki/Messier_13",
+        "source": "Wikipedia",
+        "words": 909
+      },
+      {
+        "file": "nasa.md",
+        "title": "Messier 13 (The Hercules Cluster)",
+        "url": "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-13/",
+        "source": "NASA Science",
+        "words": 414
+      },
+      {
+        "file": "wikipedia-arecibo-message.md",
+        "title": "Arecibo message",
+        "url": "https://en.wikipedia.org/wiki/Arecibo_message",
+        "source": "Wikipedia",
+        "words": 1990
+      }
+    ],
+    "omega_centauri": [
+      {
+        "file": "wikipedia.md",
+        "title": "Omega Centauri",
+        "url": "https://en.wikipedia.org/wiki/Omega_Centauri",
+        "source": "Wikipedia",
+        "words": 1032
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Omega Centauri",
+        "url": "https://simple.wikipedia.org/wiki/Omega_Centauri",
+        "source": "Simple English Wikipedia",
+        "words": 269
+      },
+      {
+        "file": "wikipedia-globular-cluster.md",
+        "title": "Globular cluster",
+        "url": "https://en.wikipedia.org/wiki/Globular_cluster",
+        "source": "Wikipedia",
+        "words": 5703
+      }
+    ]
+  }
+}

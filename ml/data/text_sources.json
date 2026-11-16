@@ -1,0 +1,25 @@
+{
+  "_about": "Extra text sources for the chat (Phase 4), on top of the links in each object's `sources` in objects.json. Read by ml/scripts/collect_texts.py. simple_wikipedia: the Simple English Wikipedia title (a plain-language explainer). related_wikipedia: English Wikipedia articles about a part of the object. nasa: extra NASA Science pages.",
+  "objects": {
+    "sun": {"simple_wikipedia": "Sun", "nasa": ["https://science.nasa.gov/sun/facts/"]},
+    "mercury": {"simple_wikipedia": "Mercury (planet)", "nasa": ["https://science.nasa.gov/mercury/facts/"]},
+    "venus": {"simple_wikipedia": "Venus", "nasa": ["https://science.nasa.gov/venus/facts/"]},
+    "earth": {"simple_wikipedia": "Earth", "nasa": ["https://science.nasa.gov/earth/facts/"]},
+    "moon": {"simple_wikipedia": "Moon", "nasa": ["https://science.nasa.gov/moon/facts/"]},
+    "mars": {"simple_wikipedia": "Mars", "nasa": ["https://science.nasa.gov/mars/facts/"]},
+    "jupiter": {"simple_wikipedia": "Jupiter", "nasa": ["https://science.nasa.gov/jupiter/facts/"]},
+    "saturn": {"simple_wikipedia": "Saturn", "nasa": ["https://science.nasa.gov/saturn/facts/"]},
+    "uranus": {"simple_wikipedia": "Uranus", "nasa": ["https://science.nasa.gov/uranus/facts/"]},
+    "neptune": {"simple_wikipedia": "Neptune", "nasa": ["https://science.nasa.gov/neptune/facts/"]},
+    "orion_nebula": {"simple_wikipedia": "Orion Nebula", "related_wikipedia": ["Trapezium Cluster"]},
+    "crab_nebula": {"simple_wikipedia": "Crab Nebula", "related_wikipedia": ["Crab Pulsar", "SN 1054"]},
+    "ring_nebula": {"simple_wikipedia": "Ring Nebula", "related_wikipedia": ["Planetary nebula"]},
+    "eagle_nebula": {"simple_wikipedia": "Eagle Nebula", "related_wikipedia": ["Pillars of Creation"]},
+    "carina_nebula": {"simple_wikipedia": "Carina Nebula", "related_wikipedia": ["Eta Carinae", "Mystic Mountain"]},
+    "horsehead_nebula": {"simple_wikipedia": "Horsehead Nebula", "related_wikipedia": ["IC 434", "Dark nebula"]},
+    "pleiades": {"simple_wikipedia": "Pleiades", "related_wikipedia": ["Pleiades in folklore and literature"]},
+    "beehive_cluster": {"simple_wikipedia": "Beehive Cluster", "related_wikipedia": ["Open cluster"]},
+    "hercules_cluster": {"simple_wikipedia": "Messier 13", "related_wikipedia": ["Arecibo message"]},
+    "omega_centauri": {"simple_wikipedia": "Omega Centauri", "related_wikipedia": ["Globular cluster"]}
+  }
+}

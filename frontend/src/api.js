@@ -44,3 +44,40 @@ export async function classifyImage(file) {
   }
   return response.json()
 }
+
+/** POST a JSON body and return the JSON answer, turning failures into plain-language UploadErrors. */
+async function postJson(path, body, timeoutMs = 60_000) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  let response
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    })
+  } catch (err) {
+    if (err.name === 'AbortError') throw new UploadError('The server took too long to answer. Please try again.')
+    throw new UploadError("Can't reach the AstroLens server. Check your connection, or try again in a minute.")
+  } finally {
+    clearTimeout(timer)
+  }
+  if (!response.ok) {
+    let detail = ''
+    try {
+      detail = (await response.json()).detail
+    } catch {
+      // not a JSON error body
+    }
+    throw new UploadError(typeof detail === 'string' && detail ? detail : `The server could not answer (error ${response.status}).`)
+  }
+  return response.json()
+}
+
+/** POST /chat: an answer from the collected texts, with numbered sources. */
+export const askChat = (message, objectId, history) =>
+  postJson('/chat', { message, object_id: objectId ?? null, history }, 90_000)
+
+/** POST /navigate: fly_to, clarify (two options) or chat, for typed text. */
+export const navigateText = (text) => postJson('/navigate', { text }, 30_000)

@@ -1,39 +1,14 @@
-import { OBJECTS } from '../objects'
 import { useStore } from '../store'
+import CommandBar from './CommandBar'
 
-const GROUP_LABELS = { solar_system: 'Solar system', nebula: 'Nebulae', star_cluster: 'Star clusters' }
-
-/** Title, the temporary "go to" dropdown (replaced by typed commands in Phase 4) and the Home button. */
+/** Title, the command bar (go to an object or ask a question) and the Home button. */
 export default function TopBar() {
-  const currentObjectId = useStore((s) => s.currentObjectId)
-  const selectObject = useStore((s) => s.selectObject)
   const goHome = useStore((s) => s.goHome)
 
   return (
     <header className="pointer-events-none absolute left-0 top-0 z-20 flex flex-wrap items-center gap-3 p-4">
       <h1 className="pointer-events-auto mr-2 text-base font-semibold tracking-[0.3em] text-slate-100">ASTROLENS</h1>
-      <label className="pointer-events-auto flex items-center gap-2 text-xs text-slate-400">
-        <span>Go to</span>
-        <select
-          data-testid="object-select"
-          value={currentObjectId ?? ''}
-          onChange={(e) => e.target.value && selectObject(e.target.value)}
-          className="rounded-md border border-white/15 bg-slate-900/70 px-2 py-1.5 text-sm text-slate-100 backdrop-blur focus:outline-none focus:ring-2 focus:ring-sky-400/60"
-        >
-          <option value="" disabled>
-            Choose an object…
-          </option>
-          {Object.entries(GROUP_LABELS).map(([group, label]) => (
-            <optgroup key={group} label={label}>
-              {OBJECTS.filter((o) => o.group === group).map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-      </label>
+      <CommandBar />
       <button
         type="button"
         data-testid="home-button"
