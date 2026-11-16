@@ -82,8 +82,11 @@ def main() -> None:
     if EXCLUDED.exists():
         with EXCLUDED.open(encoding="utf-8") as fh:
             excluded = {r["file"] for r in csv.DictReader(fh)}
-    with MANIFEST.open(encoding="utf-8") as fh:
-        unknown_rows = [r for r in csv.DictReader(fh) if r["set"] == "unknown" and r["file"] not in excluded]
+    unknown_rows = []
+    for manifest in (MANIFEST, MANIFEST.with_name("manifest_unknown.csv")):  # Wikimedia, then archive unknowns
+        if manifest.exists():
+            with manifest.open(encoding="utf-8") as fh:
+                unknown_rows += [r for r in csv.DictReader(fh) if r["set"] == "unknown" and r["file"] not in excluded]
     unknown_paths = [RAW / "unknown" / r["file"] for r in unknown_rows]
 
     def slice_scores(p: np.ndarray) -> dict:

@@ -34,8 +34,12 @@ COLS, ROWS, CELL = 10, 8, 128  # 80 thumbnails per sheet
 
 
 def files_of(cls: str) -> list[Path]:
-    if cls == "unknown":
-        return sorted((ROOT / "ml" / "data" / "raw" / "unknown").glob("*.jpg"))
+    if cls in ("unknown", "unknown_new"):
+        files = sorted((ROOT / "ml" / "data" / "raw" / "unknown").glob("*.jpg"))
+        if cls == "unknown_new":
+            done = set(DONE.read_text(encoding="utf-8").split()) if DONE.exists() else set()
+            files = [f for f in files if f.name not in done]
+        return files
     base = real_class(cls)
     files = sorted((IMAGES / base).glob("*.jpg"))
     if cls.endswith("_topup"):
