@@ -1,7 +1,7 @@
 {
   "script": "ml/scripts/evaluate.py",
   "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
-  "main_model": "efficientnet_b0_aug",
+  "main_model": "efficientnet_b0_noaug",
   "test_images": 189,
   "table_a": [
     {
@@ -66,9 +66,9 @@
       "train_images": 75,
       "val_images": 18,
       "test_images": 13,
-      "precision": 0.867,
+      "precision": 0.929,
       "recall": 1.0,
-      "f1": 0.929
+      "f1": 0.963
     },
     {
       "class": "mercury",
@@ -76,9 +76,9 @@
       "train_images": 59,
       "val_images": 12,
       "test_images": 11,
-      "precision": 0.714,
+      "precision": 0.909,
       "recall": 0.909,
-      "f1": 0.8
+      "f1": 0.909
     },
     {
       "class": "venus",
@@ -86,9 +86,9 @@
       "train_images": 60,
       "val_images": 13,
       "test_images": 11,
-      "precision": 0.857,
-      "recall": 0.545,
-      "f1": 0.667
+      "precision": 0.818,
+      "recall": 0.818,
+      "f1": 0.818
     },
     {
       "class": "earth",
@@ -96,9 +96,9 @@
       "train_images": 70,
       "val_images": 14,
       "test_images": 14,
-      "precision": 0.933,
+      "precision": 1.0,
       "recall": 1.0,
-      "f1": 0.966
+      "f1": 1.0
     },
     {
       "class": "moon",
@@ -106,9 +106,9 @@
       "train_images": 65,
       "val_images": 14,
       "test_images": 13,
-      "precision": 1.0,
-      "recall": 0.846,
-      "f1": 0.917
+      "precision": 0.929,
+      "recall": 1.0,
+      "f1": 0.963
     },
     {
       "class": "mars",
@@ -136,9 +136,9 @@
       "train_images": 106,
       "val_images": 23,
       "test_images": 21,
-      "precision": 0.955,
-      "recall": 1.0,
-      "f1": 0.977
+      "precision": 1.0,
+      "recall": 0.952,
+      "f1": 0.976
     },
     {
       "class": "uranus",
@@ -146,9 +146,9 @@
       "train_images": 54,
       "val_images": 12,
       "test_images": 10,
-      "precision": 0.7,
+      "precision": 1.0,
       "recall": 0.7,
-      "f1": 0.7
+      "f1": 0.824
     },
     {
       "class": "neptune",
@@ -156,9 +156,9 @@
       "train_images": 61,
       "val_images": 11,
       "test_images": 12,
-      "precision": 0.636,
-      "recall": 0.583,
-      "f1": 0.609
+      "precision": 0.786,
+      "recall": 0.917,
+      "f1": 0.846
     },
     {
       "class": "orion_nebula",
@@ -166,9 +166,9 @@
       "train_images": 90,
       "val_images": 23,
       "test_images": 15,
-      "precision": 1.0,
+      "precision": 0.882,
       "recall": 1.0,
-      "f1": 1.0
+      "f1": 0.938
     },
     {
       "class": "crab_nebula",
@@ -176,9 +176,9 @@
       "train_images": 73,
       "val_images": 16,
       "test_images": 14,
-      "precision": 0.933,
-      "recall": 1.0,
-      "f1": 0.966
+      "precision": 1.0,
+      "recall": 0.857,
+      "f1": 0.923
     },
     {
       "class": "eagle_nebula",
@@ -186,9 +186,9 @@
       "train_images": 44,
       "val_images": 9,
       "test_images": 9,
-      "precision": 0.778,
+      "precision": 0.875,
       "recall": 0.778,
-      "f1": 0.778
+      "f1": 0.824
     },
     {
       "class": "carina_nebula",
@@ -196,74 +196,74 @@
       "train_images": 54,
       "val_images": 11,
       "test_images": 10,
-      "precision": 0.875,
-      "recall": 0.7,
-      "f1": 0.778
+      "precision": 0.9,
+      "recall": 0.9,
+      "f1": 0.9
     }
   ],
   "most_confused_pairs": [
     {
       "true": "uranus",
       "predicted": "neptune",
-      "count": 3
-    },
-    {
-      "true": "neptune",
-      "predicted": "uranus",
-      "count": 3
+      "count": 2
     },
     {
       "true": "venus",
       "predicted": "sun",
-      "count": 2
-    },
-    {
-      "true": "venus",
-      "predicted": "mercury",
-      "count": 2
-    },
-    {
-      "true": "carina_nebula",
-      "predicted": "eagle_nebula",
-      "count": 2
-    },
-    {
-      "true": "venus",
-      "predicted": "neptune",
       "count": 1
     },
     {
-      "true": "neptune",
-      "predicted": "saturn",
+      "true": "venus",
+      "predicted": "moon",
+      "count": 1
+    },
+    {
+      "true": "uranus",
+      "predicted": "venus",
+      "count": 1
+    },
+    {
+      "true": "saturn",
+      "predicted": "neptune",
       "count": 1
     },
     {
       "true": "neptune",
       "predicted": "jupiter",
       "count": 1
+    },
+    {
+      "true": "mercury",
+      "predicted": "venus",
+      "count": 1
+    },
+    {
+      "true": "eagle_nebula",
+      "predicted": "orion_nebula",
+      "count": 1
     }
   ],
   "threshold": {
-    "value": 0.36,
+    "value": 0.46,
     "rule": "5th percentile of top-1 confidence on correctly classified validation images",
     "val_images": 217,
-    "test_share_accepted_pct": 95.8,
-    "test_accuracy_of_accepted_pct": 91.7,
-    "test_correct_but_rejected": 2,
-    "test_wrong_but_accepted": 15
+    "test_share_accepted_pct": 95.2,
+    "test_accuracy_of_accepted_pct": 94.4,
+    "test_correct_but_rejected": 6,
+    "test_wrong_but_accepted": 10
   },
   "unknown_test": {
     "images": 66,
-    "rejected": 26,
-    "rejected_pct": 39.4,
+    "rejected": 40,
+    "rejected_pct": 60.6,
     "by_source": {
       "Andromeda Galaxy": {
         "images": 3,
-        "rejected": 0
+        "rejected": 2
       },
       "Whirlpool Galaxy": {
         "images": 8,
-        "rejected": 3
+        "rejected": 8
       },
       "Lagoon Nebula": {
         "images": 11,
@@ -271,23 +271,23 @@
       },
       "Helix Nebula": {
         "images": 6,
-        "rejected": 2
+        "rejected": 3
       },
       "C/2020 F3 (NEOWISE)": {
         "images": 6,
-        "rejected": 3
+        "rejected": 2
       },
       "Featured pictures of cats": {
         "images": 6,
-        "rejected": 5
+        "rejected": 6
       },
       "Featured pictures of dogs": {
         "images": 6,
-        "rejected": 4
+        "rejected": 6
       },
       "Quality images of mountains": {
         "images": 6,
-        "rejected": 2
+        "rejected": 6
       },
       "Sombrero Galaxy": {
         "images": 5,
@@ -295,7 +295,7 @@
       },
       "Tarantula Nebula": {
         "images": 3,
-        "rejected": 1
+        "rejected": 0
       },
       "Pluto": {
         "images": 1,
@@ -303,7 +303,7 @@
       },
       "Comet": {
         "images": 5,
-        "rejected": 0
+        "rejected": 1
       }
     },
     "items": [
@@ -311,301 +311,301 @@
         "file": "unknown_673662dfc8.jpg",
         "source_category": "Andromeda Galaxy",
         "top1": "orion_nebula",
-        "confidence": 0.444,
-        "rejected": false
+        "confidence": 0.361,
+        "rejected": true
       },
       {
         "file": "unknown_47328bacea.jpg",
         "source_category": "Andromeda Galaxy",
         "top1": "crab_nebula",
-        "confidence": 0.589,
+        "confidence": 0.723,
         "rejected": false
       },
       {
         "file": "unknown_6b9a22df1b.jpg",
         "source_category": "Andromeda Galaxy",
         "top1": "saturn",
-        "confidence": 0.452,
-        "rejected": false
+        "confidence": 0.385,
+        "rejected": true
       },
       {
         "file": "unknown_db879d8c95.jpg",
         "source_category": "Whirlpool Galaxy",
-        "top1": "sun",
-        "confidence": 0.254,
+        "top1": "jupiter",
+        "confidence": 0.243,
         "rejected": true
       },
       {
         "file": "unknown_7c1640a595.jpg",
         "source_category": "Whirlpool Galaxy",
         "top1": "jupiter",
-        "confidence": 0.691,
-        "rejected": false
+        "confidence": 0.324,
+        "rejected": true
       },
       {
         "file": "unknown_d81d178946.jpg",
         "source_category": "Whirlpool Galaxy",
         "top1": "jupiter",
-        "confidence": 0.432,
-        "rejected": false
+        "confidence": 0.223,
+        "rejected": true
       },
       {
         "file": "unknown_a605b8e1f7.jpg",
         "source_category": "Whirlpool Galaxy",
-        "top1": "neptune",
-        "confidence": 0.238,
+        "top1": "uranus",
+        "confidence": 0.276,
         "rejected": true
       },
       {
         "file": "unknown_839a3ef3c7.jpg",
         "source_category": "Whirlpool Galaxy",
-        "top1": "jupiter",
-        "confidence": 0.612,
-        "rejected": false
+        "top1": "saturn",
+        "confidence": 0.248,
+        "rejected": true
       },
       {
         "file": "unknown_ffc37aee0e.jpg",
         "source_category": "Lagoon Nebula",
-        "top1": "eagle_nebula",
-        "confidence": 0.248,
+        "top1": "mercury",
+        "confidence": 0.42,
         "rejected": true
       },
       {
         "file": "unknown_c2f59ec564.jpg",
         "source_category": "Lagoon Nebula",
         "top1": "orion_nebula",
-        "confidence": 0.371,
-        "rejected": false
+        "confidence": 0.309,
+        "rejected": true
       },
       {
         "file": "unknown_c20838ca1e.jpg",
         "source_category": "Lagoon Nebula",
         "top1": "carina_nebula",
-        "confidence": 0.789,
+        "confidence": 0.809,
         "rejected": false
       },
       {
         "file": "unknown_f2ad02131c.jpg",
         "source_category": "Lagoon Nebula",
         "top1": "carina_nebula",
-        "confidence": 0.843,
+        "confidence": 0.671,
         "rejected": false
       },
       {
         "file": "unknown_3bec748f68.jpg",
         "source_category": "Lagoon Nebula",
         "top1": "eagle_nebula",
-        "confidence": 0.5,
+        "confidence": 0.617,
         "rejected": false
       },
       {
         "file": "unknown_c8ab9fd155.jpg",
         "source_category": "Lagoon Nebula",
         "top1": "carina_nebula",
-        "confidence": 0.195,
-        "rejected": true
+        "confidence": 0.484,
+        "rejected": false
       },
       {
         "file": "unknown_099692ed31.jpg",
         "source_category": "Helix Nebula",
-        "top1": "uranus",
-        "confidence": 0.252,
-        "rejected": true
+        "top1": "crab_nebula",
+        "confidence": 0.502,
+        "rejected": false
       },
       {
         "file": "unknown_825e7a9af7.jpg",
         "source_category": "Helix Nebula",
-        "top1": "crab_nebula",
-        "confidence": 0.607,
-        "rejected": false
+        "top1": "eagle_nebula",
+        "confidence": 0.307,
+        "rejected": true
       },
       {
         "file": "unknown_6e67491a86.jpg",
         "source_category": "Helix Nebula",
         "top1": "moon",
-        "confidence": 0.377,
+        "confidence": 0.51,
         "rejected": false
       },
       {
         "file": "unknown_fa0f37faf4.jpg",
         "source_category": "C/2020 F3 (NEOWISE)",
-        "top1": "saturn",
-        "confidence": 0.207,
+        "top1": "neptune",
+        "confidence": 0.186,
         "rejected": true
       },
       {
         "file": "unknown_e883bee09a.jpg",
         "source_category": "C/2020 F3 (NEOWISE)",
         "top1": "venus",
-        "confidence": 0.421,
+        "confidence": 0.626,
         "rejected": false
       },
       {
         "file": "unknown_89b18476a1.jpg",
         "source_category": "C/2020 F3 (NEOWISE)",
         "top1": "crab_nebula",
-        "confidence": 0.351,
-        "rejected": true
+        "confidence": 0.606,
+        "rejected": false
       },
       {
         "file": "unknown_5c740d0f5f.jpg",
         "source_category": "C/2020 F3 (NEOWISE)",
         "top1": "saturn",
-        "confidence": 0.393,
-        "rejected": false
+        "confidence": 0.332,
+        "rejected": true
       },
       {
         "file": "unknown_21d1123a19.jpg",
         "source_category": "C/2020 F3 (NEOWISE)",
-        "top1": "venus",
-        "confidence": 0.173,
-        "rejected": true
+        "top1": "mercury",
+        "confidence": 0.469,
+        "rejected": false
       },
       {
         "file": "unknown_42a5c84dea.jpg",
         "source_category": "C/2020 F3 (NEOWISE)",
         "top1": "crab_nebula",
-        "confidence": 0.487,
+        "confidence": 0.559,
         "rejected": false
       },
       {
         "file": "unknown_305b9c05ec.jpg",
         "source_category": "Featured pictures of cats",
-        "top1": "earth",
-        "confidence": 0.286,
+        "top1": "carina_nebula",
+        "confidence": 0.195,
         "rejected": true
       },
       {
         "file": "unknown_f4e618997d.jpg",
         "source_category": "Featured pictures of cats",
         "top1": "earth",
-        "confidence": 0.347,
+        "confidence": 0.146,
         "rejected": true
       },
       {
         "file": "unknown_c7be640b86.jpg",
         "source_category": "Featured pictures of cats",
-        "top1": "mercury",
-        "confidence": 0.266,
+        "top1": "earth",
+        "confidence": 0.263,
         "rejected": true
       },
       {
         "file": "unknown_f38a3c92a0.jpg",
         "source_category": "Featured pictures of cats",
         "top1": "jupiter",
-        "confidence": 0.396,
-        "rejected": false
+        "confidence": 0.34,
+        "rejected": true
       },
       {
         "file": "unknown_daaa32fbeb.jpg",
         "source_category": "Featured pictures of cats",
-        "top1": "earth",
-        "confidence": 0.294,
+        "top1": "jupiter",
+        "confidence": 0.218,
         "rejected": true
       },
       {
         "file": "unknown_4450c24e77.jpg",
         "source_category": "Featured pictures of cats",
         "top1": "jupiter",
-        "confidence": 0.274,
+        "confidence": 0.307,
         "rejected": true
       },
       {
         "file": "unknown_b095469409.jpg",
         "source_category": "Featured pictures of dogs",
-        "top1": "earth",
-        "confidence": 0.408,
-        "rejected": false
+        "top1": "saturn",
+        "confidence": 0.195,
+        "rejected": true
       },
       {
         "file": "unknown_4e34f6910a.jpg",
         "source_category": "Featured pictures of dogs",
         "top1": "earth",
-        "confidence": 0.228,
+        "confidence": 0.285,
         "rejected": true
       },
       {
         "file": "unknown_e0e48db4da.jpg",
         "source_category": "Featured pictures of dogs",
         "top1": "earth",
-        "confidence": 0.281,
+        "confidence": 0.161,
         "rejected": true
       },
       {
         "file": "unknown_7e5b990a6e.jpg",
         "source_category": "Featured pictures of dogs",
         "top1": "jupiter",
-        "confidence": 0.462,
-        "rejected": false
+        "confidence": 0.334,
+        "rejected": true
       },
       {
         "file": "unknown_22937ef4a0.jpg",
         "source_category": "Featured pictures of dogs",
         "top1": "jupiter",
-        "confidence": 0.228,
+        "confidence": 0.237,
         "rejected": true
       },
       {
         "file": "unknown_940e105645.jpg",
         "source_category": "Featured pictures of dogs",
         "top1": "jupiter",
-        "confidence": 0.257,
+        "confidence": 0.177,
         "rejected": true
       },
       {
         "file": "unknown_0dbd530a4a.jpg",
         "source_category": "Quality images of mountains",
         "top1": "earth",
-        "confidence": 0.308,
+        "confidence": 0.248,
         "rejected": true
       },
       {
         "file": "unknown_529febc659.jpg",
         "source_category": "Quality images of mountains",
         "top1": "earth",
-        "confidence": 0.361,
-        "rejected": false
+        "confidence": 0.31,
+        "rejected": true
       },
       {
         "file": "unknown_51ab2cb2d9.jpg",
         "source_category": "Quality images of mountains",
         "top1": "earth",
-        "confidence": 0.557,
-        "rejected": false
+        "confidence": 0.414,
+        "rejected": true
       },
       {
         "file": "unknown_4bd0b8cd92.jpg",
         "source_category": "Quality images of mountains",
         "top1": "earth",
-        "confidence": 0.457,
-        "rejected": false
+        "confidence": 0.421,
+        "rejected": true
       },
       {
         "file": "unknown_1c9594df8d.jpg",
         "source_category": "Quality images of mountains",
-        "top1": "jupiter",
-        "confidence": 0.27,
+        "top1": "saturn",
+        "confidence": 0.401,
         "rejected": true
       },
       {
         "file": "unknown_66fc16030d.jpg",
         "source_category": "Quality images of mountains",
         "top1": "earth",
-        "confidence": 0.605,
-        "rejected": false
+        "confidence": 0.268,
+        "rejected": true
       },
       {
         "file": "unknown_cfcd42a035.jpg",
         "source_category": "Whirlpool Galaxy",
         "top1": "jupiter",
-        "confidence": 0.773,
-        "rejected": false
+        "confidence": 0.419,
+        "rejected": true
       },
       {
         "file": "unknown_3fcd005556.jpg",
         "source_category": "Whirlpool Galaxy",
         "top1": "jupiter",
-        "confidence": 0.245,
+        "confidence": 0.255,
         "rejected": true
       },
       {
@@ -613,160 +613,160 @@
         "source_category": "Whirlpool Galaxy",
         "top1": "jupiter",
         "confidence": 0.459,
-        "rejected": false
+        "rejected": true
       },
       {
         "file": "unknown_dbdbb4fdd4.jpg",
         "source_category": "Lagoon Nebula",
-        "top1": "orion_nebula",
-        "confidence": 0.447,
+        "top1": "carina_nebula",
+        "confidence": 0.498,
         "rejected": false
       },
       {
         "file": "unknown_0dfabb295a.jpg",
         "source_category": "Lagoon Nebula",
         "top1": "eagle_nebula",
-        "confidence": 0.343,
-        "rejected": true
+        "confidence": 0.555,
+        "rejected": false
       },
       {
         "file": "unknown_d6edc1b57d.jpg",
         "source_category": "Lagoon Nebula",
         "top1": "carina_nebula",
-        "confidence": 0.866,
+        "confidence": 0.808,
         "rejected": false
       },
       {
         "file": "unknown_62612cc7d9.jpg",
         "source_category": "Lagoon Nebula",
-        "top1": "orion_nebula",
-        "confidence": 0.458,
-        "rejected": false
+        "top1": "eagle_nebula",
+        "confidence": 0.41,
+        "rejected": true
       },
       {
         "file": "unknown_42b6d099ad.jpg",
         "source_category": "Lagoon Nebula",
         "top1": "eagle_nebula",
-        "confidence": 0.83,
+        "confidence": 0.976,
         "rejected": false
       },
       {
         "file": "unknown_31eed2a49d.jpg",
         "source_category": "Helix Nebula",
         "top1": "eagle_nebula",
-        "confidence": 0.26,
-        "rejected": true
+        "confidence": 0.537,
+        "rejected": false
       },
       {
         "file": "unknown_824f69f352.jpg",
         "source_category": "Helix Nebula",
         "top1": "orion_nebula",
-        "confidence": 0.405,
-        "rejected": false
+        "confidence": 0.253,
+        "rejected": true
       },
       {
         "file": "unknown_1a495fe883.jpg",
         "source_category": "Helix Nebula",
         "top1": "orion_nebula",
-        "confidence": 0.459,
-        "rejected": false
+        "confidence": 0.311,
+        "rejected": true
       },
       {
         "file": "unknown_c053641dc3.jpg",
         "source_category": "Sombrero Galaxy",
         "top1": "saturn",
-        "confidence": 0.375,
+        "confidence": 0.685,
         "rejected": false
       },
       {
         "file": "unknown_567da804d0.jpg",
         "source_category": "Sombrero Galaxy",
-        "top1": "jupiter",
-        "confidence": 0.261,
+        "top1": "saturn",
+        "confidence": 0.451,
         "rejected": true
       },
       {
         "file": "unknown_d211840997.jpg",
         "source_category": "Sombrero Galaxy",
         "top1": "saturn",
-        "confidence": 0.447,
+        "confidence": 0.567,
         "rejected": false
       },
       {
         "file": "unknown_e38204e518.jpg",
         "source_category": "Sombrero Galaxy",
-        "top1": "saturn",
-        "confidence": 0.346,
+        "top1": "venus",
+        "confidence": 0.26,
         "rejected": true
       },
       {
         "file": "unknown_7ba8121fbd.jpg",
         "source_category": "Sombrero Galaxy",
         "top1": "saturn",
-        "confidence": 0.469,
+        "confidence": 0.476,
         "rejected": false
       },
       {
         "file": "unknown_9373d41c76.jpg",
         "source_category": "Tarantula Nebula",
         "top1": "carina_nebula",
-        "confidence": 0.353,
-        "rejected": true
+        "confidence": 0.677,
+        "rejected": false
       },
       {
         "file": "unknown_8777bdbdca.jpg",
         "source_category": "Tarantula Nebula",
         "top1": "carina_nebula",
-        "confidence": 0.753,
+        "confidence": 0.869,
         "rejected": false
       },
       {
         "file": "unknown_1c110716af.jpg",
         "source_category": "Tarantula Nebula",
         "top1": "carina_nebula",
-        "confidence": 0.388,
+        "confidence": 0.774,
         "rejected": false
       },
       {
         "file": "unknown_d7a3320fd1.jpg",
         "source_category": "Pluto",
-        "top1": "jupiter",
-        "confidence": 0.272,
+        "top1": "mars",
+        "confidence": 0.167,
         "rejected": true
       },
       {
         "file": "unknown_6dda678abe.jpg",
         "source_category": "Comet",
         "top1": "neptune",
-        "confidence": 0.718,
+        "confidence": 0.55,
         "rejected": false
       },
       {
         "file": "unknown_6a2785c8fc.jpg",
         "source_category": "Comet",
         "top1": "neptune",
-        "confidence": 0.679,
+        "confidence": 0.581,
         "rejected": false
       },
       {
         "file": "unknown_ed4fabd1e8.jpg",
         "source_category": "Comet",
-        "top1": "neptune",
-        "confidence": 0.453,
-        "rejected": false
+        "top1": "uranus",
+        "confidence": 0.285,
+        "rejected": true
       },
       {
         "file": "unknown_13ea6de3d8.jpg",
         "source_category": "Comet",
         "top1": "neptune",
-        "confidence": 0.826,
+        "confidence": 0.821,
         "rejected": false
       },
       {
         "file": "unknown_5b1fda0a26.jpg",
         "source_category": "Comet",
-        "top1": "neptune",
-        "confidence": 0.504,
+        "top1": "venus",
+        "confidence": 0.501,
         "rejected": false
       }
     ]

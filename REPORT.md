@@ -87,12 +87,13 @@ Source: `ml/results/train_efficientnet_b0_aug.json` and `ml/results/train_effici
 - **Stage 1, 5 epochs.** The backbone is frozen and only the new layer learns (AdamW, learning rate 3e-4).
 - **Stage 2, up to 15 epochs.** All layers learn (AdamW, learning rate 1e-4 on a cosine decay).
 - **Other settings.** Weight decay 1e-4, label smoothing 0.1, batch 32, input 224 x 224. Early stopping keeps the epoch with the lowest validation loss (patience 4).
-- **Augmentation** (main run only). Random crops keeping 25-100% of the image (this also makes close-up-like views), horizontal and vertical flips, any rotation, colour jitter, and grey 10% of the time.
+- **Augmentation** (comparison run only). Random crops keeping 25-100% of the image (this also makes close-up-like views), horizontal and vertical flips, any rotation, colour jitter, and grey 10% of the time.
 - **Runs.** Both on an NVIDIA RTX 4060 Laptop GPU with PyTorch 2.8.0: 20 epochs each, best epoch 18 in both, no early stop.
   - Without augmentation: 1.4 min, validation accuracy 92.6%.
   - With augmentation: 3.08 min, validation accuracy 88.0%.
   - Training curves: `ml/results/training_curve_efficientnet_b0_aug.png` and `..._noaug.png`.
-- **Confidence threshold.** Chosen on the validation set only: the 5th percentile of the top-1 confidence on correctly classified validation images, which is **0.36**. Below it, the answer is "not one of my known objects". The threshold is stored in `backend/app/data/classifier.json`.
+- **Which model the app uses.** The model **without augmentation**, chosen on the validation set (see section 7). Its weights are `backend/weights/efficientnet_b0_noaug.pt`.
+- **Confidence threshold.** Chosen on the validation set only: the 5th percentile of the top-1 confidence on correctly classified validation images, which is **0.46**. Below it, the answer is "not one of my known objects". The threshold is stored in `backend/app/data/classifier.json`.
 - **Command-line check.** `python ml/scripts/predict.py photo.jpg` prints the top 3 guesses and the unknown message.
 
 ## 7. Classifier results
@@ -113,55 +114,80 @@ Source: `ml/results/metrics.json`, written once by `ml/scripts/evaluate.py` on t
 | Without augmentation | 92.5 / 98.0 | 95.2 / 100.0 | 93.1 / 98.4 |
 | With augmentation | 88.4 / 96.6 | 90.5 / 100.0 | 88.9 / 97.4 |
 
-The model with augmentation was chosen in advance as the app's model. On this test set it scored *lower* than the one without, for both whole objects and close-ups; validation showed the same (88.0% against 92.6%). A likely reason: the test images are clean archive photos, much like the training images, so the extra variety from augmentation does not pay off here. 189 test images is also a small sample, where one image is about 0.5 points.
+**Choosing the app's model (validation set only).** The augmented model was first planned as the app's model. It scored lower on clean validation photos (88.0% against 92.6%), but augmentation is meant to help with messy real uploads. So both models were also scored on altered copies of the 217 validation photos, one change at a time. Source: `ml/results/robustness_val.json`, written by `ml/scripts/robustness.py`.
 
-**Table B: per-class results (model with augmentation, test set)**
+| Validation photos changed to | Imitates | Without augmentation | With augmentation |
+| --- | --- | --- | --- |
+| clean | the photo as it is | 92.6 | 88.0 |
+| rotated 45 deg | a tilted phone or telescope shot | 86.2 | 87.6 |
+| rotated 90 deg | a sideways photo | 83.4 | 88.0 |
+| blurred | out of focus or atmospheric shake | 84.3 | 80.2 |
+| darker (50%) | under-exposed | 91.2 | 88.0 |
+| brighter (160%) | over-exposed | 86.2 | 84.3 |
+| JPEG quality 10 | a heavily compressed chat-app image | 77.9 | 71.9 |
+| low resolution (64 px) | a small or distant object, digitally zoomed | 74.7 | 75.1 |
+| sensor noise | a grainy night-time phone photo | 60.4 | 54.4 |
+| grey | a black-and-white photo | 83.4 | 80.6 |
+| centre crop 50% | a zoomed-in close-up | 78.3 | 81.1 |
+| **Average over the 10 altered versions** | | **80.6** | **79.1** |
+
+- The model without augmentation won on clean photos and on 6 of the 10 altered versions: blur, darker, brighter, JPEG, noise and grey.
+- The augmented model won on the changes it was trained with: rotation (it scores the same sideways as upright), tight crops and low resolution.
+- One validation photo is about 0.5 points, so most gaps are a handful of photos.
+
+The model without augmentation was chosen because it is better on clean photos and slightly better on average over the altered ones. The choice was made on validation photos only; the test set was not used to choose.
+
+A likely reason augmentation did not pay off here: the validation and test images are clean archive photos, much like the training images. Its rotation and crop changes also did nothing for blur, noise or compression, which it never saw. 189 test images is also a small sample, where one image is about 0.5 points.
+
+**Table B: per-class results (model without augmentation, the app's model, test set)**
 
 | Class | Train images | Test images | Precision | Recall | F1 |
 | --- | --- | --- | --- | --- | --- |
-| Sun | 75 | 13 | 0.867 | 1.0 | 0.929 |
-| Mercury | 59 | 11 | 0.714 | 0.909 | 0.8 |
-| Venus | 60 | 11 | 0.857 | 0.545 | 0.667 |
-| Earth | 70 | 14 | 0.933 | 1.0 | 0.966 |
-| Moon | 65 | 13 | 1.0 | 0.846 | 0.917 |
+| Sun | 75 | 13 | 0.929 | 1.0 | 0.963 |
+| Mercury | 59 | 11 | 0.909 | 0.909 | 0.909 |
+| Venus | 60 | 11 | 0.818 | 0.818 | 0.818 |
+| Earth | 70 | 14 | 1.0 | 1.0 | 1.0 |
+| Moon | 65 | 13 | 0.929 | 1.0 | 0.963 |
 | Mars | 78 | 15 | 1.0 | 1.0 | 1.0 |
 | Jupiter | 106 | 21 | 0.955 | 1.0 | 0.977 |
-| Saturn | 106 | 21 | 0.955 | 1.0 | 0.977 |
-| Uranus | 54 | 10 | 0.7 | 0.7 | 0.7 |
-| Neptune | 61 | 12 | 0.636 | 0.583 | 0.609 |
-| Orion Nebula | 90 | 15 | 1.0 | 1.0 | 1.0 |
-| Crab Nebula | 73 | 14 | 0.933 | 1.0 | 0.966 |
+| Saturn | 106 | 21 | 1.0 | 0.952 | 0.976 |
+| Uranus | 54 | 10 | 1.0 | 0.7 | 0.824 |
+| Neptune | 61 | 12 | 0.786 | 0.917 | 0.846 |
+| Orion Nebula | 90 | 15 | 0.882 | 1.0 | 0.938 |
+| Crab Nebula | 73 | 14 | 1.0 | 0.857 | 0.923 |
 | Ring Nebula | left out (42 usable images, under 50) | | | | |
-| Eagle Nebula | 44 | 9 | 0.778 | 0.778 | 0.778 |
-| Carina Nebula | 54 | 10 | 0.875 | 0.7 | 0.778 |
+| Eagle Nebula | 44 | 9 | 0.875 | 0.778 | 0.824 |
+| Carina Nebula | 54 | 10 | 0.9 | 0.9 | 0.9 |
 | Horsehead Nebula | left out (13 usable images, under 50) | | | | |
 | Pleiades | left out (8 usable images, under 50) | | | | |
 | Beehive Cluster | left out (2 usable images, under 50) | | | | |
 | Hercules Cluster (M13) | left out (6 usable images, under 50) | | | | |
 | Omega Centauri | left out (14 usable images, under 50) | | | | |
 
-**Confusion matrix:** `ml/results/confusion_matrix.png`. The most confused pairs:
-- **Uranus and Neptune** (3 each way). Both are small, nearly featureless blue-green discs, and many Neptune images are processed to look paler, closer to Uranus.
-- **Venus taken for the Sun or Mercury** (2 each). Venus is a bright, featureless yellowish disc like the Sun in amateur photos, and its ultraviolet and radar images are grey and mottled like Mercury's surface.
-- **Carina taken for Eagle** (2). Both are red-orange star-forming clouds with dark pillars.
+Average over the 14 classes: precision 0.927, recall 0.916, F1 0.919 (macro F1 from Table A).
+
+**Confusion matrix** (app's model): `ml/results/confusion_matrix.png`. Only 13 of 189 test images are wrong, and no pair is confused more than twice:
+- **Uranus taken for Neptune** (2). Both are small, nearly featureless blue-green discs, and processed images can make one look like the other.
+- **Venus** (1 each taken for the Sun and the Moon, and 1 Mercury taken for Venus). Venus is a bright, featureless disc like the Sun in amateur photos, and its ultraviolet and radar images are grey and mottled like Mercury's or the Moon's surface.
+- Every other mistake is a single image, for example Saturn taken for Neptune, Neptune for Jupiter, Eagle for Orion, and Uranus for Venus.
 
 **Threshold on the test set:**
-- 95.8% of test images are above the threshold, and 91.7% of those are right.
-- 2 correct answers fall below the threshold, and 15 wrong answers are above it.
+- 95.2% of test images are above the threshold, and 94.4% of those are right.
+- 6 correct answers fall below the threshold, and 10 wrong answers are above it.
 
-**Unknown-object test:** 66 photos of things outside the 14 classes (`ml/data/manifest_unknown.csv` and the "unknown" rows of `ml/data/manifest.csv`, reviewed by eye). The threshold rejected **26 of 66 (39.4%)**:
+**Unknown-object test:** 66 photos of things outside the 14 classes (`ml/data/manifest_unknown.csv` and the "unknown" rows of `ml/data/manifest.csv`, reviewed by eye). The threshold rejected **40 of 66 (60.6%)**:
 
 | Unknown type | Photos | Rejected |
 | --- | --- | --- |
-| Cats | 6 | 5 |
-| Dogs | 6 | 4 |
-| Mountains | 6 | 2 |
-| Galaxies (Andromeda, Whirlpool, Sombrero) | 16 | 5 |
+| Cats | 6 | 6 |
+| Dogs | 6 | 6 |
+| Mountains | 6 | 6 |
+| Galaxies (Andromeda, Whirlpool, Sombrero) | 16 | 12 |
 | Other nebulae (Lagoon, Helix, Tarantula) | 20 | 6 |
 | Comets (NEOWISE and others) | 11 | 3 |
 | Pluto | 1 | 1 |
 
-Everyday photos are mostly rejected (11 of 18). Other space objects are mostly *not* rejected: the model gives a galaxy or another nebula a confident guess among the space classes it knows. One confidence threshold cannot separate "a nebula I know" from "a nebula I don't" well.
+All 18 everyday photos are rejected. Most galaxies are too, but most other nebulae and comets are not: the model gives them a confident guess among the nebulae it knows. One confidence threshold cannot separate "a nebula I know" from "a nebula I don't" well. (With the augmented model the same test rejected only 26 of 66, because its threshold, 0.36, was lower.)
 
 Grad-CAM examples (6): _Phase 3_.
 
@@ -257,8 +283,9 @@ The last two sky rows show that the nebula pictures and the HYG stars share one 
 - Several classes are below the planned 80 images (Uranus 76, Carina 75, Eagle 62), and the test set has only 9 to 21 images per class, so per-class scores move a lot with one image.
 - Eagle Nebula leans on Pillars of Creation close-ups (35 of 62 images).
 - Most images are processed archive pictures (Hubble, Webb, spacecraft). Phone or small-telescope photos look different and are likely to score lower.
-- The unknown-object test rejects only 39.4% of out-of-scope photos (`ml/results/metrics.json`). It works for everyday photos (11 of 18), but other galaxies and nebulae mostly get a confident wrong guess.
-- The model with augmentation, chosen before testing, scored lower than the one without (88.9% against 93.1% top-1).
+- The unknown-object test rejects 60.6% of out-of-scope photos (`ml/results/metrics.json`). It rejects all 18 everyday photos, but other nebulae and comets mostly get a confident wrong guess (rejected 6 of 20 and 3 of 11).
+- The app's model (without augmentation) is weaker on sideways photos: 83.4% on validation photos rotated 90 degrees, against 92.6% upright (`ml/results/robustness_val.json`). It is also weak on very grainy photos (60.4% with added sensor noise).
+- The threshold also rejects 6 of the 189 correct test answers (they fall below 0.46).
 - Holdout split only (no k-fold), so there are no confidence intervals on the scores.
 - Nebulae are shown as flat images at their real sky position, not true 3D shapes.
 - Planet sizes and distances are compressed and labelled "not to scale".
@@ -316,6 +343,7 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | EfficientNet-B0 | A small, accurate image-recognition network (5.3 million weights) already trained on the 1.3 million photos of ImageNet | Phase 2 |
 | Transfer learning | Start from a network that already knows edges, textures and shapes, and only teach it our classes, so a few hundred images are enough | Phase 2 |
 | Data augmentation | Random crops, flips, rotations and colour changes applied to training images, so the model sees more variety than the raw photos | Phase 2 |
+| Robustness check | Score a model on deliberately altered copies of photos (rotated, blurred, compressed, noisy) to see how it copes with messy real uploads | Phase 2 |
 | AdamW, cosine schedule, label smoothing, early stopping | The optimiser that adjusts the weights; a learning rate that slowly falls; slightly softened targets so the model is not over-confident; and keeping the epoch with the best validation loss | Phase 2 |
 | Cosine similarity of deep features | Two images are compared by the angle between their EfficientNet feature vectors; near 1 means the same picture, which is how duplicates were found | Phase 2 |
 | scikit-learn | A standard machine-learning library; used here only to compute precision, recall, F1 and the confusion matrix | Phase 2 |
@@ -363,7 +391,7 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Nov 16, 2026 | Split shuffled with a fixed seed per class | Adding images to one class no longer reshuffles every other class's split |
 | Nov 16, 2026 | Holdout split (70/15/15) only, no k-fold | Simpler and fast; noted as a limitation |
 | Nov 16, 2026 | Downloads run with a time limit and a `--only` option, saving the manifest as they go | A stopped run never loses licence records, and rate limits cannot make a run go on for hours |
-| Nov 16, 2026 | The augmented model stays the app's model (fixed before testing), and Table A reports both | Picking the model after seeing test scores would make the test score optimistic; validation can be used to switch, which is up to the author |
+| Nov 16, 2026 | The app uses the model **without** augmentation, chosen on the validation set: clean photos plus 10 altered versions (`ml/scripts/robustness.py`); Table A reports both models | It scored higher on clean validation photos (92.6% against 88.0%) and on average over the altered ones (80.6% against 79.1%). Choosing on validation, not test, keeps the test scores fair. The augmented model was the original plan |
 
 ## Progress log
 
@@ -372,7 +400,8 @@ _Phase 4: the 30 test questions and 40 command phrases._
 - **Nov 16, 2026 (Phase 2):**
   - **Dataset:** 4,144 candidates from Wikimedia Commons and six space-agency archives, all reviewed by eye. 1,401 images used in 14 classes (train 995, validation 217, test 189); six objects are left out of the classifier for having under 50 images.
   - **Training:** EfficientNet-B0 trained with and without augmentation on the RTX 4060 (3.08 and 1.4 min).
-  - **Test set**, used once: top-1 88.9% and top-3 97.4% with augmentation; 93.1% and 98.4% without.
-  - **Threshold and unknowns:** the threshold is 0.36, and the unknown test rejected 26 of 66.
+  - **Model choice:** the model without augmentation, chosen on validation photos, clean and altered (`ml/results/robustness_val.json`).
+  - **Test set:** without augmentation, top-1 93.1%, top-3 98.4%, macro F1 0.919; with augmentation, 88.9%, 97.4% and 0.861.
+  - **Threshold and unknowns:** the threshold is 0.46, and the unknown test rejected 40 of 66 (all 18 everyday photos).
   - **Done-when check:** `metrics.json` and `confusion_matrix.png` exist, and `predict.py` prints the top 3.
   - **Tests:** pytest, 30 passed. Phase 2 complete.

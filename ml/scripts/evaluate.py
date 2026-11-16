@@ -45,7 +45,9 @@ RESULTS = ROOT / "ml" / "results"
 CLASSIFIER_JSON = ROOT / "backend" / "app" / "data" / "classifier.json"
 
 RUNS = {"without augmentation": "efficientnet_b0_noaug", "with augmentation": "efficientnet_b0_aug"}
-MAIN_RUN = "efficientnet_b0_aug"  # decided before testing: the augmented model is the one the app uses
+# The model the app uses. Chosen on the VALIDATION set (clean and altered photos, ml/scripts/robustness.py):
+# without augmentation scored higher on clean validation photos and on average over 10 altered versions.
+MAIN_RUN = "efficientnet_b0_noaug"
 THRESHOLD_PERCENTILE = 5
 
 
