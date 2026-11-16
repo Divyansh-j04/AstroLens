@@ -5,18 +5,18 @@
       "tagged_doc_at_1": 14,
       "tagged_doc_at_3": 22,
       "tagged_doc_at_5": 22,
-      "answer_found_at_1": 17,
-      "answer_found_at_3": 24,
-      "answer_found_at_5": 28,
+      "answer_found_at_1": 19,
+      "answer_found_at_3": 26,
+      "answer_found_at_5": 30,
       "questions": 30
     },
     "app (card open)": {
       "tagged_doc_at_1": 14,
       "tagged_doc_at_3": 21,
       "tagged_doc_at_5": 22,
-      "answer_found_at_1": 15,
-      "answer_found_at_3": 24,
-      "answer_found_at_5": 28,
+      "answer_found_at_1": 18,
+      "answer_found_at_3": 27,
+      "answer_found_at_5": 30,
       "questions": 30
     }
   },
@@ -32,7 +32,7 @@
     "median_search_ms": 46.8,
     "median_model_ms": 812.2,
     "median_total_s": 0.91,
-    "rescored": "answer key and space handling updated after the first run; answers unchanged"
+    "rescored": "answer key and space handling updated after the first run; answers unchanged, retrieval re-run against the updated key"
   },
   "commands": {
     "MiniLM only": {

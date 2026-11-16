@@ -1,38 +1,103 @@
 # AstroLens
 
-A 3D space web page: upload a photo of a planet, nebula or star cluster, and AstroLens recognises it, flies the camera to it, shows a short fact card, and answers questions from NASA and Wikipedia texts with sources.
+Upload a photo of a planet, nebula or star cluster. AstroLens recognises it, flies a 3D camera to it, shows a short fact card and a heatmap of what it looked at, and answers your questions from NASA and Wikipedia texts with numbered sources. You can also type where to go ("the red planet", "M42", even "jupitr").
 
-College project for CSE471 (Computer Vision) and CSE472 (NLP). Plan: [PLAN.md](PLAN.md). Report: [REPORT.md](REPORT.md).
+**Live demo:** _link added after deployment_ · Course project for CSE471 (Computer Vision) and CSE472 (Natural Language Processing). Full write-up: [REPORT.md](REPORT.md).
 
-> Status: Phase 1 done: the 3D scene, camera fly-to and fact card work for all 20 objects (pick one from the temporary "Go to" list). Photo upload, chat, live link and results come in later phases.
+> The server runs on a free Hugging Face Space, which sleeps when nobody uses it. If the page says "Waking up the server…", wait up to a minute.
 
-## Run locally
+## How it works
 
-Requirements: Python 3.12, Node.js 22.
+```mermaid
+flowchart LR
+    U[User] -->|photo / typed text / question| P[Page: React + Three.js<br>Vercel]
+    P -->|POST /classify| S[Server: FastAPI<br>Hugging Face Space]
+    P -->|POST /navigate| S
+    P -->|POST /chat| S
+    S --> C[EfficientNet-B0<br>+ Grad-CAM]
+    S --> M[MiniLM embeddings<br>nicknames + 1,385 text chunks]
+    S -->|5 numbered chunks + rules| L[Language model<br>gpt-oss-20b on Groq]
+```
+
+- **Recognising photos (Computer Vision):** EfficientNet-B0, fine-tuned by transfer learning. Below a confidence threshold it says "not one of my known objects" instead of guessing. Grad-CAM shows which part of the photo decided the answer.
+- **Answering questions (NLP, retrieval-augmented generation):** the question is turned into a MiniLM embedding, the 5 closest paragraphs are found, and the language model may answer only from them, citing [1], [2]. If they don't hold the answer, it says "I don't know from my sources."
+- **Typed commands (NLP):** text is compared with every object's name and nicknames by meaning (MiniLM) and by spelling, then the page flies there, asks "did you mean", or treats the text as a question.
+- **3D scene:** 8,834 real stars, the Solar System, and nebulae and clusters at their real sky positions (not to scale).
+
+## Results
+
+Every number comes from a file in [`ml/results/`](ml/results); see [REPORT.md](REPORT.md) for the tables and how each was measured.
+
+| What | Result | Source |
+| --- | --- | --- |
+| Photo recognition, test set (189 photos, 14 objects) | 93.1% top-1, 98.4% top-3, macro F1 0.919 | `metrics.json` |
+| Out-of-scope photos rejected ("not one of my objects") | 40 of 66 (all 18 everyday photos) | `metrics.json` |
+| Chat: answer among the top 5 retrieved paragraphs | 30 of 30 questions | `rag_eval_summary.json` |
+| Chat: questions the texts cannot answer, refused | 10 of 10 | `rag_eval_summary.json` |
+| Chat: answers containing the expected fact / citing a source | 29 of 30 / 29 of 30 | `rag_eval_summary.json` |
+| Typed commands sent to the right object | 36 of 40 | `rag_eval_summary.json` |
+
+Six of the 20 objects (Ring, Horsehead, Pleiades, Beehive, M13, Omega Centauri) had too few free-licence photos to train on; they are in the scene and the chat, but the classifier does not recognise them.
+
+## Run it locally
+
+Requirements: Python 3.12, Node.js 22, and a free [Groq](https://console.groq.com) API key for the chat.
 
 ```powershell
 # Server
 py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install -r backend\requirements.txt
-cd backend; uvicorn app.main:app --reload      # http://localhost:8000/health
+pip install -r backend\requirements.txt --only-binary=:all:
+copy .env.example .env                          # then put your GROQ_API_KEY in .env
+cd backend; uvicorn app.main:app --reload       # http://localhost:8000/docs
 
 # Page (second terminal)
-cd frontend; npm install; npm run dev          # http://localhost:5173
+cd frontend; npm install; npm run dev           # http://localhost:5173
 
 # Tests
 pytest tests
-
-# Phase 1 browser check (from frontend/; uses the installed Microsoft Edge)
-node scripts/check-phase1.mjs                  # writes ml/results/phase1_scene_check.json
 ```
 
-Copy `.env.example` to `.env` and add a free Groq API key for the chat.
+The trained weights are not in git. To classify photos locally, rebuild them (below) or copy `efficientnet_b0_noaug.pt` into `backend/weights/`.
 
-## Data sources
+## Rebuild everything from scratch
 
-See [ml/data/SOURCES.md](ml/data/SOURCES.md).
+```powershell
+pip install -r ml\requirements.txt              # training libraries (see the file for the GPU build)
+python ml\scripts\collect.py; python ml\scripts\topup.py   # download candidate images (time-limited runs)
+python ml\scripts\review_sheets.py sheets <class>          # review by eye, see the script's help
+python ml\scripts\split.py                      # licence filter, duplicates, 70/15/15 split
+python ml\scripts\train.py --no-augment         # the app's model (about 1.5 min on an RTX 4060)
+python ml\scripts\train.py                      # comparison run with augmentation
+python ml\scripts\evaluate.py                   # test-set results, threshold, unknown test
+python ml\scripts\predict.py photo.jpg          # top 3 for any photo
 
-**Image credits.** Planet, Sun and Moon textures by [Solar System Scope](https://www.solarsystemscope.com/textures/) (CC BY 4.0). Nebula and cluster pictures come from Wikimedia Commons (NASA/ESA, ESO, ESA/Webb, Harel Boren, Chuck Ayoub), under public domain, CC0, CC BY 4.0 or CC BY-SA 4.0. The full credit for each file is in [ml/data/SOURCES.md](ml/data/SOURCES.md#scene-images-frontendpublictextures).
+python ml\scripts\collect_texts.py              # chat texts (Wikipedia, NASA)
+python ml\scripts\build_index.py                # MiniLM index
+python ml\scripts\eval_rag.py                   # chat and command evaluation
+```
 
-The 3D scene is **not to scale**: sizes and distances are compressed with a square root, and sky directions are real.
+Browser checks (from `frontend/`, using the installed Microsoft Edge): `node scripts/check-phase1.mjs`, `check-phase3.mjs`, `check-phase4.mjs`.
+
+## Deploy
+
+```powershell
+python deploy\push_space.py --wait              # server -> Hugging Face Space (needs HF_TOKEN in .env)
+python deploy\push_vercel.py --api https://<user>-astrolens.hf.space   # page -> Vercel (needs VERCEL_TOKEN)
+python deploy\push_space.py --origins https://<the Vercel address>     # allow the page to call the server
+```
+
+Add `GROQ_API_KEY` as a secret in the Space's settings.
+
+## Sources and licences
+
+All training images, chat texts and scene pictures are free-licence (public domain, CC0, CC BY or CC BY-SA) and credited in [ml/data/SOURCES.md](ml/data/SOURCES.md). Planet textures: [Solar System Scope](https://www.solarsystemscope.com/textures/) (CC BY 4.0). Stars: HYG Database v4.1 (CC BY-SA 4.0).
+
+## Limitations
+
+- The classifier knows 14 objects. Other galaxies and nebulae often get a confident wrong guess instead of "not one of my objects".
+- Most training photos are processed archive images (Hubble, Webb, spacecraft); phone photos through a small telescope may score lower, and sideways photos are harder.
+- The chat knows only its 76 documents, and answers depend on Groq's free service.
+- The 3D scene compresses sizes and distances, and the planets do not move along their orbits.
+
+More in [REPORT.md, section 11](REPORT.md#11-limitations-and-future-work).

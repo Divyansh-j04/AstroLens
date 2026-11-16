@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { OBJECTS_BY_ID } from '../objects'
 import { useStore } from '../store'
 import BriefCard from './BriefCard'
@@ -13,6 +14,13 @@ export default function GlassPanel() {
   const setPanelOpen = useStore((s) => s.setPanelOpen)
   const prediction = useStore((s) => s.prediction)
   const obj = currentObjectId ? OBJECTS_BY_ID[currentObjectId] : null
+
+  // Escape closes the panel (keyboard users; the "Show" tab brings it back).
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && setPanelOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [setPanelOpen])
   // The upload views ('unknown', 'guesses') and the chat can show without an object; the card needs one.
   const view =
     (['unknown', 'guesses'].includes(panelView) && prediction) || panelView === 'chat' ? panelView : obj ? panelView : null

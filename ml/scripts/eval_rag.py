@@ -105,25 +105,7 @@ def main() -> None:
     rows: list[dict] = []
 
     # ---- 1. Retrieval ----
-    settings = {"question only": lambda q: search(q["q"], None, bonus=0.0),
-                "app (card open)": lambda q: search(f"{names[q['object_id']]}: {q['q']}", q["object_id"])}
-    retrieval = {}
-    for label, run in settings.items():
-        ranks, answer_ranks = [], []
-        for i, q in enumerate(qs["answerable"]):
-            gold = f"{q['object_id']}/{q['doc']}"
-            hits = run(q)
-            rank = first_rank(hits, gold)
-            ranks.append(rank)
-            answer_ranks.append(answer_rank(hits, q["expect"]))
-            if i >= len(rows):
-                rows.append({"kind": "answerable", "question": q["q"], "object_id": q["object_id"], "gold_doc": gold})
-            rows[i][f"tagged doc rank ({label})"] = rank or ""
-            rows[i][f"answer chunk rank ({label})"] = answer_ranks[-1] or ""
-            rows[i][f"right object in top 5 ({label})"] = any(h.chunk["object_id"] == q["object_id"] for h in hits)
-        retrieval[label] = {f"tagged_doc_at_{k}": sum(1 for r in ranks if r and r <= k) for k in (1, 3, 5)}
-        retrieval[label].update({f"answer_found_at_{k}": sum(1 for r in answer_ranks if r and r <= k) for k in (1, 3, 5)})
-        retrieval[label]["questions"] = len(ranks)
+    retrieval = run_retrieval(qs["answerable"], names, rows)
     print("retrieval:", json.dumps(retrieval))
 
     # ---- 2. Answers ----
@@ -227,23 +209,52 @@ def main() -> None:
     old.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
 
 
+def run_retrieval(questions: list[dict], names: dict, rows: list[dict]) -> dict:
+    """Search for each question in both settings; fill the rank columns of `rows` (one per question)
+    and return the hit counts. Search is deterministic, so this can be re-run at any time."""
+    settings = {"question only": lambda q: search(q["q"], None, bonus=0.0),
+                "app (card open)": lambda q: search(f"{names[q['object_id']]}: {q['q']}", q["object_id"])}
+    retrieval = {}
+    for label, run in settings.items():
+        ranks, answer_ranks = [], []
+        for i, q in enumerate(questions):
+            gold = f"{q['object_id']}/{q['doc']}"
+            hits = run(q)
+            ranks.append(first_rank(hits, gold))
+            answer_ranks.append(answer_rank(hits, q["expect"]))
+            if i >= len(rows):
+                rows.append({"kind": "answerable", "question": q["q"], "object_id": q["object_id"], "gold_doc": gold})
+            rows[i][f"tagged doc rank ({label})"] = ranks[-1] or ""
+            rows[i][f"answer chunk rank ({label})"] = answer_ranks[-1] or ""
+            rows[i][f"right object in top 5 ({label})"] = any(h.chunk["object_id"] == q["object_id"] for h in hits)
+        retrieval[label] = {f"tagged_doc_at_{k}": sum(1 for r in ranks if r and r <= k) for k in (1, 3, 5)}
+        retrieval[label].update({f"answer_found_at_{k}": sum(1 for r in answer_ranks if r and r <= k) for k in (1, 3, 5)})
+        retrieval[label]["questions"] = len(ranks)
+    return retrieval
+
+
 def rescore() -> None:
     """Recompute 'contains_expected' for the answers saved in rag_eval.csv (no language model calls)."""
     qs = {q["q"]: q for q in json.loads((EVAL / "rag_questions.json").read_text(encoding="utf-8"))["answerable"]}
     path = RESULTS / "rag_eval.csv"
     with path.open(encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
-    for r in rows:
-        if r["kind"] == "answerable":
-            r["contains_expected"] = contains(r["answer"], qs[r["question"]]["expect"])
+    names = {o["id"]: o["name"] for o in json.loads(OBJECTS.read_text(encoding="utf-8"))}
+    answerable = [r for r in rows if r["kind"] == "answerable"]
+    retrieval = run_retrieval([qs[r["question"]] for r in answerable], names, answerable)
+    for r in answerable:
+        r["contains_expected"] = contains(r["answer"], qs[r["question"]]["expect"])
     with path.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
     summary_path = RESULTS / "rag_eval_summary.json"
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    summary["retrieval"] = retrieval
     summary["answers"]["contains_expected_fact"] = sum(r["contains_expected"] is True for r in rows)
-    summary["answers"]["rescored"] = "answer key and space handling updated after the first run; answers unchanged"
+    summary["answers"]["rescored"] = ("answer key and space handling updated after the first run; answers unchanged, "
+                                      "retrieval re-run against the updated key")
+    print("retrieval:", json.dumps(retrieval))
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print("contains expected fact:", summary["answers"]["contains_expected_fact"], "of", summary["answers"]["answerable"])
 

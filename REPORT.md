@@ -13,15 +13,48 @@
 
 ## 2. Abstract
 
-_Written in Phase 5 (about 150 words): problem, approach, headline results._
+AstroLens is a web page where a user uploads a photo of a planet, nebula or star cluster, and the page recognises it, flies a 3D camera to it, and answers questions about it with cited sources.
+- **Recognition:** an EfficientNet-B0 network, fine-tuned by transfer learning on 1,401 free-licence images of 14 objects. On held-out test photos it gets 93.1% top-1 and 98.4% top-3 accuracy (macro F1 0.919).
+- **Not one of my objects:** a confidence threshold chosen on validation data rejects 40 of 66 out-of-scope photos, including every everyday photo.
+- **Explanation:** a Grad-CAM heatmap shows which part of the photo decided the answer.
+- **Questions:** retrieval-augmented generation over 76 Wikipedia and NASA documents (MiniLM embeddings, a language model told to answer only from the retrieved text). The answer was in the top 5 retrieved paragraphs for 30 of 30 test questions, and 10 of 10 unanswerable questions were refused.
+- **Typed commands:** names, nicknames and typos reach the right object 36 of 40 times.
 
 ## 3. Problem and objectives
 
-_Written in Phase 5._
+**The problem.** People who photograph the sky, or find a space picture online, often cannot tell what they are looking at. A search engine needs a name, and a general chatbot may make up facts with no way to check them.
+
+**Objectives:**
+1. Recognise 20 well-known objects (the Sun, Moon, 8 planets, 6 nebulae, 4 star clusters) from a photo, including recognisable close-ups such as Jupiter's Great Red Spot, and say "not one of my known objects" for anything else (Computer Vision).
+2. Show why the model decided (Grad-CAM heatmap).
+3. Place the result in context: a 3D scene with real sky positions that flies to the object and shows a short fact card.
+4. Answer follow-up questions only from trustworthy texts, with numbered sources, and say "I don't know" otherwise (NLP: retrieval and grounded generation).
+5. Understand typed commands, including nicknames and typos ("the red planet", "jupitr") (NLP: semantic matching).
+6. Measure every part with a script and report every number from its results file.
+
+Objective 1 was met for 14 of the 20 objects: six had too few free-licence photos to train and test fairly (Section 5). They remain in the scene and the chat.
 
 ## 4. System overview
 
-_Written in Phase 5 from PLAN.md section 4 (page → server → classifier / chat → page)._
+```mermaid
+flowchart LR
+    U[User] -->|photo / typed text / question| P[Page: React + Three.js<br>Vercel]
+    P -->|POST /classify| S[Server: FastAPI<br>Hugging Face Space]
+    P -->|POST /navigate| S
+    P -->|POST /chat| S
+    S --> C[EfficientNet-B0<br>+ Grad-CAM]
+    S --> M[MiniLM embeddings<br>nicknames + 1,385 chunks]
+    S -->|5 numbered chunks + rules| L[Language model<br>gpt-oss-20b on Groq]
+    C -->|top 3, unknown?, heatmap| P
+    M --> S
+    L -->|answer with n citations| S
+```
+
+1. **Photo.** The page sends it to `/classify`. The server returns the top 3 guesses, whether it is unknown, and the heatmap. The page flies to the top guess and opens its card, or shows the unknown message.
+2. **Typed text.** The page sends it to `/navigate`. The server compares it with every name and nickname and says: fly there, ask which of two objects, or treat it as a question.
+3. **Question.** The page sends it, with the current object and the last messages, to `/chat`. The server finds the 5 closest paragraphs, and the language model answers from them with [n] citations. The page shows the answer with numbered source links.
+
+The page is static files on Vercel. The server, with the trained model, the texts and the search index, runs in one Docker container on a free Hugging Face Space. The language model is called over the internet (Groq).
 
 ### 3D scene (Phase 1)
 
@@ -111,6 +144,9 @@ Source: `ml/results/train_efficientnet_b0_aug.json` and `ml/results/train_effici
   - Without augmentation: 1.4 min, validation accuracy 92.6%.
   - With augmentation: 3.08 min, validation accuracy 88.0%.
   - Training curves: `ml/results/training_curve_efficientnet_b0_aug.png` and `..._noaug.png`.
+
+<img src="ml/results/training_curve_efficientnet_b0_noaug.png" alt="Training curve of the app's model (no augmentation): loss and accuracy per epoch" width="640">
+
 - **Which model the app uses.** The model **without augmentation**, chosen on the validation set (see section 7). Its weights are `backend/weights/efficientnet_b0_noaug.pt`.
 - **Confidence threshold.** Chosen on the validation set only: the 5th percentile of the top-1 confidence on correctly classified validation images, which is **0.46**. Below it, the answer is "not one of my known objects". The threshold is stored in `backend/app/data/classifier.json`.
 - **Command-line check.** `python ml/scripts/predict.py photo.jpg` prints the top 3 guesses and the unknown message.
@@ -185,6 +221,8 @@ A likely reason augmentation did not pay off here: the validation and test image
 
 Average over the 14 classes: precision 0.927, recall 0.916, F1 0.919 (macro F1 from Table A).
 
+<img src="ml/results/confusion_matrix.png" alt="Confusion matrix of the app's model on the test set" width="560">
+
 **Confusion matrix** (app's model): `ml/results/confusion_matrix.png`. Only 13 of 189 test images are wrong, and no pair is confused more than twice:
 - **Uranus taken for Neptune** (2). Both are small, nearly featureless blue-green discs, and processed images can make one look like the other.
 - **Venus** (1 each taken for the Sun and the Moon, and 1 Mercury taken for Venus). Venus is a bright, featureless disc like the Sun in amateur photos, and its ultraviolet and radar images are grey and mottled like Mercury's or the Moon's surface.
@@ -209,6 +247,8 @@ Average over the 14 classes: precision 0.927, recall 0.916, F1 0.919 (macro F1 f
 All 18 everyday photos are rejected. Most galaxies are too, but most other nebulae and comets are not: the model gives them a confident guess among the nebulae it knows. One confidence threshold cannot separate "a nebula I know" from "a nebula I don't" well. (With the augmented model the same test rejected only 26 of 66, because its threshold, 0.36, was lower. Source: `ml/results/metrics.json` as committed in 9280eb1, before the switch.)
 
 **Grad-CAM examples (6):** `ml/results/gradcam/gradcam_examples.png`, written by `ml/scripts/gradcam_examples.py`. These are test photos and the app's model, picked by a fixed rule: the first correct test photo of five classes, plus the first wrong test answer. Details are in `ml/results/gradcam/examples.json`.
+
+<img src="ml/results/gradcam/gradcam_examples.png" alt="Six Grad-CAM examples: photo and heatmap for each" width="420">
 
 | Photo | Top guess | Right? |
 | --- | --- | --- |
@@ -270,7 +310,7 @@ Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/re
 
 | Measure | Result |
 | --- | --- |
-| Questions where the right source was in the top 5 (of 30): the tagged document / any chunk containing the answer | 22 / 28 |
+| Questions where the right source was in the top 5 (of 30): the tagged document / any chunk containing the answer | 22 / 30 |
 | Answers fully supported by the sources, manual check (of 10) | _author to check: `ml/results/rag_manual_check.csv`_ |
 | Answers containing the expected fact, automatic check (of 30) | 29 |
 | Answers citing at least one source (of 30) | 29 |
@@ -285,14 +325,42 @@ Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/re
 
 | Setting | Tagged doc @1 / @3 / @5 | Answer found @1 / @3 / @5 |
 | --- | --- | --- |
-| Question only (no object context) | 14 / 22 / 22 | 17 / 24 / 28 |
-| App: object name in front + current-object bonus | 14 / 21 / 22 | 15 / 24 / 28 |
+| Question only (no object context) | 14 / 22 / 22 | 19 / 26 / 30 |
+| App: object name in front + current-object bonus | 14 / 21 / 22 | 18 / 27 / 30 |
 
 **Reading the results:**
 - **Object context:** it makes no difference on these 30 questions, because each one already names its object or a distinctive topic. It is there for follow-ups that do not name the object. The browser check's follow-up "How long is a day there?" was answered about Mars, and the tests check that the current object's texts come first.
-- **The automatic fact check:** it is strict. After the first run, three equivalent values that are in the sources were added to the answer key (4.5 billion years for the Sun, 70.8% for Earth's water, 9.9 hours for Jupiter's day). No-break spaces the model writes inside numbers ("15 million") are now treated as normal spaces. The saved answers were then re-checked without asking the model again (`eval_rag.py --rescore`). The one remaining miss quotes Wikipedia's 2,200 km/h for Neptune's winds rather than NASA's 1,200 mph in the key, so the key is stricter than the answer. One correct answer (how Neptune was discovered) has no [n] markers and so counts as uncited.
+- **The automatic fact check:** it is strict. After the first run, three equivalent values that are in the sources were added to the answer key (4.5 billion years for the Sun, 70.8% for Earth's water, 9.9 hours for Jupiter's day). No-break spaces the model writes inside numbers ("15 million") are now treated as normal spaces. The saved answers, and the search results, were then re-checked against the updated key without asking the model again (`eval_rag.py --rescore`). The one remaining miss quotes Wikipedia's 2,200 km/h for Neptune's winds rather than NASA's 1,200 mph in the key, so the key is stricter than the answer. One correct answer (how Neptune was discovered) has no [n] markers and so counts as uncited.
 - **Timing:** the evaluation waits 15 s between questions. In a first run with only 2 s between them, the free Groq tier slowed back-to-back calls to a median of 9533.6 ms (`ml/results/rag_eval_summary_2s_spacing.json`), which measures the free tier's limit, not one user's wait.
 - **Repeat runs:** the language model runs at temperature 0.2, so a repeat run can word answers differently.
+
+**Three example conversations** (from the browser check, `ml/results/phase4_chat_check.json`; it saves the page's text, so the citation links are written back here as [n]):
+
+1. **On the Mars card, a suggested question.**
+   > **Q:** Why is Mars red?
+   > **A:** Mars looks red because iron in its rocks, dust, and regolith oxidizes, or rusts, giving the surface a reddish hue. The iron minerals in the Martian dirt react with the thin atmosphere, creating iron oxide that spreads across the planet’s surface and dust storm…
+   > **Sources:** [1]Mars · Overview (simple.wikipedia.org); [2]Mars: Facts · Overview (science.nasa.gov); [5]Mars · Overview (en.wikipedia.org)
+
+   Then a follow-up that does not name the planet:
+   > **Q:** How long is a day there?
+   > **A:** A day on Mars, called a sol, lasts about 24.6 hours [1][2]. This is only slightly longer than an Earth day, which is 24 hours. The extra 39 minutes come from Mars’s slower rotation relative to its orbit around the Sun.
+
+2. **Typed in the command bar from anywhere:** "how hot is Venus?". The page flew to Venus and answered:
+   > Venus’ surface temperature averages about 735 K (462 °C; 864 °F) [2]. That makes it hotter than Mercury, even though Venus receives only about a quarter of Mercury’s solar energy [2]. The extreme heat is caused by a runaway greenhouse effect from its thick CO₂ atm…
+   > **Sources:** [1]Venus · Overview (en.wikipedia.org); [2]Venus · Atmosphere and climate (en.wikipedia.org); [3]Venus: Facts · Our Solar System (science.nasa.gov)
+
+3. **A question the texts cannot answer:**
+   > **Q:** Who won the 2022 football World Cup?
+   > **A:** I don't know from my sources.
+
+**Two failures:**
+1. **An answer without citations.**
+   - Asked "How was Neptune discovered?", the model gave a correct answer but left out the [n] markers:
+     > Neptune was first predicted by mathematicians Urbain Le Verrier and John Couch Adams, who calculated that an unseen planet was tugging on Uranus’s orbit. Their calculations led astronomer Johann Galle…
+   - The page then lists no sources under that answer, even though the paragraphs were retrieved. The rule "cite every fact" is followed in 29 of 30 answers, not all of them.
+2. **A nickname the matcher was not given.**
+   - "the planet with the giant storm" went to Neptune instead of Jupiter (`ml/results/navigate_eval.csv`).
+   - MiniLM found Neptune's nickname "the windy planet" closer in meaning than any of Jupiter's nicknames ("the gas giant", "Great Red Spot planet"). The only fix is more nicknames in `objects.json`.
 
 **Table D: command matching**
 
@@ -320,7 +388,7 @@ The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated wor
 | Command "take me to the red planet" | flew to mars, card "Mars" |
 | "Chat more": suggested questions shown | 3 |
 | First suggested question: "Why is Mars red?" | answered with 3 cited sources, all links https |
-| Follow-up "How long is a day there?" (no object named) | answered about Mars: "A day on Mars, called a sol, lasts about 24.6 hours 12. This is only slightly longer than …" |
+| Follow-up "How long is a day there?" (no object named) | answered about Mars: "A day on Mars, called a sol, lasts about 24.6 hours [1][2]. This is only slightly longer than …" |
 | "Who won the 2022 football World Cup?" | "I don't know from my sources.", no sources listed |
 | Command "nebula" | asked "Did you mean": Eagle Nebula / Ring Nebula; clicking the first flew to eagle_nebula |
 | Command "jupitr" | flew to jupiter |
@@ -456,11 +524,116 @@ The times are on the author's laptop, with the server on the same machine; the d
 
 ## 12. References
 
-_Completed in Phase 5. So far:_ HYG Database v4.1 (CC BY-SA 4.0); SIMBAD / CDS Sesame; Wikipedia articles and NASA Science pages listed in `ml/data/SOURCES.md`; planet, Sun and Moon textures by Solar System Scope (CC BY 4.0); nebula and cluster pictures from Wikimedia Commons (NASA/ESA, ESO, ESA/Webb and others; public domain, CC0, CC BY 4.0 or CC BY-SA 4.0), each credited in `ml/data/SOURCES.md`. Libraries used in Phase 1: Three.js 0.172, React Three Fiber 8.17, drei 9.120, GSAP 3.12, Zustand 5.0, playwright-core 1.56, Pillow 11.1.
+**Methods and models**
+- Tan, M. and Le, Q. (2019). EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks. ICML. Weights: torchvision `EfficientNet_B0_Weights.IMAGENET1K_V1`.
+- Selvaraju, R. et al. (2017). Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization. ICCV. Written for this project (`backend/app/cv/gradcam.py`); the pytorch-grad-cam package from the plan was not used.
+- Lewis, P. et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. NeurIPS.
+- Reimers, N. and Gurevych, I. (2019). Sentence-BERT. EMNLP. Wang, W. et al. (2020). MiniLM. NeurIPS. Model: [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) (Apache 2.0), revision `1110a243`.
+- Language model: `openai/gpt-oss-20b` (open weights, Apache 2.0) served by [Groq](https://groq.com).
+- FAISS was planned but not used: a NumPy matrix product does the same flat search at this size (Decisions).
+
+**Libraries (versions as installed)**
+- Python: PyTorch 2.8.0, torchvision 0.23.0, sentence-transformers 6.1.0, transformers 5.18.0, NumPy 2.3.2, scikit-learn 1.7.1, Matplotlib 3.10.5, Pillow 11.1.0, FastAPI 0.115.6, Pydantic 2.10.4, Uvicorn 0.34.0, groq 0.15.0, huggingface_hub 1.33.0, pytest 8.3.4.
+- JavaScript: React 18.3.1, Three.js 0.172.0, React Three Fiber 8.17.10, drei 9.120.4, GSAP 3.12.7, Zustand 5.0.3, Tailwind CSS 4.0.9, Vite 6.4.6, playwright-core 1.56.1.
+
+**Data and texts** (every item, with its licence, is in `ml/data/SOURCES.md`)
+- HYG Database v4.1 (CC BY-SA 4.0); SIMBAD via CDS Sesame (Wenger et al. 2000, A&AS 143, 9).
+- Training images: Wikimedia Commons, ESA/Hubble, ESA/Webb, NOIRLab, ESO (CC BY 4.0), NASA/JPL Photojournal and NASA DSCOVR EPIC (public domain). Per-image credit is in `ml/data/manifest.csv` and `ml/data/manifest_topup.csv`.
+- Chat texts: English and Simple English Wikipedia (CC BY-SA 4.0) and NASA Science pages (public domain), each file headed with its title and link (`backend/app/data/corpus/`).
+- Scene textures: Solar System Scope (CC BY 4.0); nebula and cluster pictures from Wikimedia Commons.
 
 ## 13. Appendix
 
-_Phase 4: the 30 test questions and 40 command phrases._
+**A. The 30 test questions** (`ml/data/eval/rag_questions.json`; object on screen, the document tagged as holding the answer)
+
+1. How old is the Sun? (Sun; `nasa-facts`)
+2. How hot is the Sun's core? (Sun; `nasa-facts`)
+3. How long is a year on Mercury? (Mercury; `nasa-facts`)
+4. Does Mercury have any moons? (Mercury; `nasa-facts`)
+5. Why is Venus the hottest planet? (Venus; `nasa-facts`)
+6. Which way does Venus spin compared with most planets? (Venus; `nasa-facts`)
+7. How much of Earth's surface is covered by water? (Earth; `nasa-facts`)
+8. How old is the Earth? (Earth; `wikipedia`)
+9. How did the Moon form? (Moon; `nasa-facts`)
+10. When did humans first land on the Moon? (Moon; `wikipedia`)
+11. What is the largest volcano on Mars? (Mars; `nasa-facts`)
+12. What are the names of the moons of Mars? (Mars; `nasa-facts`)
+13. What is the Great Red Spot? (Jupiter; `nasa-facts`)
+14. How long is a day on Jupiter? (Jupiter; `nasa-facts`)
+15. What are Saturn's rings made of? (Saturn; `nasa-facts`)
+16. How long does Saturn take to orbit the Sun? (Saturn; `nasa-facts`)
+17. Why does Uranus spin on its side? (Uranus; `nasa-facts`)
+18. Who discovered Uranus? (Uranus; `wikipedia`)
+19. How fast are the winds on Neptune? (Neptune; `nasa-facts`)
+20. How was Neptune discovered? (Neptune; `wikipedia`)
+21. How far away is the Orion Nebula? (Orion Nebula; `wikipedia`)
+22. What is the Trapezium? (Orion Nebula; `wikipedia-trapezium-cluster`)
+23. In what year was the supernova that made the Crab Nebula seen? (Crab Nebula; `wikipedia-sn-1054`)
+24. How fast does the Crab Pulsar spin? (Crab Nebula; `wikipedia-crab-pulsar`)
+25. What kind of object is the Ring Nebula? (Ring Nebula; `wikipedia`)
+26. When did Hubble first photograph the Pillars of Creation? (Eagle Nebula; `wikipedia-pillars-of-creation`)
+27. What is Eta Carinae? (Carina Nebula; `wikipedia-eta-carinae`)
+28. What makes the Horsehead Nebula look dark? (Horsehead Nebula; `wikipedia`)
+29. How old are the stars in the Pleiades? (Pleiades; `wikipedia`)
+30. What message was sent toward M13, and when? (Hercules Cluster (M13); `wikipedia-arecibo-message`)
+
+**B. The 10 questions the texts cannot answer**
+
+1. Who won the 2022 football World Cup?
+2. What is the best telescope to buy for under 500 dollars?
+3. How much does a ticket to Mars cost?
+4. What will the weather be like on Venus next Tuesday?
+5. What is the phone number of the Hubble Space Telescope team?
+6. Which restaurant is closest to the Arecibo Observatory?
+7. What is my zodiac sign if I was born in March?
+8. How many students in my class have seen the Orion Nebula?
+9. What is the recipe for a chocolate cake?
+10. Which streaming service has the most space documentaries?
+
+**C. The 40 command phrases** (`ml/data/eval/commands.json`; expected object; ✓ = flew there in the app's setting)
+
+| # | Phrase | Type | Expected | Result |
+| --- | --- | --- | --- | --- |
+| 1 | Sun | exact | Sun | ✓ |
+| 2 | Mercury | exact | Mercury | ✓ |
+| 3 | Venus | exact | Venus | ✓ |
+| 4 | go to Earth | exact | Earth | ✓ |
+| 5 | Moon | exact | Moon | ✓ |
+| 6 | fly to Mars | exact | Mars | ✓ |
+| 7 | Jupiter | exact | Jupiter | ✓ |
+| 8 | take me to Saturn | exact | Saturn | ✓ |
+| 9 | Neptune | exact | Neptune | ✓ |
+| 10 | Orion Nebula | exact | Orion Nebula | ✓ |
+| 11 | show me the Crab Nebula | exact | Crab Nebula | ✓ |
+| 12 | Eagle Nebula | exact | Eagle Nebula | ✓ |
+| 13 | Pleiades | exact | Pleiades | ✓ |
+| 14 | Beehive Cluster | exact | Beehive Cluster | ✓ |
+| 15 | Omega Centauri | exact | Omega Centauri | ✓ |
+| 16 | take me to the red planet | nickname | Mars | ✓ |
+| 17 | the ringed planet | nickname | Saturn | ✓ |
+| 18 | seven sisters | nickname | Pleiades | ✓ |
+| 19 | show me the Pillars of Creation | nickname | Eagle Nebula | ✓ |
+| 20 | the morning star | nickname | Venus | ✓ |
+| 21 | M42 | nickname | Orion Nebula | ✓ |
+| 22 | go to M13 | nickname | Hercules Cluster (M13) | ✓ |
+| 23 | Praesepe | nickname | Beehive Cluster | ✓ |
+| 24 | the blue planet | nickname | Earth | ✓ |
+| 25 | fly to the sideways planet | nickname | Uranus | ✓ |
+| 26 | the hottest planet | nickname (not in nicknames) | Venus | clarify |
+| 27 | our nearest star | nickname (not in nicknames) | Sun | ✓ |
+| 28 | Earth's natural satellite | nickname (not in nicknames) | Moon | clarify |
+| 29 | the planet with the giant storm | nickname (not in nicknames) | Jupiter | fly_to Neptune |
+| 30 | the most distant planet | nickname (not in nicknames) | Neptune | ✓ |
+| 31 | jupitr | typo | Jupiter | ✓ |
+| 32 | satrun | typo | Saturn | ✓ |
+| 33 | neptun | typo | Neptune | ✓ |
+| 34 | mercurry | typo | Mercury | ✓ |
+| 35 | plaeides | typo | Pleiades | ✓ |
+| 36 | orion nebulla | typo | Orion Nebula | ✓ |
+| 37 | carina nebual | typo | Carina Nebula | ✓ |
+| 38 | please take me to the horse head nebula | typo | Horsehead Nebula | ✓ |
+| 39 | can you show me the ring nebula please | typo | Ring Nebula | chat Ring Nebula |
+| 40 | i want to visit uranus now | typo | Uranus | ✓ |
 
 ---
 
@@ -602,7 +775,7 @@ _Phase 4: the 30 test questions and 40 command phrases._
   - **Server:** `/chat` answers only from the top 5 chunks, with [n] citations; `/navigate` handles names, nicknames and typos.
   - **Page:** chat panel and command bar.
   - **Evaluation** (`ml/results/rag_eval_summary.json`):
-    - answer found in the top 5 for 28 of 30 questions;
+    - answer found in the top 5 for 30 of 30 questions;
     - 10 of 10 unanswerable questions refused, and 0 answerable ones wrongly refused;
     - commands 36 of 40 right.
   - **Browser check:** passed (`ml/results/phase4_chat_check.json`).
