@@ -42,12 +42,19 @@ def call(method: str, path: str, token: str, body: bytes | None = None, headers:
         path += ("&" if "?" in path else "?") + f"teamId={TEAM_ID}"
     req = urllib.request.Request(f"{API}{path}", data=body, method=method,
                                  headers={"Authorization": f"Bearer {token}", **(headers or {})})
-    try:
-        with urllib.request.urlopen(req, timeout=120) as r:
-            return json.loads(r.read() or b"{}")
-    except urllib.error.HTTPError as err:
-        detail = err.read().decode("utf-8", "replace")[:500]
-        sys.exit(f"Vercel API {method} {path} failed: HTTP {err.code} {detail}")
+    for attempt in range(1, 5):  # a dropped connection is retried; an HTTP error answer is not
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return json.loads(r.read() or b"{}")
+        except urllib.error.HTTPError as err:
+            detail = err.read().decode("utf-8", "replace")[:500]
+            sys.exit(f"Vercel API {method} {path} failed: HTTP {err.code} {detail}")
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as err:
+            if attempt == 4:
+                sys.exit(f"Vercel API {method} {path}: connection failed 4 times ({err})")
+            print(f"  connection dropped ({err}); retry {attempt}/3 in {5 * attempt} s", flush=True)
+            time.sleep(5 * attempt)
+    raise RuntimeError("unreachable")
 
 
 def main() -> None:
