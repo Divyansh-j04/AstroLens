@@ -1,5 +1,5 @@
 {
-  "_about": "Extra image sources, run by ml/scripts/topup.py. 'pia' = JPL Photojournal images found by searching the NASA Image Library and keeping only PIA ids; 'esa' = ESA/Hubble, ESA/Webb or NOIRLab archive search; 'epic' = NASA DSCOVR EPIC full-disc Earth photos. A result is kept only if its title names the object (name or alias from objects.json). Every image is then reviewed by eye. 'max' = results kept per source (default 80); 'pages' = result pages read.",
+  "_about": "Extra image sources, run by ml/scripts/topup.py. 'pia' = JPL Photojournal images found by searching the NASA Image Library and keeping only PIA ids; 'esa' = ESA/Hubble, ESA/Webb, NOIRLab or ESO archive search; 'epic' = NASA DSCOVR EPIC full-disc Earth photos. A result is kept only if its title names the object (name or alias from objects.json). Every image is then reviewed by eye. 'max' = results kept per source (default 80); 'pages' = result pages read.",
   "classes": {
     "mercury": [
       {
@@ -158,6 +158,11 @@
       {
         "esa": "noirlab",
         "search": "Orion Nebula"
+      },
+      {
+        "esa": "eso",
+        "search": "Orion Nebula",
+        "pages": 2
       }
     ],
     "crab_nebula": [
@@ -176,6 +181,11 @@
       {
         "esa": "noirlab",
         "search": "Crab Nebula"
+      },
+      {
+        "esa": "eso",
+        "search": "Crab Nebula",
+        "pages": 2
       }
     ],
     "ring_nebula": [
@@ -194,6 +204,11 @@
       {
         "esa": "noirlab",
         "search": "Ring Nebula"
+      },
+      {
+        "esa": "eso",
+        "search": "Ring Nebula",
+        "pages": 2
       }
     ],
     "eagle_nebula": [
@@ -216,6 +231,16 @@
       {
         "esa": "noirlab",
         "search": "Eagle Nebula"
+      },
+      {
+        "esa": "eso",
+        "search": "Eagle Nebula",
+        "pages": 2
+      },
+      {
+        "esa": "eso",
+        "search": "Messier 16",
+        "pages": 2
       }
     ],
     "carina_nebula": [
@@ -234,6 +259,11 @@
       {
         "esa": "noirlab",
         "search": "Carina Nebula"
+      },
+      {
+        "esa": "eso",
+        "search": "Carina Nebula",
+        "pages": 2
       }
     ],
     "horsehead_nebula": [
@@ -252,6 +282,11 @@
       {
         "esa": "noirlab",
         "search": "Horsehead"
+      },
+      {
+        "esa": "eso",
+        "search": "Horsehead",
+        "pages": 2
       }
     ],
     "pleiades": [
@@ -266,6 +301,11 @@
       {
         "esa": "noirlab",
         "search": "Pleiades"
+      },
+      {
+        "esa": "eso",
+        "search": "Pleiades",
+        "pages": 2
       }
     ],
     "beehive_cluster": [
@@ -280,6 +320,16 @@
       {
         "esa": "noirlab",
         "search": "Beehive"
+      },
+      {
+        "esa": "eso",
+        "search": "Beehive",
+        "pages": 2
+      },
+      {
+        "esa": "eso",
+        "search": "Messier 44",
+        "pages": 2
       }
     ],
     "hercules_cluster": [
@@ -298,6 +348,11 @@
       {
         "esa": "noirlab",
         "search": "M13"
+      },
+      {
+        "esa": "eso",
+        "search": "Messier 13",
+        "pages": 2
       }
     ],
     "omega_centauri": [
@@ -316,6 +371,11 @@
       {
         "esa": "noirlab",
         "search": "Omega Centauri"
+      },
+      {
+        "esa": "eso",
+        "search": "Omega Centauri",
+        "pages": 2
       }
     ]
   }

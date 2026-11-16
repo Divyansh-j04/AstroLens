@@ -6,8 +6,8 @@ step adds two further public archives (see ml/data/topup_sources.json):
 - "pia":  JPL Photojournal images (ids "PIA....."), found through the NASA Image and Video Library
           search (images-api.nasa.gov). Keeping only PIA ids drops event and people photos.
           NASA images are not copyrighted; images credited to other agencies keep their own terms.
-- "esa":  image archive search on ESA/Hubble (esahubble.org), ESA/Webb (esawebb.org) or NOIRLab
-          (noirlab.edu, the US national optical observatory). All CC BY 4.0.
+- "esa":  image archive search on ESA/Hubble (esahubble.org), ESA/Webb (esawebb.org), NOIRLab
+          (noirlab.edu, the US national optical observatory) or ESO (eso.org). All CC BY 4.0.
 - "epic": NASA DSCOVR EPIC full-disc photos of Earth (epic.gsfc.nasa.gov API), spread evenly
           over the mission's dates; public domain.
 
@@ -59,6 +59,9 @@ ESA_SITES = {
     "hubble": {"site": "https://esahubble.org", "cdn": "https://cdn.esahubble.org", "name": "ESA/Hubble"},
     "webb": {"site": "https://esawebb.org", "cdn": "https://cdn.esawebb.org", "name": "ESA/Webb"},
     "noirlab": {"site": "https://noirlab.edu/public", "cdn": "https://storage.noirlab.edu/media", "name": "NOIRLab"},
+    # ESO (European Southern Observatory), CC BY 4.0; its image files have no "/archives" in the path
+    "eso": {"site": "https://www.eso.org/public", "cdn": "https://cdn.eso.org", "name": "ESO",
+            "image": "{cdn}/images/screen/{id}.jpg"},
 }
 EPIC_API = "https://epic.gsfc.nasa.gov/api/natural"
 EPIC_IMAGE = "https://epic.gsfc.nasa.gov/archive/natural/{y}/{m}/{d}/jpg/{name}.jpg"
@@ -130,7 +133,7 @@ def esa_results(which: str, query: str, pages: int) -> list[dict]:
             out.append({
                 "key": f"{which}:{img_id}", "title": html.unescape(title.replace("\\'", "'")),
                 "page": f"{site['site']}/images/{img_id}/",
-                "image": f"{site['cdn']}/archives/images/screen/{img_id}.jpg",
+                "image": site.get("image", "{cdn}/archives/images/screen/{id}.jpg").format(cdn=site["cdn"], id=img_id),
                 "author": site["name"], "licence": "CC BY 4.0",
             })
         if len(found) < 50:
@@ -196,7 +199,10 @@ def main() -> None:
     done_pages = {r["page"] for r in old}
     rows = list(old)
 
+    only = next((a.split("=", 1)[1].split(",") for a in sys.argv if a.startswith("--only=")), None)
     for cls, sources in config.items():
+        if only and cls not in only:
+            continue
         pattern = name_pattern(objects[cls])
         candidates: dict[str, dict] = {}
         for src in sources:
