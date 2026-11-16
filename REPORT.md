@@ -32,6 +32,25 @@ _Written in Phase 5 from PLAN.md section 4 (page → server → classifier / cha
 - **Two scene modes.** Planets are light-minutes away and nebulae thousands of light-years away, so one camera view cannot show both. A fly-to into the other mode first pulls the camera back to that mode's overview over 2.5 s while the planets and nebula pictures cross-fade, then flies to the object.
 - **Fly-to.** GSAP animates the camera position and its look-at point with an ease-in-out curve. A flight takes 1 + distance/400 seconds, clamped to 1.2 to 3 s. Mouse controls are locked during a flight. For a nebula or cluster, the camera stops on the line from Earth to the object, so the stars behind it are its real constellation.
 
+### Upload and classify (Phase 3)
+
+- **Path of a photo.** The page checks the file in the browser (an image, at most 8 MB) and sends it to `POST /classify` as a form upload.
+- **Server checks.** The server checks it again:
+  - not an image → 415 with a plain message;
+  - over 8 MB or over 40 million pixels → 413;
+  - damaged or empty → 400.
+- **Classifying.** The server turns the photo upright if a phone stored it sideways (EXIF), crops the centre exactly as in training, and runs the model once on the CPU. That one pass gives the top 3 probabilities and the Grad-CAM heatmap.
+- **The answer.** The reply has the top 3 (ids and names from `objects.json`), `is_unknown` (top guess below the 0.46 threshold), the threshold, how many objects the classifier knows, the heatmap as a base64 PNG, and the time taken.
+- **What the page does next.**
+  - Known object: the page flies to the top guess and opens its card with a confidence badge (green above 80%, amber 55-80%, red below 55%). "Top-3 guesses" lists all three with bars, and clicking one flies there instead.
+  - Unknown (below the threshold): the camera does not move. The panel says "This doesn't look like one of the 14 objects I can recognise" and lists the closest 3.
+  - The heatmap can be faded in over the thumbnail.
+- **Loading the model.** It is loaded once when the server starts, and one warm-up image is run so the first upload is not slow.
+- **Grad-CAM** (`backend/app/cv/gradcam.py`):
+  - It takes the gradient of the top guess's score with respect to the last convolution block's 1,280 feature maps (7 x 7 cells each).
+  - It averages each map's gradient into a weight, adds up the maps times their weights, keeps the positive part, and stretches the result to the photo's size.
+  - Bright areas are the parts that raised the top guess's score the most.
+
 ## 5. Dataset
 
 Source: `ml/results/dataset_counts.json`, written by `ml/scripts/split.py`. Sources and licences: `ml/data/SOURCES.md`.
@@ -189,7 +208,24 @@ Average over the 14 classes: precision 0.927, recall 0.916, F1 0.919 (macro F1 f
 
 All 18 everyday photos are rejected. Most galaxies are too, but most other nebulae and comets are not: the model gives them a confident guess among the nebulae it knows. One confidence threshold cannot separate "a nebula I know" from "a nebula I don't" well. (With the augmented model the same test rejected only 26 of 66, because its threshold, 0.36, was lower. Source: `ml/results/metrics.json` as committed in 9280eb1, before the switch.)
 
-Grad-CAM examples (6): _Phase 3_.
+**Grad-CAM examples (6):** `ml/results/gradcam/gradcam_examples.png`, written by `ml/scripts/gradcam_examples.py`. These are test photos and the app's model, picked by a fixed rule: the first correct test photo of five classes, plus the first wrong test answer. Details are in `ml/results/gradcam/examples.json`.
+
+| Photo | Top guess | Right? |
+| --- | --- | --- |
+| Jupiter (whole) | Jupiter 98% | yes |
+| Saturn (close-up) | Saturn 94% | yes |
+| Moon (whole) | Moon 52% | yes |
+| Orion Nebula (whole) | Orion Nebula 91% | yes |
+| Crab Nebula (whole) | Crab Nebula 94% | yes |
+| Carina Nebula (close-up) | Eagle Nebula 63% | no |
+
+What the heatmaps show:
+- **Jupiter:** the cloud bands.
+- **Orion Nebula:** its bright core.
+- **Crab Nebula:** the filament cloud.
+- **Saturn close-up:** the ring edge in the corner, not the plain disc.
+- **Moon:** the lit edge of the crescent.
+- **The mistake:** a Carina close-up full of dark dusty pillars was read as Eagle, whose best-known photos (the Pillars of Creation) are exactly that.
 
 ## 8. Chat and command matching
 
@@ -243,6 +279,14 @@ _Phase 4. Source: `ml/results/rag_eval.csv`._
 | 2 | Test-set evaluation: Table A, Table B, accuracy by view, confusion matrix, threshold, unknown test (`evaluate.py`, `ml/results/metrics.json`) | Done |
 | 2 | `predict.py photo.jpg` prints the top 3 and the unknown message | Done |
 | 2 | Classifier config for the server (`backend/app/data/classifier.json`); weights in `backend/weights/` (not committed) | Done |
+| 3 | `POST /classify`: top 3 with probabilities, `is_unknown`, threshold, Grad-CAM heatmap, time taken; model loaded once at startup on the CPU | Done |
+| 3 | Upload checks with clear errors: not an image (415), over 8 MB or too many pixels (413), damaged or empty (400) | Done |
+| 3 | Grad-CAM written with a PyTorch hook (`backend/app/cv/gradcam.py`); 6 examples saved for the report | Done |
+| 3 | Upload box: drag and drop or click, thumbnail, spinner, "waking up" message after 5 s, photo/heatmap toggle | Done |
+| 3 | On a result: fly to the top guess and open the card with a coloured confidence badge; "Top-3 guesses" view where clicking a guess flies there | Done |
+| 3 | Unknown message with the closest 3 guesses; the camera stays put | Done |
+| 3 | Error messages on the page: server unreachable, too large, not an image, server error | Done |
+| 3 | API tests (`tests/test_api.py`) and browser check (`frontend/scripts/check-phase3.mjs`) | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -267,6 +311,27 @@ _Phase 4. Source: `ml/results/rag_eval.csv`._
 | Browser console errors | 0 |
 
 The last two sky rows show that the nebula pictures and the HYG stars share one coordinate frame. The Pleiades picture sits 0.21° from a magnitude 2.85 star, which is Alcyone, the cluster's brightest star.
+
+**Phase 3 upload check.** Source: `ml/results/phase3_upload_check.json`, written by `node scripts/check-phase3.mjs` (run from `frontend/`). The script started the real server (model `efficientnet_b0_noaug` on the CPU) and the page, and drove Microsoft Edge on the author's laptop. Its two photos were a Saturn photo from the test set and a cat photo from the unknown-object set. Screenshots are in `ml/results/phase3_screens/`.
+
+| Check | Result |
+| --- | --- |
+| Saturn photo: top guess | Saturn 78%, not unknown |
+| Saturn photo: camera flew to Saturn's viewpoint, card and badge shown | saturn, camera error 0, card "Saturn", badge "78% match" |
+| Heatmap toggle (heatmap opacity shown / hidden) | 1 / 0 |
+| "Top-3 guesses" view: rows; clicking the 2nd guess flew there | 3; flew to sun, card "Sun" |
+| Cat photo: best guess and threshold | Carina Nebula 20%, below 0.46, so unknown |
+| Cat photo: message shown; camera moved; object before / after | "This doesn't look like one of the 14 objects I can recognise."; 0; sun / sun |
+| Text file | "That file is not an image. Please choose a JPEG, PNG or WebP photo." (checked in the browser) |
+| Text file named .jpg | "That file is not an image. Please upload a JPEG, PNG or WebP photo." (checked by the server) |
+| File over 8 MB | "That image is larger than 8 MB. Please choose a smaller photo." |
+| Server held back for 6.5 s (imitates a sleeping free server) | "Waking up the server… this can take up to a minute" shown after 5 s |
+| Server switched off | "Can't reach the AstroLens server. Check your connection, or try again in a minute." |
+| Time to classify on the server, median of 10 uploads (CPU, includes Grad-CAM) | 362.7 ms |
+| Photo chosen until the answer shows on the page, median of 10 (local server) | 902 ms |
+| Unexpected browser console errors | 0 |
+
+The times are on the author's laptop, with the server on the same machine; the deployed times go in Table E (Phase 5).
 
 **Table E: time taken per step (deployed, median of 10 runs)**
 
@@ -295,7 +360,10 @@ The last two sky rows show that the nebula pictures and the HYG stars share one 
 - Stars are drawn at their real direction, but not at their real distance (they sit on a far sphere). The 3D view therefore does not show stars at different depths.
 - Orion Nebula and Horsehead Nebula are only 3° apart on the sky, so their pictures overlap. That is true to the sky, but it can make one hard to click.
 - The frame rates were measured on one laptop with a fast GPU (RTX 4060). Slower machines, and phones in particular, have not been measured yet (Phase 5).
-- The chat view is a placeholder until Phase 4. "Top-3 guesses" stays disabled until the classifier exists (Phase 3).
+- The chat view is a placeholder until Phase 4.
+- Grad-CAM is coarse: the network's last feature maps are 7 x 7 cells, so the heatmap shows roughly where the model looked, not exact outlines. It covers the centre crop the model saw, so the edges of a wide photo are not part of it.
+- The 'server waking up' message was tested by holding a request back for 6.5 s, not with a real sleeping server (that comes with deployment in Phase 5).
+- The temporary "Go to" dropdown stays until the typed commands of Phase 4.
 - Future work (beyond this project): draw star clusters as 3D balls of star points instead of one picture, and give nebulae depth with a particle cloud built from the bright pixels of their photo.
 - Future work (beyond this project): planets move along their orbits from the moment the page loads. Speeds come from each planet's period, run on a sped-up clock, because real speed is too slow to see (Earth moves about 1° a day). The motion pauses in deep-space mode, so the page does no orbit work while the planets are hidden, and resumes on return. The fly-to must then follow a moving planet: the camera keeps tracking it after landing.
 - Future work (beyond this project): an OpenCV auto-crop before classification. It would find the bright disc in photos where the Moon or a planet is small in the frame (thresholding or circle detection) and classify the crop. This adds a classic computer-vision step in front of the deep model.
@@ -344,6 +412,13 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Transfer learning | Start from a network that already knows edges, textures and shapes, and only teach it our classes, so a few hundred images are enough | Phase 2 |
 | Data augmentation | Random crops, flips, rotations and colour changes applied to training images, so the model sees more variety than the raw photos | Phase 2 |
 | Robustness check | Score a model on deliberately altered copies of photos (rotated, blurred, compressed, noisy) to see how it copes with messy real uploads | Phase 2 |
+| Grad-CAM | A heatmap of which parts of a photo pushed the model towards its answer, made from the gradients of the last convolution layer | Phase 3 |
+| PyTorch hook | A small function PyTorch calls while the network runs; ours saves the last layer's feature maps so Grad-CAM can use them | Phase 3 |
+| Multipart form upload (python-multipart) | The standard way a browser sends a file to a server; FastAPI reads it as an `UploadFile` | Phase 3 |
+| Base64 | A way to write binary data, such as a PNG, as plain text, so the heatmap fits inside the JSON answer | Phase 3 |
+| HTTP status codes | Numbers that say how a request went: 200 OK, 400 bad request, 413 too large, 415 wrong file type, 503 not ready | Phase 3 |
+| fetch, FormData and AbortController | The browser's built-in tools to send the photo, package it as a form, and give up after 90 s | Phase 3 |
+| EXIF orientation | A tag in phone photos saying which way is up; the server applies it so a sideways-stored photo is classified upright | Phase 3 |
 | AdamW, cosine schedule, label smoothing, early stopping | The optimiser that adjusts the weights; a learning rate that slowly falls; slightly softened targets so the model is not over-confident; and keeping the epoch with the best validation loss | Phase 2 |
 | Cosine similarity of deep features | Two images are compared by the angle between their EfficientNet feature vectors; near 1 means the same picture, which is how duplicates were found | Phase 2 |
 | scikit-learn | A standard machine-learning library; used here only to compute precision, recall, F1 and the confusion matrix | Phase 2 |
@@ -391,6 +466,12 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Nov 16, 2026 | Split shuffled with a fixed seed per class | Adding images to one class no longer reshuffles every other class's split |
 | Nov 16, 2026 | Holdout split (70/15/15) only, no k-fold | Simpler and fast; noted as a limitation |
 | Nov 16, 2026 | Downloads run with a time limit and a `--only` option, saving the manifest as they go | A stopped run never loses licence records, and rate limits cannot make a run go on for hours |
+| Nov 16, 2026 | Grad-CAM written in about 30 lines with a PyTorch hook, not the `pytorch-grad-cam` package | No new dependency, and every step can be explained; one forward pass gives both the answer and the heatmap |
+| Nov 16, 2026 | The server runs the model on the CPU, even on the GPU laptop | The deployed server has no GPU, so local times match what users will see |
+| Nov 16, 2026 | Uploads are checked in the browser and again on the server; the server checks the file before using the model | The browser check gives instant messages; the server check is the real protection, and bad files never reach the model |
+| Nov 16, 2026 | The unknown message names how many objects the classifier knows (14, sent by the server), not "20" | Six objects are not in the classifier, so "20" would be wrong |
+| Nov 16, 2026 | A third badge colour, red, below 55% | The plan only gave green (above 80%) and amber (55-80%), but answers between the 46% threshold and 55% also need a colour |
+| Nov 16, 2026 | The temporary "Go to" dropdown is kept until Phase 4 | Until typed commands exist, it is the only way to reach an object without a photo |
 | Nov 16, 2026 | The app uses the model **without** augmentation, chosen on the validation set: clean photos plus 10 altered versions (`ml/scripts/robustness.py`); Table A reports both models | It scored higher on clean validation photos (92.6% against 88.0%) and on average over the altered ones (80.6% against 79.1%). Choosing on validation, not test, keeps the test scores fair. The augmented model was the original plan |
 
 ## Progress log
@@ -405,3 +486,9 @@ _Phase 4: the 30 test questions and 40 command phrases._
   - **Threshold and unknowns:** the threshold is 0.46, and the unknown test rejected 40 of 66 (all 18 everyday photos).
   - **Done-when check:** `metrics.json` and `confusion_matrix.png` exist, and `predict.py` prints the top 3.
   - **Tests:** pytest, 30 passed. Phase 2 complete.
+- **Nov 16, 2026 (Phase 3):**
+  - **Server:** `POST /classify` returns the top 3, `is_unknown`, the threshold and a Grad-CAM heatmap, with checked uploads and clear errors.
+  - **Page:** upload box with thumbnail, spinner and heatmap toggle; fly-to with the confidence badge; "Top-3 guesses" view; unknown message.
+  - **Browser check** (`ml/results/phase3_upload_check.json`): the Saturn photo flew to Saturn (78%), the cat photo showed the unknown message with the camera unmoved, and all 5 error cases showed the right message. Classifying took a median of 362.7 ms on the CPU.
+  - **Grad-CAM:** 6 examples in `ml/results/gradcam/`.
+  - **Tests:** pytest, 38 passed. Phase 3 complete.

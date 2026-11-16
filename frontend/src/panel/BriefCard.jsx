@@ -1,15 +1,18 @@
 import { useStore } from '../store'
 
-/** Confidence from the classifier (Phase 3). Shows nothing until a photo has been classified. */
+/** Confidence from the classifier for this object; shows nothing if it was not among the top 3 guesses. */
 function ConfidenceBadge({ objectId }) {
   const prediction = useStore((s) => s.prediction)
   const guess = prediction?.top3?.find((g) => g.id === objectId)
   if (!guess) return null
   const pct = Math.round(guess.prob * 100)
+  // Bands from the plan: green above 80%, amber 55-80%, red below 55%.
   const band =
     pct > 80
       ? 'border-emerald-300/40 bg-emerald-400/15 text-emerald-200'
-      : 'border-amber-300/40 bg-amber-400/15 text-amber-200'
+      : pct >= 55
+        ? 'border-amber-300/40 bg-amber-400/15 text-amber-200'
+        : 'border-rose-300/40 bg-rose-400/15 text-rose-200'
   return (
     <span data-testid="confidence-badge" className={`rounded-full border px-3 py-1 text-xs ${band}`}>
       {pct}% match
@@ -62,6 +65,8 @@ export default function BriefCard({ obj }) {
         </button>
         <button
           type="button"
+          data-testid="top3-button"
+          onClick={() => setPanelView('guesses')}
           disabled={!prediction}
           title={prediction ? undefined : 'Available after a photo upload'}
           className="flex-1 rounded-lg border border-white/20 px-3 py-2 text-sm text-slate-100 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"

@@ -1,0 +1,138 @@
+{
+  "script": "frontend/scripts/check-phase3.mjs",
+  "model": "efficientnet_b0_noaug",
+  "photos": {
+    "saturn": "saturn_1af3f13153.jpg",
+    "cat": "unknown_305b9c05ec.jpg"
+  },
+  "saturn": {
+    "top3": [
+      {
+        "id": "saturn",
+        "name": "Saturn",
+        "prob": 0.7835
+      },
+      {
+        "id": "sun",
+        "name": "Sun",
+        "prob": 0.0592
+      },
+      {
+        "id": "uranus",
+        "name": "Uranus",
+        "prob": 0.0253
+      }
+    ],
+    "is_unknown": false,
+    "flew_to": "saturn",
+    "camera_error": 0,
+    "card_name": "Saturn",
+    "badge": "78% match",
+    "round_trip_ms": 953,
+    "pass": true
+  },
+  "gradcam_toggle": {
+    "heatmap_opacity_shown": 1,
+    "heatmap_opacity_hidden": 0,
+    "pass": true
+  },
+  "top3_view": {
+    "rows": 3,
+    "clicked": "sun",
+    "flew_to": "sun",
+    "card_name": "Sun",
+    "pass": true
+  },
+  "cat": {
+    "top3": [
+      {
+        "id": "carina_nebula",
+        "name": "Carina Nebula",
+        "prob": 0.1953
+      },
+      {
+        "id": "earth",
+        "name": "Earth",
+        "prob": 0.1484
+      },
+      {
+        "id": "venus",
+        "name": "Venus",
+        "prob": 0.1169
+      }
+    ],
+    "threshold": 0.46,
+    "is_unknown": true,
+    "message": "This doesn't look like one of the 14 objects I can recognise.",
+    "camera_moved": 0,
+    "object_before": "sun",
+    "object_after": "sun",
+    "round_trip_ms": 366,
+    "pass": true
+  },
+  "timing": {
+    "uploads": 10,
+    "server_classify_ms_median": 362.7,
+    "round_trip_ms_median": 902,
+    "server_classify_ms": [
+      351,
+      376.5,
+      357,
+      367.6,
+      363,
+      388.9,
+      394.8,
+      360.3,
+      362.3,
+      358.3
+    ],
+    "round_trip_ms": [
+      901,
+      910,
+      887,
+      903,
+      904,
+      876,
+      905,
+      961,
+      898,
+      885
+    ],
+    "note": "local machine, model on the CPU; round trip = file chosen -> answer shown, measured in the page"
+  },
+  "errors": [
+    {
+      "case": "text file",
+      "message": "That file is not an image. Please choose a JPEG, PNG or WebP photo.",
+      "expect": "not an image",
+      "pass": true
+    },
+    {
+      "case": "text file named .jpg (checked by the server)",
+      "message": "That file is not an image. Please upload a JPEG, PNG or WebP photo.",
+      "expect": "not an image",
+      "pass": true
+    },
+    {
+      "case": "file over 8 MB",
+      "message": "That image is larger than 8 MB. Please choose a smaller photo.",
+      "expect": "larger than 8 MB",
+      "pass": true
+    },
+    {
+      "case": "slow server (6.5 s)",
+      "message": "Waking up the server… this can take up to a minute",
+      "expect": "Waking up",
+      "pass": true
+    },
+    {
+      "case": "server switched off",
+      "message": "Can't reach the AstroLens server. Check your connection, or try again in a minute.",
+      "expect": "Can't reach",
+      "pass": true
+    }
+  ],
+  "console_errors_unexpected": [],
+  "pass": true,
+  "date": "2026-11-16T16:06:37.116Z"
+}

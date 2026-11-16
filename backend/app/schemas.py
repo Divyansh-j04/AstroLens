@@ -74,4 +74,27 @@ class ObjectCatalogue(RootModel[list[SpaceObject]]):
 class HealthResponse(BaseModel):
     status: Literal["ok"]
     objects: int
-    model: str | None  # name of the loaded classifier; None until Phase 3
+    model: str | None  # name of the loaded classifier; None if no weights are installed
+
+
+class Guess(BaseModel):
+    """One of the classifier's top guesses."""
+
+    id: str
+    name: str
+    prob: float = Field(ge=0, le=1)
+
+
+class ClassifyResponse(BaseModel):
+    """Answer to POST /classify."""
+
+    top3: list[Guess] = Field(min_length=3, max_length=3)
+    is_unknown: bool  # True when the best guess is below the threshold: "not one of my known objects"
+    threshold: float
+    known_classes: int  # how many objects the classifier can recognise
+    gradcam_png_base64: str  # the photo (as the model saw it) with the Grad-CAM heatmap over it
+    latency_ms: float  # time spent classifying on the server
+
+
+class ErrorResponse(BaseModel):
+    detail: str

@@ -1,0 +1,126 @@
+{
+  "script": "ml/scripts/gradcam_examples.py",
+  "model": "efficientnet_b0_noaug",
+  "examples": [
+    {
+      "file": "jupiter_0c6b722440.jpg",
+      "class": "jupiter",
+      "view": "whole",
+      "correct": true,
+      "top3": [
+        {
+          "id": "jupiter",
+          "prob": 0.979
+        },
+        {
+          "id": "mars",
+          "prob": 0.004
+        },
+        {
+          "id": "venus",
+          "prob": 0.002
+        }
+      ]
+    },
+    {
+      "file": "saturn_051339d3fd.jpg",
+      "class": "saturn",
+      "view": "closeup",
+      "correct": true,
+      "top3": [
+        {
+          "id": "saturn",
+          "prob": 0.936
+        },
+        {
+          "id": "venus",
+          "prob": 0.021
+        },
+        {
+          "id": "jupiter",
+          "prob": 0.008
+        }
+      ]
+    },
+    {
+      "file": "moon_03b601db86.jpg",
+      "class": "moon",
+      "view": "whole",
+      "correct": true,
+      "top3": [
+        {
+          "id": "moon",
+          "prob": 0.524
+        },
+        {
+          "id": "mercury",
+          "prob": 0.34
+        },
+        {
+          "id": "earth",
+          "prob": 0.03
+        }
+      ]
+    },
+    {
+      "file": "orion_nebula_00762fc3fc.jpg",
+      "class": "orion_nebula",
+      "view": "whole",
+      "correct": true,
+      "top3": [
+        {
+          "id": "orion_nebula",
+          "prob": 0.913
+        },
+        {
+          "id": "neptune",
+          "prob": 0.015
+        },
+        {
+          "id": "crab_nebula",
+          "prob": 0.013
+        }
+      ]
+    },
+    {
+      "file": "crab_nebula_044b167f6b.jpg",
+      "class": "crab_nebula",
+      "view": "whole",
+      "correct": true,
+      "top3": [
+        {
+          "id": "crab_nebula",
+          "prob": 0.942
+        },
+        {
+          "id": "sun",
+          "prob": 0.008
+        },
+        {
+          "id": "mercury",
+          "prob": 0.008
+        }
+      ]
+    },
+    {
+      "file": "carina_nebula_t_9e3da680d9.jpg",
+      "class": "carina_nebula",
+      "view": "closeup",
+      "correct": false,
+      "top3": [
+        {
+          "id": "eagle_nebula",
+          "prob": 0.631
+        },
+        {
+          "id": "carina_nebula",
+          "prob": 0.26
+        },
+        {
+          "id": "mercury",
+          "prob": 0.017
+        }
+      ]
+    }
+  ]
+}

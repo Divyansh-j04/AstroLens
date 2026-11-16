@@ -3,7 +3,7 @@ import { useStore } from '../store'
 
 const GROUP_LABELS = { solar_system: 'Solar system', nebula: 'Nebulae', star_cluster: 'Star clusters' }
 
-/** Title, the temporary "go to" dropdown (replaced by upload in Phase 3) and the Home button. */
+/** Title, the temporary "go to" dropdown (replaced by typed commands in Phase 4) and the Home button. */
 export default function TopBar() {
   const currentObjectId = useStore((s) => s.currentObjectId)
   const selectObject = useStore((s) => s.selectObject)

@@ -1,6 +1,8 @@
 import { OBJECTS_BY_ID } from '../objects'
 import { useStore } from '../store'
 import BriefCard from './BriefCard'
+import TopGuesses from './TopGuesses'
+import UnknownCard from './UnknownCard'
 
 /** Placeholder for the chat view; the real chat (RAG with sources) arrives in Phase 4. */
 function ChatPlaceholder({ obj }) {
@@ -33,8 +35,17 @@ export default function GlassPanel() {
   const panelOpen = useStore((s) => s.panelOpen)
   const panelView = useStore((s) => s.panelView)
   const setPanelOpen = useStore((s) => s.setPanelOpen)
+  const prediction = useStore((s) => s.prediction)
   const obj = currentObjectId ? OBJECTS_BY_ID[currentObjectId] : null
-  if (!obj) return null
+  // The upload views ('unknown', 'guesses') can show without an object; card and chat need one.
+  const view = ['unknown', 'guesses'].includes(panelView) && prediction ? panelView : obj ? panelView : null
+  if (!view) return null
+  const body = {
+    card: () => <BriefCard obj={obj} />,
+    chat: () => <ChatPlaceholder obj={obj} />,
+    guesses: () => <TopGuesses />,
+    unknown: () => <UnknownCard />,
+  }[view]
 
   return (
     <>
@@ -56,7 +67,7 @@ export default function GlassPanel() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 pb-6">
-          {panelView === 'chat' ? <ChatPlaceholder obj={obj} /> : <BriefCard obj={obj} />}
+          {body()}
         </div>
       </aside>
       {!panelOpen && (
@@ -65,7 +76,7 @@ export default function GlassPanel() {
           onClick={() => setPanelOpen(true)}
           className="absolute right-0 top-1/2 z-30 -translate-y-1/2 rounded-l-lg border border-r-0 border-white/15 bg-slate-950/40 px-2 py-4 text-xs tracking-wider text-slate-200 backdrop-blur-[14px] [writing-mode:vertical-rl] hover:bg-slate-900/60"
         >
-          Show card
+          {view === 'unknown' ? 'Show result' : 'Show card'}
         </button>
       )}
     </>
