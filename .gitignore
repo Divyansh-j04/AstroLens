@@ -24,3 +24,6 @@ ml/data/processed/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Assistant instructions (kept locally, not published)
+CLAUDE.md
