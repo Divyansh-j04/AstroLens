@@ -65,17 +65,26 @@ EXCLUDE = re.compile(
 
 
 def fetch(url: str) -> bytes:
-    """GET a URL; if Wikimedia says "too many requests" (429), wait and try again."""
-    for attempt in range(6):
+    """GET a URL; wait and try again if Wikimedia says "too many requests" (429) or if a
+    connection fails (Wikimedia occasionally serves a certificate chain Python cannot verify;
+    the next connection is fine). Every attempt is fully verified; nothing is accepted unverified."""
+    conn_failures = 0
+    for attempt in range(12):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), context=SSL_CONTEXT, timeout=60) as r:
                 return r.read()
         except urllib.error.HTTPError as err:
-            if err.code != 429 or attempt == 5:
+            if err.code != 429 or attempt == 11:
                 raise
             wait = int(err.headers.get("Retry-After") or 15 * (attempt + 1))
             print(f"  rate limited, waiting {wait} s", file=sys.stderr)
             time.sleep(wait)
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as err:
+            conn_failures += 1
+            if conn_failures >= 5:
+                raise
+            print(f"  connection failed ({str(err)[:60]}), retry {conn_failures}/4 in 5 s", file=sys.stderr)
+            time.sleep(5)
     raise RuntimeError("unreachable")
 
 
