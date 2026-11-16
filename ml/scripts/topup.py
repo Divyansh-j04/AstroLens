@@ -27,6 +27,7 @@ import html
 import io
 import json
 import re
+import ssl
 import sys
 import time
 import urllib.error
@@ -41,6 +42,14 @@ CONFIG = ROOT / "ml" / "data" / "topup_sources.json"
 OBJECTS = ROOT / "backend" / "app" / "data" / "objects.json"
 IMAGES = ROOT / "ml" / "data" / "raw" / "images"
 MANIFEST_TOPUP = ROOT / "ml" / "data" / "manifest_topup.csv"
+
+# HTTPS: normal certificate checks, plus two public Let's Encrypt "link" certificates
+# (ISRG Root X2 signed by ISRG Root X1, and Root YE signed by ISRG Root X2). Some Wikimedia
+# servers leave these out of their chain; Windows fetches them by itself, Python does not.
+# They only connect the chain to ISRG Root X1, which Windows already trusts; no check is disabled.
+SSL_CONTEXT = ssl.create_default_context()
+for _pem in sorted((ROOT / "ml" / "data" / "certs").glob("*.pem")):
+    SSL_CONTEXT.load_verify_locations(str(_pem))
 FIELDS = ["file", "class", "set", "title", "page", "author", "licence", "width", "height"]
 HEADERS = {"User-Agent": "Mozilla/5.0 (AstroLens student project; one-off dataset download)"}
 
@@ -62,7 +71,7 @@ EXCLUDE = re.compile(r"diagram|illustration|artist|concept|chart|\bmap\b|graph|a
 def fetch(url: str) -> bytes:
     for attempt in range(4):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), timeout=90) as r:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), context=SSL_CONTEXT, timeout=90) as r:
                 return r.read()
         except urllib.error.HTTPError as err:
             if err.code in (403, 404) or attempt == 3:

@@ -21,6 +21,7 @@ import io
 import json
 import random
 import re
+import ssl
 import sys
 import time
 import urllib.error
@@ -35,6 +36,14 @@ CONFIG = ROOT / "ml" / "data" / "collect_sources.json"
 OBJECTS = ROOT / "backend" / "app" / "data" / "objects.json"
 RAW = ROOT / "ml" / "data" / "raw"
 MANIFEST = ROOT / "ml" / "data" / "manifest.csv"
+
+# HTTPS: normal certificate checks, plus two public Let's Encrypt "link" certificates
+# (ISRG Root X2 signed by ISRG Root X1, and Root YE signed by ISRG Root X2). Some Wikimedia
+# servers leave these out of their chain; Windows fetches them by itself, Python does not.
+# They only connect the chain to ISRG Root X1, which Windows already trusts; no check is disabled.
+SSL_CONTEXT = ssl.create_default_context()
+for _pem in sorted((ROOT / "ml" / "data" / "certs").glob("*.pem")):
+    SSL_CONTEXT.load_verify_locations(str(_pem))
 
 API = "https://commons.wikimedia.org/w/api.php"
 # Wikimedia blocks some HTTP libraries by fingerprint; Python's built-in urllib is accepted.
@@ -59,7 +68,7 @@ def fetch(url: str) -> bytes:
     """GET a URL; if Wikimedia says "too many requests" (429), wait and try again."""
     for attempt in range(6):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), timeout=60) as r:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), context=SSL_CONTEXT, timeout=60) as r:
                 return r.read()
         except urllib.error.HTTPError as err:
             if err.code != 429 or attempt == 5:
@@ -196,26 +205,48 @@ def main() -> None:
     if args.dry_run:
         return
 
-    # 3. Download
-    rows: list[dict] = []
+    # 3. Manifest first: list every chosen file that is already on disk, so stopping the run
+    #    later can never lose the licence records. It is rewritten after every class.
+    rows: dict[str, dict] = {}
+
+    def add_row(name: str, cls: str, set_: str, f: dict) -> None:
+        rows[name] = {"file": name, "class": cls, "set": set_, **{k: f[k] for k in
+                      ("title", "page", "author", "licence", "width", "height")}}
+
+    def write_manifest() -> None:
+        with MANIFEST.open("w", newline="", encoding="utf-8") as fh:
+            w = csv.DictWriter(fh, fieldnames=["file", "class", "set", "title", "page", "author", "licence",
+                                               "width", "height"])
+            w.writeheader()
+            w.writerows(rows.values())
+
     for cls, files in chosen.items():
+        for f in files:
+            name = file_name(cls, f["title"])
+            if (RAW / "images" / cls / name).exists():
+                add_row(name, cls, "known", f)
+    write_manifest()
+    print(f"Manifest: {len(rows)} files already on disk", file=sys.stderr)
+
+    # 4. Download what is missing (skipped with --manifest-only)
+    for cls, files in chosen.items():
+        if args.manifest_only:
+            break
         folder = RAW / "images" / cls
         folder.mkdir(parents=True, exist_ok=True)
         for f in files:
             name = file_name(cls, f["title"])
-            if args.manifest_only and not (folder / name).exists():
-                continue
             if not (folder / name).exists():
                 try:
                     save(f, folder / name)
                 except Exception as err:  # a broken file should not stop the run
                     print(f"  skip {f['title']}: {err}", file=sys.stderr)
                     continue
-            rows.append({"file": name, "class": cls, "set": "known", **{k: f[k] for k in
-                         ("title", "page", "author", "licence", "width", "height")}})
+            add_row(name, cls, "known", f)
+        write_manifest()
         print(f"{cls}: {len(files)} done", file=sys.stderr)
 
-    # 4. Unknown-object test set
+    # 5. Unknown-object test set
     unk = config["unknown"]
     folder = RAW / "unknown"
     folder.mkdir(parents=True, exist_ok=True)
@@ -232,14 +263,11 @@ def main() -> None:
                 except Exception as err:
                     print(f"  skip {f['title']}: {err}", file=sys.stderr)
                     continue
-            rows.append({"file": name, "class": src["category"], "set": "unknown", **{k: f[k] for k in
-                         ("title", "page", "author", "licence", "width", "height")}})
+            add_row(name, src["category"], "unknown", f)
+        write_manifest()
         print(f"unknown / {src['category']}: {len(files)}", file=sys.stderr)
 
-    with MANIFEST.open("w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=list(rows[0]))
-        w.writeheader()
-        w.writerows(rows)
+    write_manifest()
     print(f"Wrote {len(rows)} rows to {MANIFEST.relative_to(ROOT)}", file=sys.stderr)
 
 
