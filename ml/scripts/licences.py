@@ -14,11 +14,12 @@ _ALLOWED = re.compile(r"^\s*(public domain|pd\b|cc0|cc[ -]by(?:[ -]sa)?(?:[ -]\d
 
 def licence_ok(licence: str, author: str = "") -> bool:
     """True if an image with this licence (and credit) may be used for training or testing."""
-    if not licence or _BLOCKED.search(licence) or _ALLOWED.search(licence) is None:
+    if not licence:
         return False
-    if licence.lower().startswith("nasa photojournal"):
+    if licence.strip().lower().startswith("nasa photojournal"):
+        # Our own label says "NASA images not copyrighted", so judge these by their credit line.
         return bool(re.search(r"NASA|JPL", author)) and not re.search(r"copyright", author, re.I)
-    return True
+    return not _BLOCKED.search(licence) and _ALLOWED.search(licence) is not None
 
 
 if __name__ == "__main__":  # quick self-check
@@ -27,7 +28,7 @@ if __name__ == "__main__":  # quick self-check
         ("Public domain", ""): True, ("Public domain (NASA)", ""): True, ("CC0", ""): True,
         ("CC BY-NC 4.0", ""): False, ("CC BY-NC-SA 2.0", ""): False, ("CC BY-ND 4.0", ""): False,
         ("GFDL", ""): False, ("", ""): False, ("All rights reserved", ""): False,
-        ("NASA Photojournal (...)", "NASA/JPL-Caltech"): True,
+        ("NASA Photojournal (NASA images not copyrighted; other credits keep their terms)", "NASA/JPL-Caltech"): True,
         ("NASA Photojournal (...)", "Copyright: Stuart Heggie"): False,
         ("NASA Photojournal (...)", "Courtesy AAAS/Science"): False,
     }
