@@ -57,4 +57,18 @@ Retrieved Nov 16, 2026 with `python ml/scripts/fetch_scene_images.py`, which als
 
 ## Training images (Phase 2)
 
-To be filled in Phase 2: one row per image source, with licence.
+Retrieved Nov 15-16, 2026. Every image's title, page link, author and licence is in `ml/data/manifest.csv` (Wikimedia Commons) or `ml/data/manifest_topup.csv` (space-agency archives); `ml/data/manifest_unknown.csv` lists the unknown-object test photos. The images themselves are not committed. Counts are the 1,401 images used for training, validation and testing (`ml/data/split.csv`).
+
+**Licence rule** (`ml/scripts/licences.py`, tested in `tests/test_licences.py`): only public domain, CC0, CC BY and CC BY-SA are used, plus NASA/JPL Photojournal images whose credit is NASA or JPL with no copyright notice. Non-commercial (NC), no-derivatives (ND), "all rights reserved" and copyrighted images are left out.
+
+| Source | How it was searched | Images used | Licence |
+| --- | --- | --- | --- |
+| Wikimedia Commons | Categories and searches per class in `ml/data/collect_sources.json` (`ml/scripts/collect.py`) | 974 | Public domain 308, CC BY 2.0 272, CC BY-SA 4.0 125, CC BY 4.0 116, CC0 57, CC BY-SA 3.0 36, CC BY-SA 2.0 30, CC BY 3.0 25, CC BY-SA 3.0 IGO 4, CC BY 2.5 1 |
+| ESA/Hubble (`esahubble.org`) | Archive searches in `ml/data/topup_sources.json` (`ml/scripts/topup.py`) | 158 | CC BY 4.0 |
+| NASA/JPL Photojournal (`science.nasa.gov/photojournal`), found through the NASA Images API by PIA number | same | 143 | NASA images, not copyrighted |
+| NASA DSCOVR EPIC (`epic.gsfc.nasa.gov`), whole-Earth photos | same | 39 | Public domain (NASA) |
+| NOIRLab (`noirlab.edu`) | same | 37 | CC BY 4.0 |
+| ESO (`eso.org`) | same | 30 | CC BY 4.0 |
+| ESA/Webb (`esawebb.org`) | same | 20 | CC BY 4.0 |
+
+Credit line for the archive images, as the licences ask: NASA, ESA, ESO, NOIRLab/NSF/AURA, ESA/Webb and the individual authors named in the manifests.

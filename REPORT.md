@@ -34,49 +34,136 @@ _Written in Phase 5 from PLAN.md section 4 (page → server → classifier / cha
 
 ## 5. Dataset
 
-_Phase 2: images per class, sources and licences, how duplicates were removed, the 70/15/15 split._
+Source: `ml/results/dataset_counts.json`, written by `ml/scripts/split.py`. Sources and licences: `ml/data/SOURCES.md`.
+
+- **Collection.** Candidate images came from Wikimedia Commons (`ml/scripts/collect.py`) and from six space-agency archives: ESA/Hubble, ESA/Webb, NOIRLab, ESO, NASA/JPL Photojournal and NASA DSCOVR EPIC (`ml/scripts/topup.py`). Deep-sky classes were also searched by catalogue name (M42, NGC 1976, M1, M16, NGC 3372, and so on).
+- **Licences.** Only public domain, CC0, CC BY, CC BY-SA and NASA images were used (`ml/scripts/licences.py`); 54 candidates were left out for their licence.
+- **Review by eye.** Every candidate was checked on numbered contact sheets (`ml/scripts/review_sheets.py`). Each rejection is logged with its reason in `ml/data/review_excluded.csv`: charts, labelled panels, collages, artwork, the wrong object, near-black frames, and close-ups too zoomed in to recognise. Recognisable close-ups were kept and tagged in `ml/data/review_closeups.csv`: Jupiter's Great Red Spot, Saturn's rings, sunspots, the Pillars of Creation, Carina's Cosmic Cliffs. Close-ups are at most 30% of a class, or 60% for classes under 80 images.
+- **Duplicates.** Each image is described by the EfficientNet-B0 ImageNet features and compared with cosine similarity:
+  - 0.985 or more: the same picture, so only one copy is kept.
+  - 0.95 or more: versions of one picture (other crops or colours). They are kept, but always in the same part of the split, so a picture cannot be in both training and test.
+  - In all, 233 images fell into such groups, and 0 groups spanned two classes.
+- **Split.** 70 / 15 / 15 by group, with a fixed seed per class, done separately for whole-object and close-up images. The split is one list, `ml/data/split.csv`. At most 150 images per class.
+- **Classes left out.** Six objects could not reach 50 usable free-licence images, so they are left out of the classifier: Ring Nebula, Horsehead Nebula, Pleiades, Beehive Cluster, M13 and Omega Centauri. They stay in the 3D scene, the cards and the chat. The classifier has 14 classes.
+
+| Stage | Images |
+| --- | --- |
+| Candidates downloaded | 4,144 |
+| Kept after review | 1,723 |
+| Left after removing duplicates | 1,599 |
+| Used (after the 150 cap, close-up cap and left-out classes) | 1,401 (1,071 whole, 330 close-up) |
+| Train / validation / test | 995 / 217 / 189 |
+
+**Images per class**
+
+| Class | Candidates | After review | After duplicates | Used | Whole | Close-up | Train | Val | Test |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Sun | 245 | 106 | 106 | 106 | 86 | 20 | 75 | 18 | 13 |
+| Mercury | 322 | 179 | 176 | 82 | 33 | 49 | 59 | 12 | 11 |
+| Venus | 289 | 86 | 84 | 84 | 79 | 5 | 60 | 13 | 11 |
+| Earth | 224 | 99 | 99 | 98 | 69 | 29 | 70 | 14 | 14 |
+| Moon | 260 | 92 | 92 | 92 | 87 | 5 | 65 | 14 | 13 |
+| Mars | 457 | 117 | 111 | 111 | 97 | 14 | 78 | 18 | 15 |
+| Jupiter | 449 | 210 | 204 | 150 | 105 | 45 | 106 | 23 | 21 |
+| Saturn | 381 | 191 | 182 | 150 | 105 | 45 | 106 | 23 | 21 |
+| Uranus | 330 | 108 | 76 | 76 | 76 | 0 | 54 | 12 | 10 |
+| Neptune | 274 | 107 | 84 | 84 | 69 | 15 | 61 | 11 | 12 |
+| Orion Nebula | 298 | 147 | 135 | 128 | 90 | 38 | 90 | 23 | 15 |
+| Crab Nebula | 226 | 120 | 103 | 103 | 95 | 8 | 73 | 16 | 14 |
+| Ring Nebula (left out: under 50) | 121 | 60 | 42 | 42 | 42 | 0 | 30 | 6 | 6 |
+| Eagle Nebula | 146 | 68 | 62 | 62 | 27 | 35 | 44 | 9 | 9 |
+| Carina Nebula | 243 | 93 | 85 | 75 | 53 | 22 | 54 | 11 | 10 |
+| Horsehead Nebula (left out: under 50) | 17 | 13 | 13 | 13 | 9 | 4 | 10 | 2 | 1 |
+| Pleiades (left out: under 50) | 21 | 8 | 8 | 8 | 6 | 2 | 7 | 1 | 0 |
+| Beehive Cluster (left out: under 50) | 3 | 2 | 2 | 2 | 2 | 0 | 2 | 0 | 0 |
+| Hercules Cluster (M13) (left out: under 50) | 8 | 6 | 6 | 6 | 4 | 2 | 5 | 1 | 0 |
+| Omega Centauri (left out: under 50) | 31 | 14 | 14 | 14 | 8 | 6 | 11 | 2 | 1 |
 
 ## 6. Image classifier
 
-_Phase 2: EfficientNet-B0, training settings, augmentation, training curve._
+Source: `ml/results/train_efficientnet_b0_aug.json` and `ml/results/train_efficientnet_b0_noaug.json`, written by `ml/scripts/train.py`. Model code: `backend/app/cv/classifier.py`.
+
+- **Model.** EfficientNet-B0 with ImageNet weights (torchvision). Its last layer is replaced by a 14-class layer (transfer learning).
+- **Stage 1, 5 epochs.** The backbone is frozen and only the new layer learns (AdamW, learning rate 3e-4).
+- **Stage 2, up to 15 epochs.** All layers learn (AdamW, learning rate 1e-4 on a cosine decay).
+- **Other settings.** Weight decay 1e-4, label smoothing 0.1, batch 32, input 224 x 224. Early stopping keeps the epoch with the lowest validation loss (patience 4).
+- **Augmentation** (main run only). Random crops keeping 25-100% of the image (this also makes close-up-like views), horizontal and vertical flips, any rotation, colour jitter, and grey 10% of the time.
+- **Runs.** Both on an NVIDIA RTX 4060 Laptop GPU with PyTorch 2.8.0: 20 epochs each, best epoch 18 in both, no early stop.
+  - Without augmentation: 1.4 min, validation accuracy 92.6%.
+  - With augmentation: 3.08 min, validation accuracy 88.0%.
+  - Training curves: `ml/results/training_curve_efficientnet_b0_aug.png` and `..._noaug.png`.
+- **Confidence threshold.** Chosen on the validation set only: the 5th percentile of the top-1 confidence on correctly classified validation images, which is **0.36**. Below it, the answer is "not one of my known objects". The threshold is stored in `backend/app/data/classifier.json`.
+- **Command-line check.** `python ml/scripts/predict.py photo.jpg` prints the top 3 guesses and the unknown message.
 
 ## 7. Classifier results
 
-_Phase 2. Source: `ml/results/metrics.json`._
+Source: `ml/results/metrics.json`, written once by `ml/scripts/evaluate.py` on the 189 test images, which were not used before this point.
 
-**Table A: classifier results**
+**Table A: classifier results (test set)**
 
 | Model | Top-1 accuracy % | Top-3 accuracy % | Macro F1 | Training time (min) |
 | --- | --- | --- | --- | --- |
-| EfficientNet-B0 without augmentation |  |  |  |  |
-| EfficientNet-B0 with augmentation |  |  |  |  |
+| EfficientNet-B0 without augmentation | 93.1 | 98.4 | 0.919 | 1.4 |
+| EfficientNet-B0 with augmentation | 88.9 | 97.4 | 0.861 | 3.08 |
 
-**Table B: per-class results**
+**Accuracy by view type (test set, top-1 / top-3 %)**
+
+| Model | Whole objects (147) | Close-ups (42) | All (189) |
+| --- | --- | --- | --- |
+| Without augmentation | 92.5 / 98.0 | 95.2 / 100.0 | 93.1 / 98.4 |
+| With augmentation | 88.4 / 96.6 | 90.5 / 100.0 | 88.9 / 97.4 |
+
+The model with augmentation was chosen in advance as the app's model. On this test set it scored *lower* than the one without, for both whole objects and close-ups; validation showed the same (88.0% against 92.6%). A likely reason: the test images are clean archive photos, much like the training images, so the extra variety from augmentation does not pay off here. 189 test images is also a small sample, where one image is about 0.5 points.
+
+**Table B: per-class results (model with augmentation, test set)**
 
 | Class | Train images | Test images | Precision | Recall | F1 |
 | --- | --- | --- | --- | --- | --- |
-| Sun |  |  |  |  |  |
-| Mercury |  |  |  |  |  |
-| Venus |  |  |  |  |  |
-| Earth |  |  |  |  |  |
-| Moon |  |  |  |  |  |
-| Mars |  |  |  |  |  |
-| Jupiter |  |  |  |  |  |
-| Saturn |  |  |  |  |  |
-| Uranus |  |  |  |  |  |
-| Neptune |  |  |  |  |  |
-| Orion Nebula |  |  |  |  |  |
-| Crab Nebula |  |  |  |  |  |
-| Ring Nebula |  |  |  |  |  |
-| Eagle Nebula |  |  |  |  |  |
-| Carina Nebula |  |  |  |  |  |
-| Horsehead Nebula |  |  |  |  |  |
-| Pleiades |  |  |  |  |  |
-| Beehive Cluster |  |  |  |  |  |
-| Hercules Cluster (M13) |  |  |  |  |  |
-| Omega Centauri |  |  |  |  |  |
+| Sun | 75 | 13 | 0.867 | 1.0 | 0.929 |
+| Mercury | 59 | 11 | 0.714 | 0.909 | 0.8 |
+| Venus | 60 | 11 | 0.857 | 0.545 | 0.667 |
+| Earth | 70 | 14 | 0.933 | 1.0 | 0.966 |
+| Moon | 65 | 13 | 1.0 | 0.846 | 0.917 |
+| Mars | 78 | 15 | 1.0 | 1.0 | 1.0 |
+| Jupiter | 106 | 21 | 0.955 | 1.0 | 0.977 |
+| Saturn | 106 | 21 | 0.955 | 1.0 | 0.977 |
+| Uranus | 54 | 10 | 0.7 | 0.7 | 0.7 |
+| Neptune | 61 | 12 | 0.636 | 0.583 | 0.609 |
+| Orion Nebula | 90 | 15 | 1.0 | 1.0 | 1.0 |
+| Crab Nebula | 73 | 14 | 0.933 | 1.0 | 0.966 |
+| Ring Nebula | left out (42 usable images, under 50) | | | | |
+| Eagle Nebula | 44 | 9 | 0.778 | 0.778 | 0.778 |
+| Carina Nebula | 54 | 10 | 0.875 | 0.7 | 0.778 |
+| Horsehead Nebula | left out (13 usable images, under 50) | | | | |
+| Pleiades | left out (8 usable images, under 50) | | | | |
+| Beehive Cluster | left out (2 usable images, under 50) | | | | |
+| Hercules Cluster (M13) | left out (6 usable images, under 50) | | | | |
+| Omega Centauri | left out (14 usable images, under 50) | | | | |
 
-Confusion matrix: _Phase 2_. Unknown-object test: _Phase 2_. Grad-CAM examples (6): _Phase 3_.
+**Confusion matrix:** `ml/results/confusion_matrix.png`. The most confused pairs:
+- **Uranus and Neptune** (3 each way). Both are small, nearly featureless blue-green discs, and many Neptune images are processed to look paler, closer to Uranus.
+- **Venus taken for the Sun or Mercury** (2 each). Venus is a bright, featureless yellowish disc like the Sun in amateur photos, and its ultraviolet and radar images are grey and mottled like Mercury's surface.
+- **Carina taken for Eagle** (2). Both are red-orange star-forming clouds with dark pillars.
+
+**Threshold on the test set:**
+- 95.8% of test images are above the threshold, and 91.7% of those are right.
+- 2 correct answers fall below the threshold, and 15 wrong answers are above it.
+
+**Unknown-object test:** 66 photos of things outside the 14 classes (`ml/data/manifest_unknown.csv` and the "unknown" rows of `ml/data/manifest.csv`, reviewed by eye). The threshold rejected **26 of 66 (39.4%)**:
+
+| Unknown type | Photos | Rejected |
+| --- | --- | --- |
+| Cats | 6 | 5 |
+| Dogs | 6 | 4 |
+| Mountains | 6 | 2 |
+| Galaxies (Andromeda, Whirlpool, Sombrero) | 16 | 5 |
+| Other nebulae (Lagoon, Helix, Tarantula) | 20 | 6 |
+| Comets (NEOWISE and others) | 11 | 3 |
+| Pluto | 1 | 1 |
+
+Everyday photos are mostly rejected (11 of 18). Other space objects are mostly *not* rejected: the model gives a galaxy or another nebula a confident guess among the space classes it knows. One confidence threshold cannot separate "a nebula I know" from "a nebula I don't" well.
+
+Grad-CAM examples (6): _Phase 3_.
 
 ## 8. Chat and command matching
 
@@ -122,6 +209,14 @@ _Phase 4. Source: `ml/results/rag_eval.csv`._
 | 1 | Mouse orbit when idle, locked during a flight; Home button; clickable planets and name labels; loading screen with a progress bar | Done |
 | 1 | Temporary "Go to" dropdown of the 20 objects (to be replaced by upload and typed commands) | Done |
 | 1 | Browser check script `frontend/scripts/check-phase1.mjs` and 20 screenshots in `ml/results/phase1_screens/` | Done |
+| 2 | Image collection from Wikimedia Commons and six space-agency archives, with a licence record for every image (`collect.py`, `topup.py`, manifests) | Done |
+| 2 | Licence rule with tests (`ml/scripts/licences.py`, `tests/test_licences.py`) | Done |
+| 2 | Review by eye with numbered contact sheets; every rejection logged with a reason (`review_sheets.py`) | Done |
+| 2 | Deep-feature duplicate removal and a leak-free 70/15/15 split (`split.py`, `ml/data/split.csv`) | Done |
+| 2 | EfficientNet-B0 trained with and without augmentation (`train.py`) | Done |
+| 2 | Test-set evaluation: Table A, Table B, accuracy by view, confusion matrix, threshold, unknown test (`evaluate.py`, `ml/results/metrics.json`) | Done |
+| 2 | `predict.py photo.jpg` prints the top 3 and the unknown message | Done |
+| 2 | Classifier config for the server (`backend/app/data/classifier.json`); weights in `backend/weights/` (not committed) | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -158,7 +253,13 @@ The last two sky rows show that the nebula pictures and the HYG stars share one 
 
 ## 11. Limitations and future work
 
-- Only 20 classes; any other sky photo is outside scope.
+- Only 20 objects, and the classifier knows 14 of them. Ring Nebula, Horsehead Nebula, Pleiades, Beehive Cluster, M13 and Omega Centauri had too few free-licence photos (under 50 after review) and are left out of the classifier; they are still in the scene and the chat.
+- Several classes are below the planned 80 images (Uranus 76, Carina 75, Eagle 62), and the test set has only 9 to 21 images per class, so per-class scores move a lot with one image.
+- Eagle Nebula leans on Pillars of Creation close-ups (35 of 62 images).
+- Most images are processed archive pictures (Hubble, Webb, spacecraft). Phone or small-telescope photos look different and are likely to score lower.
+- The unknown-object test rejects only 39.4% of out-of-scope photos (`ml/results/metrics.json`). It works for everyday photos (11 of 18), but other galaxies and nebulae mostly get a confident wrong guess.
+- The model with augmentation, chosen before testing, scored lower than the one without (88.9% against 93.1% top-1).
+- Holdout split only (no k-fold), so there are no confidence intervals on the scores.
 - Nebulae are shown as flat images at their real sky position, not true 3D shapes.
 - Planet sizes and distances are compressed and labelled "not to scale".
 - Object distances are rounded central values; published uncertainties are large for some (Crab Nebula ± 1,600 ly).
@@ -210,6 +311,19 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Wikimedia Commons API | Wikipedia's media library; its API gives each image a resized copy plus its licence and author | Phase 1 |
 | Pillow | A Python library for opening and saving images; used here to save every scene image as a real JPEG | Phase 1 |
 | Playwright (playwright-core) | Drives a real web browser from a script: it clicks, waits and takes screenshots, so the fly-to check is automatic | Phase 1 |
+| PyTorch | The deep-learning library that runs the model on the graphics card and learns its weights | Phase 2 |
+| torchvision | PyTorch's image companion: it supplies EfficientNet-B0 with ImageNet weights and the image transforms (crop, flip, rotate) | Phase 2 |
+| EfficientNet-B0 | A small, accurate image-recognition network (5.3 million weights) already trained on the 1.3 million photos of ImageNet | Phase 2 |
+| Transfer learning | Start from a network that already knows edges, textures and shapes, and only teach it our classes, so a few hundred images are enough | Phase 2 |
+| Data augmentation | Random crops, flips, rotations and colour changes applied to training images, so the model sees more variety than the raw photos | Phase 2 |
+| AdamW, cosine schedule, label smoothing, early stopping | The optimiser that adjusts the weights; a learning rate that slowly falls; slightly softened targets so the model is not over-confident; and keeping the epoch with the best validation loss | Phase 2 |
+| Cosine similarity of deep features | Two images are compared by the angle between their EfficientNet feature vectors; near 1 means the same picture, which is how duplicates were found | Phase 2 |
+| scikit-learn | A standard machine-learning library; used here only to compute precision, recall, F1 and the confusion matrix | Phase 2 |
+| Confusion matrix | A table of true class against predicted class; everything off the diagonal is a mistake, so it shows which classes get mixed up | Phase 2 |
+| Matplotlib | Draws the training curves and the confusion matrix as PNG images | Phase 2 |
+| NumPy | Fast arrays of numbers; used for the evaluation sums and percentiles | Phase 2 |
+| NASA Images API, JPL Photojournal, DSCOVR EPIC | NASA's image search, its archive of spacecraft pictures (PIA numbers), and the daily whole-Earth photos from the DSCOVR satellite | Phase 2 |
+| ESA/Hubble, ESA/Webb, NOIRLab, ESO archives | The image archives of the Hubble and Webb telescopes and of two ground observatories; all CC BY 4.0 | Phase 2 |
 
 ## Decisions
 
@@ -240,16 +354,25 @@ _Phase 4: the 30 test questions and 40 command phrases._
 | Nov 16, 2026 | Keep identifiable close-ups (Great Red Spot, Saturn's rings, Pillars of Creation, sunspots), tagged as "close-up", at most 30% of a class; drop ambiguous ones (crater fields, featureless haze) | Users often share a famous feature rather than the whole object; capping and tagging keeps whole-object accuracy measurable |
 | Nov 16, 2026 | Zoom-in augmentation: random crops keep 25-100% of the image (wider than the planned 60-100%) | Turns whole-object photos into close-up-like training views at no data cost |
 | Nov 16, 2026 | Test accuracy reported separately for whole objects, close-ups and all images | A single blended number would hide whether close-ups lowered accuracy on whole objects |
-| Nov 16, 2026 | Near-duplicates found with a 64-bit difference hash written in a few lines (Pillow + NumPy), not the `imagehash` library | One fewer dependency, and the method is short enough to explain line by line |
+| Nov 16, 2026 | Duplicates found by cosine similarity of EfficientNet-B0 ImageNet features (0.985 = same picture, keep one; 0.95 = same group, same split), replacing the 64-bit difference hash tried first | The difference hash matched unrelated dark space images (1,515 false cross-class pairs, which would have removed about 750 good images); the feature similarity found no cross-class pairs, and needs no extra library |
+| Nov 16, 2026 | Licence allowlist: public domain, CC0, CC BY, CC BY-SA and NASA; non-commercial, no-derivatives and copyrighted images left out | Free to use in a public demo and report with credit; one tested rule decides every image |
+| Nov 16, 2026 | Extra images from space-agency archives (ESA/Hubble, ESA/Webb, NOIRLab, ESO, Photojournal, EPIC), with catalogue-name searches for deep-sky objects | Wikimedia Commons alone did not give enough usable photos of the outer planets and the nebulae, and kept rate-limiting |
+| Nov 16, 2026 | Python's HTTPS check kept on; two missing intermediate certificates (Let's Encrypt, HARICA for ESO) added in `ml/data/certs/` after checking their fingerprints against the Windows-trusted roots | Fixes "certificate verify failed" without ever turning verification off |
+| Nov 16, 2026 | Classes under 50 usable images are left out of the classifier (6 of 20), not padded with weak images | Too few images to train and test fairly; those objects stay in the scene and the chat |
+| Nov 16, 2026 | Classes under 80 may use up to 60% close-ups, including zoomed views re-admitted only if they show most of the object and are easy to recognise | Gives short classes enough images without adding close-ups nobody could identify |
+| Nov 16, 2026 | Split shuffled with a fixed seed per class | Adding images to one class no longer reshuffles every other class's split |
+| Nov 16, 2026 | Holdout split (70/15/15) only, no k-fold | Simpler and fast; noted as a limitation |
+| Nov 16, 2026 | Downloads run with a time limit and a `--only` option, saving the manifest as they go | A stopped run never loses licence records, and rate limits cannot make a run go on for hours |
+| Nov 16, 2026 | The augmented model stays the app's model (fixed before testing), and Table A reports both | Picking the model after seeing test scores would make the test score optimistic; validation can be used to switch, which is up to the author |
 
 ## Progress log
 
 - **Nov 16, 2026 (Phase 0):** Project set up outside OneDrive with git. objects.json written for all 20 objects (coordinates from SIMBAD, facts from Wikipedia and NASA), validated by 9 passing tests. Star file built with 8,834 stars. Server answers /health; page builds and serves with all frontend libraries. Groq test call answered in 616 ms with gpt-oss-20b. Phase 0 complete.
 - **Nov 16, 2026 (Phase 1):** 3D scene built: HYG star field, textured Solar System with orbit rings, 10 deep-space pictures at their real RA/Dec, GSAP fly-to with mode-switch pull-back, glass panel with the brief card, Home button, loading screen and a temporary dropdown. 21 scene images were downloaded with their licences (`ml/scripts/fetch_scene_images.py`). The browser check passed for all 20 objects, plus the panel, Home, scene-click and sky-alignment checks, with 0 console errors (`ml/results/phase1_scene_check.json`). pytest: 12 passed. Phase 1 complete.
-- **Nov 16, 2026 (Phase 2, in progress, checkpoint):**
-  - **Collection:** candidate images collected from Wikimedia Commons, JPL Photojournal, ESA/Hubble, ESA/Webb, NOIRLab and NASA DSCOVR EPIC. There are 3,324 images on disk, plus 48 unknown-object test photos. Every image downloaded so far has been reviewed by eye, and every rejection is logged with its reason in `ml/data/review_excluded.csv`.
-  - **Not done yet:** the Wikimedia downloads for Neptune, the nebulae, the clusters and the Wikimedia unknown photos, which were rate-limited.
-  - **Manifest:** `manifest.csv` must be rebuilt by re-running `collect.py`. Wikimedia HTTPS now works through two verified Let's Encrypt link certificates in `ml/data/certs/`.
-  - **Duplicates:** the deep-feature duplicate grouping (threshold 0.95) has been added to `split.py`.
-  - **Not run yet:** training, evaluation and the split.
-  - **Waiting on:** the author's decision about classes below 80 images, once the final counts are known.
+- **Nov 16, 2026 (Phase 2):**
+  - **Dataset:** 4,144 candidates from Wikimedia Commons and six space-agency archives, all reviewed by eye. 1,401 images used in 14 classes (train 995, validation 217, test 189); six objects are left out of the classifier for having under 50 images.
+  - **Training:** EfficientNet-B0 trained with and without augmentation on the RTX 4060 (3.08 and 1.4 min).
+  - **Test set**, used once: top-1 88.9% and top-3 97.4% with augmentation; 93.1% and 98.4% without.
+  - **Threshold and unknowns:** the threshold is 0.36, and the unknown test rejected 26 of 66.
+  - **Done-when check:** `metrics.json` and `confusion_matrix.png` exist, and `predict.py` prints the top 3.
+  - **Tests:** pytest, 30 passed. Phase 2 complete.

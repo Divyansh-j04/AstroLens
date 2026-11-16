@@ -190,6 +190,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="only count candidates")
     ap.add_argument("--manifest-only", action="store_true", help="write the manifest for files already on disk")
+    ap.add_argument("--only", default="", help="comma-separated classes to list and download (others keep their rows); "
+                    "'unknown' fetches the unknown-object test photos")
     args = ap.parse_args()
 
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
@@ -198,6 +200,9 @@ def main() -> None:
 
     # 1. Candidates per class
     rng = random.Random(SEED)
+    only = [c for c in args.only.split(",") if c]
+    if only:
+        ids = [c for c in only if c in ids]  # in the order given (priority)
     per_class: dict[str, dict[str, dict]] = {}
     for cls in ids:
         print(f"{cls}", file=sys.stderr)
@@ -222,6 +227,9 @@ def main() -> None:
     # 3. Manifest first: list every chosen file that is already on disk, so stopping the run
     #    later can never lose the licence records. It is rewritten after every class.
     rows: dict[str, dict] = {}
+    if only and MANIFEST.exists():  # keep every other class's existing rows
+        with MANIFEST.open(encoding="utf-8") as fh:
+            rows = {r["file"]: r for r in csv.DictReader(fh) if r["class"] not in only}
 
     def add_row(name: str, cls: str, set_: str, f: dict) -> None:
         rows[name] = {"file": name, "class": cls, "set": set_, **{k: f[k] for k in
@@ -257,10 +265,16 @@ def main() -> None:
                     print(f"  skip {f['title']}: {err}", file=sys.stderr)
                     continue
             add_row(name, cls, "known", f)
+            if len(rows) % 25 == 0:  # save often, so a stopped run keeps its licence records
+                write_manifest()
         write_manifest()
         print(f"{cls}: {len(files)} done", file=sys.stderr)
 
-    # 5. Unknown-object test set
+    # 5. Unknown-object test set (skipped when only some classes were asked for, unless "unknown" is one)
+    if only and "unknown" not in only:
+        write_manifest()
+        print(f"Wrote {len(rows)} rows to {MANIFEST.relative_to(ROOT)}", file=sys.stderr)
+        return
     unk = config["unknown"]
     folder = RAW / "unknown"
     folder.mkdir(parents=True, exist_ok=True)

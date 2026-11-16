@@ -1,0 +1,194 @@
+{
+  "run": "efficientnet_b0_aug_trial",
+  "script": "ml/scripts/train.py",
+  "augmentation": true,
+  "settings": {
+    "backbone": "EfficientNet-B0 (torchvision, ImageNet-1k weights)",
+    "image_size": 224,
+    "batch_size": 32,
+    "head_epochs": 5,
+    "head_lr": 0.0003,
+    "finetune_epochs": 15,
+    "finetune_lr": 0.0001,
+    "weight_decay": 0.0001,
+    "label_smoothing": 0.1,
+    "early_stopping_patience": 4,
+    "optimizer": "AdamW",
+    "schedule": "cosine decay during fine-tuning",
+    "seed": 0,
+    "augmentation": "random resized crop (25-100% of area), horizontal and vertical flip, rotation up to 180 deg, colour jitter (brightness/contrast/saturation 0.3, hue 0.05), grayscale 10%"
+  },
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "torch_version": "2.8.0+cu128",
+  "train_images": 734,
+  "val_images": 158,
+  "epochs_run": 20,
+  "stopped_early": false,
+  "best_epoch": 17,
+  "best_val_loss": 0.8394,
+  "best_val_acc": 0.8924,
+  "training_minutes": 2.73,
+  "weights_file": "backend/weights/efficientnet_b0_aug_trial.pt",
+  "history": [
+    {
+      "epoch": 1,
+      "stage": "head",
+      "train_loss": 2.2073,
+      "train_acc": 0.2234,
+      "val_loss": 2.0789,
+      "val_acc": 0.462
+    },
+    {
+      "epoch": 2,
+      "stage": "head",
+      "train_loss": 1.9828,
+      "train_acc": 0.4537,
+      "val_loss": 1.8903,
+      "val_acc": 0.6456
+    },
+    {
+      "epoch": 3,
+      "stage": "head",
+      "train_loss": 1.8179,
+      "train_acc": 0.5599,
+      "val_loss": 1.736,
+      "val_acc": 0.6835
+    },
+    {
+      "epoch": 4,
+      "stage": "head",
+      "train_loss": 1.6985,
+      "train_acc": 0.6131,
+      "val_loss": 1.6075,
+      "val_acc": 0.7152
+    },
+    {
+      "epoch": 5,
+      "stage": "head",
+      "train_loss": 1.5699,
+      "train_acc": 0.6567,
+      "val_loss": 1.5146,
+      "val_acc": 0.7215
+    },
+    {
+      "epoch": 6,
+      "stage": "finetune",
+      "train_loss": 1.3801,
+      "train_acc": 0.7125,
+      "val_loss": 1.1647,
+      "val_acc": 0.7595
+    },
+    {
+      "epoch": 7,
+      "stage": "finetune",
+      "train_loss": 1.156,
+      "train_acc": 0.7616,
+      "val_loss": 1.0448,
+      "val_acc": 0.8038
+    },
+    {
+      "epoch": 8,
+      "stage": "finetune",
+      "train_loss": 1.017,
+      "train_acc": 0.8052,
+      "val_loss": 0.9728,
+      "val_acc": 0.8228
+    },
+    {
+      "epoch": 9,
+      "stage": "finetune",
+      "train_loss": 0.9689,
+      "train_acc": 0.8283,
+      "val_loss": 0.9402,
+      "val_acc": 0.8544
+    },
+    {
+      "epoch": 10,
+      "stage": "finetune",
+      "train_loss": 0.8942,
+      "train_acc": 0.8529,
+      "val_loss": 0.9078,
+      "val_acc": 0.8544
+    },
+    {
+      "epoch": 11,
+      "stage": "finetune",
+      "train_loss": 0.8541,
+      "train_acc": 0.8638,
+      "val_loss": 0.8925,
+      "val_acc": 0.8608
+    },
+    {
+      "epoch": 12,
+      "stage": "finetune",
+      "train_loss": 0.8667,
+      "train_acc": 0.8651,
+      "val_loss": 0.8769,
+      "val_acc": 0.8734
+    },
+    {
+      "epoch": 13,
+      "stage": "finetune",
+      "train_loss": 0.8198,
+      "train_acc": 0.876,
+      "val_loss": 0.8661,
+      "val_acc": 0.8734
+    },
+    {
+      "epoch": 14,
+      "stage": "finetune",
+      "train_loss": 0.8081,
+      "train_acc": 0.8815,
+      "val_loss": 0.8573,
+      "val_acc": 0.8671
+    },
+    {
+      "epoch": 15,
+      "stage": "finetune",
+      "train_loss": 0.7973,
+      "train_acc": 0.8924,
+      "val_loss": 0.8496,
+      "val_acc": 0.8924
+    },
+    {
+      "epoch": 16,
+      "stage": "finetune",
+      "train_loss": 0.787,
+      "train_acc": 0.8924,
+      "val_loss": 0.8479,
+      "val_acc": 0.8924
+    },
+    {
+      "epoch": 17,
+      "stage": "finetune",
+      "train_loss": 0.7708,
+      "train_acc": 0.9046,
+      "val_loss": 0.8394,
+      "val_acc": 0.8924
+    },
+    {
+      "epoch": 18,
+      "stage": "finetune",
+      "train_loss": 0.783,
+      "train_acc": 0.9087,
+      "val_loss": 0.8429,
+      "val_acc": 0.8987
+    },
+    {
+      "epoch": 19,
+      "stage": "finetune",
+      "train_loss": 0.764,
+      "train_acc": 0.9087,
+      "val_loss": 0.8508,
+      "val_acc": 0.8861
+    },
+    {
+      "epoch": 20,
+      "stage": "finetune",
+      "train_loss": 0.7734,
+      "train_acc": 0.906,
+      "val_loss": 0.8427,
+      "val_acc": 0.8861
+    }
+  ]
+}
