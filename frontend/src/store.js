@@ -26,6 +26,14 @@ export const useStore = create((set, get) => ({
   setPanelOpen: (panelOpen) => set({ panelOpen }),
   setPanelView: (panelView) => set({ panelView }),
   setUpload: (patch) => set((s) => ({ upload: { ...s.upload, ...patch } })),
+  // Remove the uploaded photo and everything that came from it (guesses, badge, heatmap).
+  clearUpload: () =>
+    set((s) => ({
+      upload: { status: 'idle', error: null, previewUrl: null, slow: false },
+      prediction: null,
+      panelView: ['unknown', 'guesses'].includes(s.panelView) ? 'card' : s.panelView,
+      panelOpen: ['unknown', 'guesses'].includes(s.panelView) ? Boolean(s.currentObjectId) && s.panelOpen : s.panelOpen,
+    })),
   openChat: () => set({ panelOpen: true, panelView: 'chat' }),
 
   // Ask the chat about the current object (or in general), keeping one conversation per object.

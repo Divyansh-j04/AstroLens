@@ -101,10 +101,10 @@ async function main() {
     const upload = async (file) => {
       // Reset the status first, so the wait below cannot see the previous upload's result.
       await page.evaluate(() => window.astrolens.store.getState().setUpload({ status: 'idle' }))
-      await page.waitForSelector('[data-testid=upload-zone][data-status=idle]')
+      await page.waitForSelector('[data-testid=upload-zone][data-status=idle]', { state: 'attached' })
       const t = Date.now()
       await page.setInputFiles('[data-testid=upload-input]', file)
-      await page.waitForSelector('[data-testid=upload-zone]:is([data-status=done],[data-status=error])', { timeout: 100000 })
+      await page.waitForSelector('[data-testid=upload-zone]:is([data-status=done],[data-status=error])', { state: 'attached', timeout: 100000 })
       return Date.now() - t
     }
     const waitForFlightEnd = async () => {
@@ -199,7 +199,7 @@ async function main() {
     await page.waitForTimeout(5800)
     const slowText = await page.locator('[data-testid=upload-zone]').innerText()
     await page.screenshot({ path: path.join(SHOTS, 'slow_server.jpg'), type: 'jpeg', quality: 75 })
-    await page.waitForSelector('[data-testid=upload-zone][data-status=done]', { timeout: 30000 })
+    await page.waitForSelector('[data-testid=upload-zone][data-status=done]', { state: 'attached', timeout: 30000 })
     await page.unroute('**/classify')
     errors.push({ case: 'slow server (6.5 s)', message: slowText.includes('Waking up') ? 'Waking up the server… this can take up to a minute' : slowText, expect: 'Waking up' })
     await waitForFlightEnd()
