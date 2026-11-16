@@ -1,0 +1,322 @@
+{
+  "_about": "Extra image sources, run by ml/scripts/topup.py. 'pia' = JPL Photojournal images found by searching the NASA Image Library and keeping only PIA ids; 'esa' = ESA/Hubble, ESA/Webb or NOIRLab archive search; 'epic' = NASA DSCOVR EPIC full-disc Earth photos. A result is kept only if its title names the object (name or alias from objects.json). Every image is then reviewed by eye. 'max' = results kept per source (default 80); 'pages' = result pages read.",
+  "classes": {
+    "mercury": [
+      {
+        "pia": "Mercury MESSENGER",
+        "pages": 10,
+        "max": 150
+      },
+      {
+        "pia": "Mercury Mariner 10",
+        "pages": 3
+      },
+      {
+        "pia": "Mercury BepiColombo",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Mercury"
+      }
+    ],
+    "venus": [
+      {
+        "esa": "noirlab",
+        "search": "Venus"
+      },
+      {
+        "esa": "hubble",
+        "search": "Venus"
+      }
+    ],
+    "mars": [
+      {
+        "pia": "Mars Hubble",
+        "pages": 3
+      },
+      {
+        "pia": "Mars global",
+        "pages": 5
+      },
+      {
+        "pia": "Mars full disk",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Mars"
+      },
+      {
+        "esa": "webb",
+        "search": "Mars"
+      },
+      {
+        "esa": "noirlab",
+        "search": "Mars"
+      }
+    ],
+    "earth": [
+      {
+        "pia": "Earth from space",
+        "pages": 5
+      },
+      {
+        "pia": "Earth Moon spacecraft",
+        "pages": 3
+      },
+      {
+        "epic": "natural",
+        "count": 40
+      }
+    ],
+    "jupiter": [
+      {
+        "pia": "Jupiter",
+        "pages": 5
+      },
+      {
+        "esa": "hubble",
+        "search": "Jupiter"
+      },
+      {
+        "esa": "webb",
+        "search": "Jupiter"
+      },
+      {
+        "esa": "noirlab",
+        "search": "Jupiter"
+      }
+    ],
+    "saturn": [
+      {
+        "pia": "Saturn Cassini",
+        "pages": 5
+      },
+      {
+        "esa": "hubble",
+        "search": "Saturn"
+      },
+      {
+        "esa": "webb",
+        "search": "Saturn"
+      },
+      {
+        "esa": "noirlab",
+        "search": "Saturn"
+      }
+    ],
+    "uranus": [
+      {
+        "pia": "Uranus",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Uranus"
+      },
+      {
+        "esa": "webb",
+        "search": "Uranus"
+      },
+      {
+        "esa": "noirlab",
+        "search": "Uranus"
+      }
+    ],
+    "neptune": [
+      {
+        "pia": "Neptune",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Neptune"
+      },
+      {
+        "esa": "webb",
+        "search": "Neptune"
+      },
+      {
+        "esa": "noirlab",
+        "search": "Neptune"
+      }
+    ],
+    "orion_nebula": [
+      {
+        "esa": "hubble",
+        "search": "Orion Nebula"
+      },
+      {
+        "esa": "webb",
+        "search": "Orion"
+      },
+      {
+        "pia": "Orion Nebula",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Orion Nebula"
+      }
+    ],
+    "crab_nebula": [
+      {
+        "esa": "hubble",
+        "search": "Crab Nebula"
+      },
+      {
+        "esa": "webb",
+        "search": "Crab Nebula"
+      },
+      {
+        "pia": "Crab Nebula",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Crab Nebula"
+      }
+    ],
+    "ring_nebula": [
+      {
+        "esa": "hubble",
+        "search": "Ring Nebula"
+      },
+      {
+        "esa": "webb",
+        "search": "Ring Nebula"
+      },
+      {
+        "pia": "Ring Nebula",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Ring Nebula"
+      }
+    ],
+    "eagle_nebula": [
+      {
+        "esa": "hubble",
+        "search": "Eagle Nebula"
+      },
+      {
+        "esa": "hubble",
+        "search": "Pillars of Creation"
+      },
+      {
+        "esa": "webb",
+        "search": "Pillars of Creation"
+      },
+      {
+        "pia": "Eagle Nebula",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Eagle Nebula"
+      }
+    ],
+    "carina_nebula": [
+      {
+        "esa": "hubble",
+        "search": "Carina Nebula"
+      },
+      {
+        "esa": "webb",
+        "search": "Carina"
+      },
+      {
+        "pia": "Carina Nebula",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Carina Nebula"
+      }
+    ],
+    "horsehead_nebula": [
+      {
+        "esa": "hubble",
+        "search": "Horsehead"
+      },
+      {
+        "esa": "webb",
+        "search": "Horsehead"
+      },
+      {
+        "pia": "Horsehead Nebula",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Horsehead"
+      }
+    ],
+    "pleiades": [
+      {
+        "esa": "hubble",
+        "search": "Pleiades"
+      },
+      {
+        "pia": "Pleiades",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Pleiades"
+      }
+    ],
+    "beehive_cluster": [
+      {
+        "esa": "hubble",
+        "search": "Beehive"
+      },
+      {
+        "pia": "Beehive Cluster",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Beehive"
+      }
+    ],
+    "hercules_cluster": [
+      {
+        "esa": "hubble",
+        "search": "Messier 13"
+      },
+      {
+        "esa": "hubble",
+        "search": "Hercules"
+      },
+      {
+        "pia": "M13 globular cluster",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "M13"
+      }
+    ],
+    "omega_centauri": [
+      {
+        "esa": "hubble",
+        "search": "Omega Centauri"
+      },
+      {
+        "esa": "webb",
+        "search": "Omega Centauri"
+      },
+      {
+        "pia": "Omega Centauri",
+        "pages": 2
+      },
+      {
+        "esa": "noirlab",
+        "search": "Omega Centauri"
+      }
+    ]
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "_about": "Where training images come from. Each class lists Wikimedia Commons categories (depth 0 = files directly in the category, depth 1 = also files in its direct subcategories) and optional Commons searches. Every candidate is reviewed by eye before use (ml/data/review_excluded.csv). Each source gives at most 150 random picks unless it sets \"max\"; close-up-heavy sources get a lower max.",
+  "classes": {
+    "sun": [
+      {
+        "category": "Sun",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of the Sun",
+        "depth": 0
+      },
+      {
+        "category": "Quality images of the Sun",
+        "depth": 0
+      },
+      {
+        "category": "Sun by spectral line",
+        "depth": 1,
+        "max": 80
+      }
+    ],
+    "mercury": [
+      {
+        "category": "Mercury (planet)",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Mercury by spacecraft",
+        "depth": 1,
+        "max": 80
+      },
+      {
+        "category": "Infrared images of Mercury",
+        "depth": 0
+      }
+    ],
+    "venus": [
+      {
+        "category": "Venus (planet)",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of Venus",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Venus by spacecraft",
+        "depth": 1
+      },
+      {
+        "category": "Photos of Venus by amateur telescopes",
+        "depth": 0
+      },
+      {
+        "category": "Phases of Venus",
+        "depth": 0
+      },
+      {
+        "category": "Atmosphere of Venus",
+        "depth": 0
+      }
+    ],
+    "earth": [
+      {
+        "category": "Earth",
+        "depth": 0
+      },
+      {
+        "category": "Views of Earth",
+        "depth": 1
+      }
+    ],
+    "moon": [
+      {
+        "category": "Moon",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of the Moon",
+        "depth": 0
+      },
+      {
+        "category": "Quality images of the Moon",
+        "depth": 0
+      },
+      {
+        "category": "Moon from Earth",
+        "depth": 0
+      },
+      {
+        "category": "Moon from space",
+        "depth": 0
+      },
+      {
+        "category": "Lunar phases",
+        "depth": 0
+      }
+    ],
+    "mars": [
+      {
+        "category": "Mars (planet)",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of Mars",
+        "depth": 0
+      },
+      {
+        "category": "Photographs of Mars",
+        "depth": 0
+      },
+      {
+        "category": "Mars from space",
+        "depth": 0
+      },
+      {
+        "category": "Mars overviews",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Mars system by spacecraft",
+        "depth": 0
+      },
+      {
+        "category": "Valued images of Mars",
+        "depth": 0
+      }
+    ],
+    "jupiter": [
+      {
+        "category": "Jupiter (planet)",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of Jupiter",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Jupiter system by spacecraft",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Jupiter by JunoCam",
+        "depth": 0,
+        "max": 40
+      },
+      {
+        "category": "Photos of Jupiter by New Horizons",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Jupiter by Pioneer 10",
+        "depth": 0
+      },
+      {
+        "category": "Crescent Jupiter",
+        "depth": 0
+      },
+      {
+        "category": "Infrared images of Jupiter",
+        "depth": 0
+      }
+    ],
+    "saturn": [
+      {
+        "category": "Saturn (planet)",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of Saturn",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Saturn system by spacecraft",
+        "depth": 0
+      },
+      {
+        "category": "Crescent Saturn",
+        "depth": 0
+      }
+    ],
+    "uranus": [
+      {
+        "category": "Uranus (planet)",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Uranus system by spacecraft",
+        "depth": 1
+      },
+      {
+        "category": "Crescent Uranus",
+        "depth": 0
+      },
+      {
+        "category": "Atmosphere of Uranus",
+        "depth": 0
+      },
+      {
+        "category": "Uranus (rings)",
+        "depth": 0
+      }
+    ],
+    "neptune": [
+      {
+        "category": "Neptune (planet)",
+        "depth": 0
+      },
+      {
+        "category": "Photos of Neptune system by spacecraft",
+        "depth": 1
+      },
+      {
+        "category": "Atmosphere of Neptune",
+        "depth": 0
+      }
+    ],
+    "orion_nebula": [
+      {
+        "category": "Orion Nebula",
+        "depth": 0
+      },
+      {
+        "category": "Amateur pictures of the Orion Nebula",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of Orion Nebula",
+        "depth": 0
+      }
+    ],
+    "crab_nebula": [
+      {
+        "category": "Crab Nebula",
+        "depth": 0
+      },
+      {
+        "category": "Amateur pictures of the Crab Nebula",
+        "depth": 0
+      }
+    ],
+    "ring_nebula": [
+      {
+        "category": "Ring Nebula",
+        "depth": 0
+      }
+    ],
+    "eagle_nebula": [
+      {
+        "category": "Eagle Nebula",
+        "depth": 0
+      },
+      {
+        "category": "Amateur pictures of the Eagle Nebula",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of Eagle Nebula",
+        "depth": 0
+      },
+      {
+        "category": "Pillars of Creation",
+        "depth": 0
+      }
+    ],
+    "carina_nebula": [
+      {
+        "category": "Carina Nebula",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of Carina Nebula",
+        "depth": 0
+      },
+      {
+        "category": "NGC 3324",
+        "depth": 0
+      }
+    ],
+    "horsehead_nebula": [
+      {
+        "category": "Horsehead Nebula",
+        "depth": 0
+      },
+      {
+        "category": "Featured pictures of Horsehead Nebula",
+        "depth": 0
+      }
+    ],
+    "pleiades": [
+      {
+        "category": "Pleiades (star cluster)",
+        "depth": 0
+      },
+      {
+        "category": "Amateur pictures of the Pleiades",
+        "depth": 0
+      }
+    ],
+    "beehive_cluster": [
+      {
+        "category": "Beehive Cluster",
+        "depth": 0
+      },
+      {
+        "search": "Praesepe"
+      },
+      {
+        "search": "Beehive Cluster"
+      },
+      {
+        "search": "Messier 44"
+      }
+    ],
+    "hercules_cluster": [
+      {
+        "category": "Messier 13",
+        "depth": 0
+      }
+    ],
+    "omega_centauri": [
+      {
+        "category": "NGC 5139",
+        "depth": 0
+      }
+    ]
+  },
+  "unknown": {
+    "_about": "Photos of things outside the 20 classes, used only to test the 'not one of my known objects' threshold. Never used for training.",
+    "per_source": 6,
+    "sources": [
+      {
+        "category": "Andromeda Galaxy"
+      },
+      {
+        "category": "Whirlpool Galaxy"
+      },
+      {
+        "category": "Lagoon Nebula"
+      },
+      {
+        "category": "Helix Nebula"
+      },
+      {
+        "category": "Pluto"
+      },
+      {
+        "category": "C/2020 F3 (NEOWISE)"
+      },
+      {
+        "category": "Featured pictures of cats"
+      },
+      {
+        "category": "Featured pictures of dogs"
+      },
+      {
+        "category": "Quality images of mountains"
+      }
+    ]
+  }
+}

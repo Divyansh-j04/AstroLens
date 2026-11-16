@@ -1,0 +1,9 @@
+# Phase 2 training and evaluation (install on top of backend/requirements.txt).
+# PyTorch with CUDA 12.8 for an NVIDIA GPU:
+#   pip install -r ml/requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+# On a machine without an NVIDIA GPU, plain `pip install -r ml/requirements.txt` gets the CPU build.
+torch==2.8.0
+torchvision==0.23.0
+scikit-learn==1.7.1
+matplotlib==3.10.5
+numpy==2.3.2

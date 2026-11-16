@@ -1,0 +1,14 @@
+{
+  "_about": "Photos of space objects that are NOT among the 20 classes, used only to test the 'not one of my known objects' threshold (never for training). Fetched by ml/scripts/topup.py --unknown from ESA/Hubble, NOIRLab and JPL Photojournal because Wikimedia downloads were blocked. A result is kept only if its title matches 'title'. Reviewed by eye like every other image.",
+  "per_source": 6,
+  "objects": {
+    "Andromeda Galaxy": {"title": "Andromeda|M31\\b|Messier 31", "sources": [{"esa": "hubble", "search": "Andromeda"}, {"esa": "noirlab", "search": "Andromeda"}]},
+    "Whirlpool Galaxy": {"title": "Whirlpool|M51\\b|Messier 51", "sources": [{"esa": "hubble", "search": "Whirlpool"}, {"esa": "noirlab", "search": "Whirlpool"}]},
+    "Lagoon Nebula": {"title": "Lagoon", "sources": [{"esa": "hubble", "search": "Lagoon Nebula"}, {"esa": "noirlab", "search": "Lagoon"}]},
+    "Helix Nebula": {"title": "Helix", "sources": [{"esa": "hubble", "search": "Helix"}, {"esa": "noirlab", "search": "Helix"}]},
+    "Sombrero Galaxy": {"title": "Sombrero|M104\\b", "sources": [{"esa": "hubble", "search": "Sombrero"}, {"esa": "webb", "search": "Sombrero"}]},
+    "Tarantula Nebula": {"title": "Tarantula", "sources": [{"esa": "hubble", "search": "Tarantula"}, {"esa": "webb", "search": "Tarantula"}]},
+    "Pluto": {"title": "Pluto", "sources": [{"pia": "Pluto New Horizons", "pages": 2}]},
+    "Comet": {"title": "Comet", "sources": [{"esa": "hubble", "search": "comet"}, {"esa": "noirlab", "search": "comet"}]}
+  }
+}
