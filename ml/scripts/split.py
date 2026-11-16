@@ -10,6 +10,14 @@ is brighter than its right-hand neighbour. That gives 64 bits; two images whose 
 most HAMMING_LIMIT places are treated as the same picture. Removing them BEFORE splitting stops
 the same picture landing in both training and test (test-set leakage).
 
+dHash misses different crops or colour versions of one famous picture (e.g. several crops of the
+Hubble Crab Nebula mosaic). So we also compare images by their EfficientNet-B0 features (the
+ImageNet-pretrained network, before any training on our data): images whose feature similarity
+(cosine) is at least FEATURE_SIMILARITY are put in one group, and a group always goes into the same
+part of the split (all train, all validation or all test). 0.95 was chosen by looking at sample
+pairs: above it, pairs were almost always the same picture; at 0.90 different photos of the same
+object (e.g. all EPIC Earth images) chained into one large group.
+
 Outputs:
     ml/data/split.csv                 one row per image: file, class, split (train / val / test)
     ml/results/dataset_counts.json    counts per class at every step, for REPORT.md Table B
@@ -38,6 +46,7 @@ SPLIT = ROOT / "ml" / "data" / "split.csv"
 COUNTS = ROOT / "ml" / "results" / "dataset_counts.json"
 
 HAMMING_LIMIT = 6  # of 64 bits
+FEATURE_SIMILARITY = 0.95  # cosine similarity of EfficientNet-B0 features; same group at or above
 MAX_PER_CLASS = 150
 MAX_CLOSEUP_SHARE = 0.30  # close-ups may be at most 30% of a class
 FRACTIONS = {"train": 0.70, "val": 0.15}  # test gets the rest (about 15%)
@@ -48,6 +57,44 @@ def dhash(path: Path) -> int:
     grey = np.asarray(Image.open(path).convert("L").resize((9, 8), Image.Resampling.LANCZOS), dtype=np.int16)
     bits = (grey[:, 1:] > grey[:, :-1]).flatten()
     return int("".join("1" if b else "0" for b in bits), 2)
+
+
+def feature_groups(paths: list[Path]) -> list[int]:
+    """Group id per image: images with deep-feature similarity >= FEATURE_SIMILARITY share a group."""
+    import sys
+
+    import torch
+    from torchvision import models
+
+    sys.path.insert(0, str(ROOT / "backend"))
+    from app.cv.classifier import eval_transform
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    net = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
+    net.classifier = torch.nn.Identity()  # keep the 1280 features, drop the ImageNet classes
+    net = net.to(device).eval()
+    tf = eval_transform()
+    feats = []
+    with torch.no_grad():
+        for i in range(0, len(paths), 64):
+            x = torch.stack([tf(Image.open(q).convert("RGB")) for q in paths[i:i + 64]]).to(device)
+            feats.append(torch.nn.functional.normalize(net(x), dim=1))
+    f = torch.cat(feats)
+    sim = (f @ f.T).cpu()
+    parent = list(range(len(paths)))
+
+    def find(a: int) -> int:
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    pairs = (torch.triu(sim, diagonal=1) >= FEATURE_SIMILARITY).nonzero().tolist()
+    for a, b in pairs:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[rb] = ra
+    return [find(i) for i in range(len(paths))]
 
 
 def main() -> None:
@@ -100,29 +147,56 @@ def main() -> None:
     for cls in counts:
         counts[cls]["after_dedup"] = sum(r["class"] == cls for r in unique)
 
-    # Cap (close-ups at most 30%), then split each view type 70/15/15, with a fixed seed.
+    # Deep-feature groups (crops and colour versions of one picture). A group spanning two
+    # classes is ambiguous and dropped, like the dHash rule above.
+    unique.sort(key=lambda r: r["file"])
+    gid = feature_groups([IMAGES / r["class"] / r["file"] for r in unique])
+    by_group: dict[int, list[dict]] = defaultdict(list)
+    for r, g in zip(unique, gid):
+        by_group[g].append(r)
+    groups = []
+    cross_class_groups = 0
+    for g, members in by_group.items():
+        if len({r["class"] for r in members}) > 1:
+            cross_class_groups += len(members)
+            continue
+        groups.append(members)
+    grouped_images = sum(len(m) for m in groups if len(m) > 1)
+
+    # Cap (close-ups at most 30%), then split each view type 70/15/15 by whole groups, fixed seed.
     rng = random.Random(SEED)
     out: list[dict] = []
     for cls in sorted(counts):
-        by_view = {}
-        for view in ("whole", "closeup"):
-            items = sorted((r for r in unique if r["class"] == cls and r["view"] == view), key=lambda r: r["file"])
-            rng.shuffle(items)
-            by_view[view] = items
-        target = min(MAX_PER_CLASS, len(by_view["whole"]) + len(by_view["closeup"]))
-        n_close = min(len(by_view["closeup"]), int(MAX_CLOSEUP_SHARE * target))
-        n_whole = min(len(by_view["whole"]), target - n_close)
-        n_close = min(n_close, int(MAX_CLOSEUP_SHARE / (1 - MAX_CLOSEUP_SHARE) * n_whole))
-        for view, n in (("whole", n_whole), ("closeup", n_close)):
-            items = by_view[view][:n]
-            n_train = round(n * FRACTIONS["train"])
-            n_val = round(n * FRACTIONS["val"])
-            for k, r in enumerate(items):
-                split = "train" if k < n_train else "val" if k < n_train + n_val else "test"
-                out.append({"file": r["file"], "class": cls, "view": view, "split": split, "licence": r["licence"]})
+        by_view: dict[str, list[list[dict]]] = {"whole": [], "closeup": []}
+        for members in sorted((m for m in groups if m[0]["class"] == cls), key=lambda m: m[0]["file"]):
+            views = Counter(r["view"] for r in members)
+            by_view["closeup" if views["closeup"] > views["whole"] else "whole"].append(members)
+        for view in by_view:
+            rng.shuffle(by_view[view])
+        avail = {v: sum(len(m) for m in by_view[v]) for v in by_view}
+        target = min(MAX_PER_CLASS, avail["whole"] + avail["closeup"])
+        quota_close = min(avail["closeup"], int(MAX_CLOSEUP_SHARE * target))
+        quota_whole = min(avail["whole"], target - quota_close)
+        quota_close = min(quota_close, int(MAX_CLOSEUP_SHARE / (1 - MAX_CLOSEUP_SHARE) * quota_whole))
+        used = {}
+        for view, quota in (("whole", quota_whole), ("closeup", quota_close)):
+            chosen, n = [], 0
+            for members in by_view[view]:
+                if n + len(members) <= quota:
+                    chosen.append(members)
+                    n += len(members)
+            used[view] = n
+            done = 0
+            for members in chosen:  # whole groups go to one split, filled in order train -> val -> test
+                split = ("train" if done < FRACTIONS["train"] * n
+                         else "val" if done < (FRACTIONS["train"] + FRACTIONS["val"]) * n else "test")
+                for r in members:
+                    out.append({"file": r["file"], "class": cls, "view": view, "split": split,
+                                "licence": r["licence"]})
+                done += len(members)
         mine = [o for o in out if o["class"] == cls]
         c = Counter(o["split"] for o in mine)
-        counts[cls].update(used=len(mine), whole=n_whole, closeup=n_close,
+        counts[cls].update(used=len(mine), whole=used["whole"], closeup=used["closeup"],
                            train=c["train"], val=c["val"], test=c["test"])
 
     out.sort(key=lambda r: (r["class"], r["split"], r["file"]))
@@ -136,6 +210,9 @@ def main() -> None:
     result = {
         "script": "ml/scripts/split.py",
         "hamming_limit": HAMMING_LIMIT,
+        "feature_similarity": FEATURE_SIMILARITY,
+        "images_in_similarity_groups": grouped_images,
+        "cross_class_similar_images_dropped": cross_class_groups,
         "max_per_class": MAX_PER_CLASS,
         "max_closeup_share": MAX_CLOSEUP_SHARE,
         "seed": SEED,
