@@ -16,6 +16,7 @@ export const useStore = create((set, get) => ({
   upload: { status: 'idle', error: null, previewUrl: null, slow: false }, // status: idle | loading | done | error
   chats: {}, // one conversation per object id (or '_general'): [{ role, content, citations?, refused?, error? }]
   chatPending: false, // true while waiting for an answer
+  browserOpen: false, // the right-side object list (drawer)
 
   selectObject: (id) =>
     set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1 })),
@@ -35,6 +36,7 @@ export const useStore = create((set, get) => ({
       panelOpen: ['unknown', 'guesses'].includes(s.panelView) ? Boolean(s.currentObjectId) && s.panelOpen : s.panelOpen,
     })),
   openChat: () => set({ panelOpen: true, panelView: 'chat' }),
+  setBrowserOpen: (browserOpen) => set({ browserOpen }),
 
   // Ask the chat about the current object (or in general), keeping one conversation per object.
   sendChat: async (text) => {

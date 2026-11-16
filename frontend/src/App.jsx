@@ -3,6 +3,7 @@ import TopBar, { ScaleNote } from './ui/TopBar'
 import LoadingScreen from './ui/LoadingScreen'
 import GlassPanel from './panel/GlassPanel'
 import UploadZone from './upload/UploadZone'
+import ObjectBrowser from './panel/ObjectBrowser'
 import './debug'
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
       <UploadZone />
       <ScaleNote />
       <GlassPanel />
+      <ObjectBrowser />
       <LoadingScreen />
     </main>
   )

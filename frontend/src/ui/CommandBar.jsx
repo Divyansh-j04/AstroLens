@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { navigateText, UploadError } from '../api'
-import { OBJECTS } from '../objects'
 import { useStore } from '../store'
 
 /**
  * Type where to go ("the red planet", "M42", "jupitr") or ask a question ("how hot is Venus?").
  * The server decides (POST /navigate): fly there, ask which of two objects was meant, or pass
- * the text to the chat. The object names are offered as suggestions while typing.
+ * the text to the chat. To browse all objects, use the Objects list on the right.
  */
 export default function CommandBar() {
   const selectObject = useStore((s) => s.selectObject)
@@ -47,7 +46,6 @@ export default function CommandBar() {
       <form onSubmit={submit} className="flex items-center gap-2">
         <input
           data-testid="command-input"
-          list="object-names"
           value={text}
           onChange={(e) => setText(e.target.value)}
           maxLength={200}
@@ -55,11 +53,6 @@ export default function CommandBar() {
           aria-label="Go to an object or ask a question"
           className="w-64 rounded-md border border-white/15 bg-slate-900/70 px-3 py-1.5 text-sm text-slate-100 backdrop-blur placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/60 sm:w-80"
         />
-        <datalist id="object-names">
-          {OBJECTS.map((o) => (
-            <option key={o.id} value={o.name} />
-          ))}
-        </datalist>
         <button
           type="submit"
           data-testid="command-go"
