@@ -6,7 +6,9 @@
    SHA-1), plus frontend/vercel.json (cache headers).
 3. Creates a production deployment of the project "astrolens" and waits until it is ready.
 
-Reads VERCEL_TOKEN from .env (never printed). Uses only Python's built-in urllib.
+Reads VERCEL_TOKEN from .env (never printed). Uses only Python's built-in urllib. A token scoped to a
+team (e.g. "<name>'s projects", the Hobby team) needs that team's id on every request; it is looked
+up automatically (GET /v2/teams) unless VERCEL_TEAM_ID is set in .env.
 
 Usage (from the project root):
     python deploy/push_vercel.py --api https://<user>-astrolens.hf.space
@@ -32,7 +34,12 @@ API = "https://api.vercel.com"
 PROJECT = "astrolens"
 
 
+TEAM_ID = ""  # filled in main(); added to every request as ?teamId=
+
+
 def call(method: str, path: str, token: str, body: bytes | None = None, headers: dict | None = None) -> dict:
+    if TEAM_ID and "/v2/teams" not in path:
+        path += ("&" if "?" in path else "?") + f"teamId={TEAM_ID}"
     req = urllib.request.Request(f"{API}{path}", data=body, method=method,
                                  headers={"Authorization": f"Bearer {token}", **(headers or {})})
     try:
@@ -51,6 +58,17 @@ def main() -> None:
     token = os.getenv("VERCEL_TOKEN", "").strip()
     if not token:
         sys.exit("VERCEL_TOKEN is empty: add a Vercel token to .env (see .env.example).")
+
+    global TEAM_ID
+    TEAM_ID = os.getenv("VERCEL_TEAM_ID", "").strip()
+    if not TEAM_ID:
+        teams = call("GET", "/v2/teams", token).get("teams", [])
+        if len(teams) == 1:
+            TEAM_ID = teams[0]["id"]
+            print(f"Vercel team: {teams[0].get('name') or teams[0].get('slug')}")
+        elif len(teams) > 1:
+            sys.exit("The token can reach several Vercel teams; set VERCEL_TEAM_ID in .env to choose one: "
+                     + ", ".join(f"{t.get('slug')}={t['id']}" for t in teams))
 
     print(f"Building the page with VITE_API_URL={args.api}")
     npm = "npm.cmd" if os.name == "nt" else "npm"
