@@ -10,19 +10,18 @@ that were first rejected as "ambiguous" and then re-admitted on a second look
 upload zoomed-in photos, and these classes have too few whole-object images. Accuracy is still
 reported separately for whole objects and close-ups.
 
-Near-duplicates (the same picture resized, re-compressed or slightly re-edited) are found with a
-difference hash (dHash): shrink the image to 9x8 grey pixels and record, for each pixel, whether it
-is brighter than its right-hand neighbour. That gives 64 bits; two images whose bits differ in at
-most HAMMING_LIMIT places are treated as the same picture. Removing them BEFORE splitting stops
-the same picture landing in both training and test (test-set leakage).
-
-dHash misses different crops or colour versions of one famous picture (e.g. several crops of the
-Hubble Crab Nebula mosaic). So we also compare images by their EfficientNet-B0 features (the
-ImageNet-pretrained network, before any training on our data): images whose feature similarity
-(cosine) is at least FEATURE_SIMILARITY are put in one group, and a group always goes into the same
-part of the split (all train, all validation or all test). 0.95 was chosen by looking at sample
-pairs: above it, pairs were almost always the same picture; at 0.90 different photos of the same
-object (e.g. all EPIC Earth images) chained into one large group.
+Duplicates are found by comparing images with their EfficientNet-B0 features (the
+ImageNet-pretrained network, before any training on our data), using cosine similarity:
+  - at least DUPLICATE_SIMILARITY (0.985): the same picture (copy, resize, re-encode). Only one is kept.
+  - at least FEATURE_SIMILARITY (0.95): versions of one picture (other crops or colours). All are
+    kept, but as one group that always goes into the same part of the split.
+  - a duplicate or group that spans two classes is ambiguous and dropped.
+This happens BEFORE splitting, so the same picture cannot land in both training and test.
+The thresholds were chosen by looking at sample pairs: above 0.95, pairs were almost always the same
+picture; at 0.90 different photos of the same object (e.g. all EPIC Earth images) chained together.
+A 64-bit difference hash (dHash) was tried first and rejected: on dark space images it matched
+unrelated pictures (a Beehive star field "matched" M13, Jupiter and the Moon; 1,515 false
+cross-class pairs), while the feature similarity found no cross-class pairs at all.
 
 Outputs:
     ml/data/split.csv                 one row per image: file, class, split (train / val / test)
@@ -38,7 +37,6 @@ import random
 from collections import Counter, defaultdict
 from pathlib import Path
 
-import numpy as np
 from PIL import Image
 
 from licences import licence_ok  # ml/scripts/licences.py: the agreed licence allowlist
@@ -53,8 +51,8 @@ REVIEWED = ROOT / "ml" / "data" / "review_done.txt"  # only images someone has l
 SPLIT = ROOT / "ml" / "data" / "split.csv"
 COUNTS = ROOT / "ml" / "results" / "dataset_counts.json"
 
-HAMMING_LIMIT = 6  # of 64 bits
-FEATURE_SIMILARITY = 0.95  # cosine similarity of EfficientNet-B0 features; same group at or above
+DUPLICATE_SIMILARITY = 0.985  # cosine similarity of EfficientNet-B0 features: same picture, keep one
+FEATURE_SIMILARITY = 0.95  # versions of one picture: kept, but in the same part of the split
 MAX_PER_CLASS = 150
 MAX_CLOSEUP_SHARE = 0.30  # close-ups may be at most 30% of a class
 SHORT_CLASS_MIN = 80  # the plan's minimum per class
@@ -64,14 +62,8 @@ FRACTIONS = {"train": 0.70, "val": 0.15}  # test gets the rest (about 15%)
 SEED = 0
 
 
-def dhash(path: Path) -> int:
-    grey = np.asarray(Image.open(path).convert("L").resize((9, 8), Image.Resampling.LANCZOS), dtype=np.int16)
-    bits = (grey[:, 1:] > grey[:, :-1]).flatten()
-    return int("".join("1" if b else "0" for b in bits), 2)
-
-
-def feature_groups(paths: list[Path]) -> list[int]:
-    """Group id per image: images with deep-feature similarity >= FEATURE_SIMILARITY share a group."""
+def feature_similarity(paths: list[Path]):
+    """Cosine similarity of EfficientNet-B0 (ImageNet) features for every pair of images."""
     import sys
 
     import torch
@@ -91,8 +83,14 @@ def feature_groups(paths: list[Path]) -> list[int]:
             x = torch.stack([tf(Image.open(q).convert("RGB")) for q in paths[i:i + 64]]).to(device)
             feats.append(torch.nn.functional.normalize(net(x), dim=1))
     f = torch.cat(feats)
-    sim = (f @ f.T).cpu()
-    parent = list(range(len(paths)))
+    return (f @ f.T).cpu()
+
+
+def groups_at(sim, threshold: float) -> list[int]:
+    """Group id per image: pairs with similarity >= threshold are joined (transitively)."""
+    import torch
+
+    parent = list(range(sim.shape[0]))
 
     def find(a: int) -> int:
         while parent[a] != a:
@@ -100,12 +98,12 @@ def feature_groups(paths: list[Path]) -> list[int]:
             a = parent[a]
         return a
 
-    pairs = (torch.triu(sim, diagonal=1) >= FEATURE_SIMILARITY).nonzero().tolist()
+    pairs = (torch.triu(sim, diagonal=1) >= threshold).nonzero().tolist()
     for a, b in pairs:
         ra, rb = find(a), find(b)
         if ra != rb:
             parent[rb] = ra
-    return [find(i) for i in range(len(paths))]
+    return [find(i) for i in range(sim.shape[0])]
 
 
 def main() -> None:
@@ -155,34 +153,29 @@ def main() -> None:
     for cls in counts:
         counts[cls]["after_review"] = sum(r["class"] == cls for r in kept)
 
-    # Near-duplicates, compared across ALL classes. Keep the first of each group (by file name);
-    # if a group spans two classes the picture is ambiguous, so the whole group is dropped.
+    # Duplicates (same picture), compared across ALL classes. Keep the first of each duplicate set
+    # (by file name); if a set spans two classes the picture is ambiguous, so the whole set is dropped.
     kept.sort(key=lambda r: r["file"])
-    hashes = [dhash(IMAGES / r["class"] / r["file"]) for r in kept]
-    group = list(range(len(kept)))
-    for i in range(len(kept)):
-        if group[i] != i:
-            continue
-        for j in range(i + 1, len(kept)):
-            if group[j] == j and bin(hashes[i] ^ hashes[j]).count("1") <= HAMMING_LIMIT:
-                group[j] = i
+    sim = feature_similarity([IMAGES / r["class"] / r["file"] for r in kept])
+    dup = groups_at(sim, DUPLICATE_SIMILARITY)
     members: dict[int, list[int]] = defaultdict(list)
-    for j, g in enumerate(group):
+    for j, g in enumerate(dup):
         members[g].append(j)
-    unique = []
+    unique_idx = []
     cross_class = 0
     for g, idx in members.items():
         if len({kept[j]["class"] for j in idx}) > 1:
             cross_class += len(idx)
             continue
-        unique.append(kept[g])
+        unique_idx.append(min(idx))
+    unique_idx.sort()
+    unique = [kept[j] for j in unique_idx]
     for cls in counts:
         counts[cls]["after_dedup"] = sum(r["class"] == cls for r in unique)
 
     # Deep-feature groups (crops and colour versions of one picture). A group spanning two
     # classes is ambiguous and dropped, like the dHash rule above.
-    unique.sort(key=lambda r: r["file"])
-    gid = feature_groups([IMAGES / r["class"] / r["file"] for r in unique])
+    gid = groups_at(sim[unique_idx][:, unique_idx], FEATURE_SIMILARITY)
     by_group: dict[int, list[dict]] = defaultdict(list)
     for r, g in zip(unique, gid):
         by_group[g].append(r)
@@ -243,7 +236,7 @@ def main() -> None:
               ("candidates", "after_review", "after_dedup", "used", "whole", "closeup", "train", "val", "test")}
     result = {
         "script": "ml/scripts/split.py",
-        "hamming_limit": HAMMING_LIMIT,
+        "duplicate_similarity": DUPLICATE_SIMILARITY,
         "feature_similarity": FEATURE_SIMILARITY,
         "images_in_similarity_groups": grouped_images,
         "cross_class_similar_images_dropped": cross_class_groups,
