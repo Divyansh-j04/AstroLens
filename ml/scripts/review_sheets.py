@@ -46,6 +46,14 @@ def files_of(cls: str) -> list[Path]:
             done = set(DONE.read_text(encoding="utf-8").split()) if DONE.exists() else set()
             files = [f for f in files if f.name not in done]
         return files
+    if cls.endswith("_snapshot"):
+        # A frozen list of a class's unreviewed images, so numbering stays stable while downloads continue.
+        snap = REVIEW / f"{cls}.txt"
+        if not snap.exists():
+            REVIEW.mkdir(parents=True, exist_ok=True)
+            snap.write_text(chr(10).join(f.name for f in files_of(cls.removesuffix("_snapshot") + "_new")), encoding="utf-8")
+        base = real_class(cls)
+        return [IMAGES / base / n for n in snap.read_text(encoding="utf-8").split()]
     base = real_class(cls)
     files = sorted((IMAGES / base).glob("*.jpg"))
     if cls.endswith("_topup"):
@@ -70,7 +78,7 @@ def files_of(cls: str) -> list[Path]:
 
 
 def real_class(cls: str) -> str:
-    for suffix in ("_topup", "_wiki", "_new", "_ambiguous"):
+    for suffix in ("_snapshot", "_topup", "_wiki", "_new", "_ambiguous"):
         cls = cls.removesuffix(suffix)
     return cls
 
