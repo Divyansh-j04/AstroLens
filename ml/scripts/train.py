@@ -122,9 +122,11 @@ def run_epoch(model, loader, loss_fn, device, optimizer=None) -> tuple[float, fl
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-augment", action="store_true", help="train without data augmentation")
+    ap.add_argument("--planets-only", action="store_true",
+                    help="trial run on the Solar System classes only (results saved with a _trial suffix)")
     args = ap.parse_args()
     augment = not args.no_augment
-    run = "efficientnet_b0_aug" if augment else "efficientnet_b0_noaug"
+    run = ("efficientnet_b0_aug" if augment else "efficientnet_b0_noaug") + ("_trial" if args.planets_only else "")
 
     seed = SETTINGS["seed"]
     random.seed(seed)
@@ -135,6 +137,9 @@ def main() -> None:
     with SPLIT.open(encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
     # Classes in objects.json order, minus any left out by split.py for having too few images.
+    if args.planets_only:
+        solar = {o["id"] for o in json.loads(OBJECTS.read_text(encoding="utf-8")) if o["group"] == "solar_system"}
+        rows = [r for r in rows if r["class"] in solar]
     present = {r["class"] for r in rows}
     classes = [o["id"] for o in json.loads(OBJECTS.read_text(encoding="utf-8")) if o["id"] in present]
     train_rows = [r for r in rows if r["split"] == "train"]

@@ -2,7 +2,7 @@
   "script": "ml/scripts/split.py",
   "duplicate_similarity": 0.985,
   "feature_similarity": 0.95,
-  "images_in_similarity_groups": 142,
+  "images_in_similarity_groups": 203,
   "cross_class_similar_images_dropped": 0,
   "max_per_class": 150,
   "max_closeup_share": 0.3,
@@ -11,13 +11,11 @@
   "short_classes": [
     "beehive_cluster",
     "carina_nebula",
-    "crab_nebula",
     "eagle_nebula",
     "hercules_cluster",
     "horsehead_nebula",
     "mercury",
     "omega_centauri",
-    "orion_nebula",
     "pleiades",
     "ring_nebula"
   ],
@@ -25,43 +23,41 @@
   "dropped_classes": [
     "beehive_cluster",
     "carina_nebula",
-    "crab_nebula",
     "eagle_nebula",
     "hercules_cluster",
     "horsehead_nebula",
     "omega_centauri",
-    "orion_nebula",
     "pleiades",
     "ring_nebula"
   ],
   "seed": 0,
   "licence_rule": "allowed: public domain, CC0, CC BY, CC BY-SA, NASA works (ml/scripts/licences.py)",
-  "excluded_by_licence": 45,
-  "duplicates_removed": 92,
+  "excluded_by_licence": 53,
+  "duplicates_removed": 136,
   "cross_class_duplicates_dropped": 0,
   "totals": {
-    "candidates": 3231,
-    "after_review": 1295,
-    "after_dedup": 1214,
-    "used": 1033,
-    "whole": 806,
-    "closeup": 227,
-    "train": 734,
-    "val": 155,
-    "test": 144
+    "candidates": 3755,
+    "after_review": 1562,
+    "after_dedup": 1452,
+    "used": 1264,
+    "whole": 991,
+    "closeup": 273,
+    "train": 897,
+    "val": 197,
+    "test": 170
   },
   "licences_used": {
-    "CC BY 2.0": 254,
-    "Public domain": 222,
-    "CC BY 4.0": 202,
-    "NASA Photojournal (NASA images not copyrighted; other credits keep their terms)": 139,
-    "CC BY-SA 4.0": 80,
+    "CC BY 4.0": 293,
+    "Public domain": 281,
+    "CC BY 2.0": 267,
+    "NASA Photojournal (NASA images not copyrighted; other credits keep their terms)": 141,
+    "CC BY-SA 4.0": 106,
+    "CC0": 48,
     "Public domain (NASA)": 39,
-    "CC0": 36,
-    "CC BY 3.0": 23,
-    "CC BY-SA 3.0": 20,
-    "CC BY-SA 2.0": 15,
-    "CC BY-SA 3.0 igo": 2,
+    "CC BY-SA 3.0": 33,
+    "CC BY-SA 2.0": 26,
+    "CC BY 3.0": 25,
+    "CC BY-SA 3.0 igo": 4,
     "CC BY 2.5": 1
   },
   "per_class": {
@@ -81,29 +77,29 @@
     },
     "carina_nebula": {
       "candidates": 71,
-      "after_review": 39,
-      "after_dedup": 37,
+      "after_review": 46,
+      "after_dedup": 42,
       "short_class": true,
-      "used": 37,
-      "whole": 16,
-      "closeup": 21,
-      "train": 28,
-      "val": 4,
+      "used": 42,
+      "whole": 19,
+      "closeup": 23,
+      "train": 31,
+      "val": 6,
       "test": 5,
       "dropped_from_classifier": true
     },
     "crab_nebula": {
-      "candidates": 63,
-      "after_review": 42,
-      "after_dedup": 39,
-      "short_class": true,
-      "used": 39,
-      "whole": 30,
-      "closeup": 9,
-      "train": 28,
-      "val": 7,
-      "test": 4,
-      "dropped_from_classifier": true
+      "candidates": 226,
+      "excluded_licence": 2,
+      "after_review": 120,
+      "after_dedup": 103,
+      "short_class": false,
+      "used": 103,
+      "whole": 95,
+      "closeup": 8,
+      "train": 73,
+      "val": 16,
+      "test": 14
     },
     "eagle_nebula": {
       "candidates": 45,
@@ -180,8 +176,8 @@
       "whole": 97,
       "closeup": 14,
       "train": 78,
-      "val": 17,
-      "test": 16
+      "val": 18,
+      "test": 15
     },
     "mercury": {
       "candidates": 322,
@@ -218,9 +214,9 @@
       "used": 84,
       "whole": 69,
       "closeup": 15,
-      "train": 60,
-      "val": 13,
-      "test": 11
+      "train": 61,
+      "val": 11,
+      "test": 12
     },
     "omega_centauri": {
       "candidates": 31,
@@ -236,17 +232,17 @@
       "dropped_from_classifier": true
     },
     "orion_nebula": {
-      "candidates": 123,
-      "after_review": 59,
-      "after_dedup": 57,
-      "short_class": true,
-      "used": 34,
-      "whole": 14,
-      "closeup": 20,
-      "train": 24,
-      "val": 5,
-      "test": 5,
-      "dropped_from_classifier": true
+      "candidates": 298,
+      "excluded_licence": 5,
+      "after_review": 147,
+      "after_dedup": 135,
+      "short_class": false,
+      "used": 128,
+      "whole": 90,
+      "closeup": 38,
+      "train": 90,
+      "val": 23,
+      "test": 15
     },
     "pleiades": {
       "candidates": 21,
@@ -262,16 +258,17 @@
       "dropped_from_classifier": true
     },
     "ring_nebula": {
-      "candidates": 29,
-      "after_review": 10,
-      "after_dedup": 10,
+      "candidates": 121,
+      "excluded_licence": 1,
+      "after_review": 60,
+      "after_dedup": 42,
       "short_class": true,
-      "used": 10,
-      "whole": 10,
+      "used": 42,
+      "whole": 42,
       "closeup": 0,
-      "train": 7,
-      "val": 2,
-      "test": 1,
+      "train": 30,
+      "val": 6,
+      "test": 6,
       "dropped_from_classifier": true
     },
     "saturn": {
@@ -297,8 +294,8 @@
       "whole": 86,
       "closeup": 20,
       "train": 75,
-      "val": 16,
-      "test": 15
+      "val": 18,
+      "test": 13
     },
     "uranus": {
       "candidates": 330,
@@ -309,9 +306,9 @@
       "used": 76,
       "whole": 76,
       "closeup": 0,
-      "train": 55,
-      "val": 10,
-      "test": 11
+      "train": 54,
+      "val": 12,
+      "test": 10
     },
     "venus": {
       "candidates": 289,

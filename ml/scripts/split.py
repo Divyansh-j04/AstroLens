@@ -190,9 +190,11 @@ def main() -> None:
     grouped_images = sum(len(m) for m in groups if len(m) > 1)
 
     # Cap (close-ups at most 30%), then split each view type 70/15/15 by whole groups, fixed seed.
-    rng = random.Random(SEED)
     out: list[dict] = []
     for cls in sorted(counts):
+        # Each class gets its own seeded shuffle, so adding or removing other classes never
+        # changes this class's train/val/test split.
+        rng = random.Random(f"{SEED}-{cls}")
         by_view: dict[str, list[list[dict]]] = {"whole": [], "closeup": []}
         for members in sorted((m for m in groups if m[0]["class"] == cls), key=lambda m: m[0]["file"]):
             views = Counter(r["view"] for r in members)
