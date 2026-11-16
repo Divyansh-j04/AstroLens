@@ -1,0 +1,149 @@
+{
+  "script": "ml/scripts/robustness.py",
+  "images": 217,
+  "set": "validation (the test set is not used)",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "results": [
+    {
+      "change": "clean",
+      "imitates": "the photo as it is",
+      "without augmentation": {
+        "top1_accuracy_pct": 92.6,
+        "top3_accuracy_pct": 97.2
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 88.0,
+        "top3_accuracy_pct": 97.7
+      }
+    },
+    {
+      "change": "rotated 45 deg",
+      "imitates": "a tilted phone or telescope shot",
+      "without augmentation": {
+        "top1_accuracy_pct": 86.2,
+        "top3_accuracy_pct": 95.9
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 87.6,
+        "top3_accuracy_pct": 96.8
+      }
+    },
+    {
+      "change": "rotated 90 deg",
+      "imitates": "a sideways photo",
+      "without augmentation": {
+        "top1_accuracy_pct": 83.4,
+        "top3_accuracy_pct": 96.8
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 88.0,
+        "top3_accuracy_pct": 96.8
+      }
+    },
+    {
+      "change": "blurred",
+      "imitates": "out of focus or atmospheric shake",
+      "without augmentation": {
+        "top1_accuracy_pct": 84.3,
+        "top3_accuracy_pct": 96.3
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 80.2,
+        "top3_accuracy_pct": 94.5
+      }
+    },
+    {
+      "change": "darker (50%)",
+      "imitates": "under-exposed",
+      "without augmentation": {
+        "top1_accuracy_pct": 91.2,
+        "top3_accuracy_pct": 97.7
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 88.0,
+        "top3_accuracy_pct": 97.2
+      }
+    },
+    {
+      "change": "brighter (160%)",
+      "imitates": "over-exposed",
+      "without augmentation": {
+        "top1_accuracy_pct": 86.2,
+        "top3_accuracy_pct": 97.2
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 84.3,
+        "top3_accuracy_pct": 96.8
+      }
+    },
+    {
+      "change": "JPEG quality 10",
+      "imitates": "a heavily compressed chat-app image",
+      "without augmentation": {
+        "top1_accuracy_pct": 77.9,
+        "top3_accuracy_pct": 92.6
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 71.9,
+        "top3_accuracy_pct": 89.4
+      }
+    },
+    {
+      "change": "low resolution (64 px)",
+      "imitates": "a small or distant object, digitally zoomed",
+      "without augmentation": {
+        "top1_accuracy_pct": 74.7,
+        "top3_accuracy_pct": 94.9
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 75.1,
+        "top3_accuracy_pct": 92.2
+      }
+    },
+    {
+      "change": "sensor noise",
+      "imitates": "a grainy night-time phone photo",
+      "without augmentation": {
+        "top1_accuracy_pct": 60.4,
+        "top3_accuracy_pct": 78.8
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 54.4,
+        "top3_accuracy_pct": 75.1
+      }
+    },
+    {
+      "change": "grey",
+      "imitates": "a black-and-white photo",
+      "without augmentation": {
+        "top1_accuracy_pct": 83.4,
+        "top3_accuracy_pct": 94.9
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 80.6,
+        "top3_accuracy_pct": 94.5
+      }
+    },
+    {
+      "change": "centre crop 50%",
+      "imitates": "a zoomed-in close-up",
+      "without augmentation": {
+        "top1_accuracy_pct": 78.3,
+        "top3_accuracy_pct": 90.3
+      },
+      "with augmentation": {
+        "top1_accuracy_pct": 81.1,
+        "top3_accuracy_pct": 92.6
+      }
+    }
+  ],
+  "mean_top1_over_messy_changes_pct": {
+    "without augmentation": 80.6,
+    "with augmentation": 79.1
+  },
+  "messy_changes_won": {
+    "without augmentation": 6,
+    "with augmentation": 4
+  },
+  "messy_changes": 10
+}
