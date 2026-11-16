@@ -187,7 +187,7 @@ Average over the 14 classes: precision 0.927, recall 0.916, F1 0.919 (macro F1 f
 | Comets (NEOWISE and others) | 11 | 3 |
 | Pluto | 1 | 1 |
 
-All 18 everyday photos are rejected. Most galaxies are too, but most other nebulae and comets are not: the model gives them a confident guess among the nebulae it knows. One confidence threshold cannot separate "a nebula I know" from "a nebula I don't" well. (With the augmented model the same test rejected only 26 of 66, because its threshold, 0.36, was lower.)
+All 18 everyday photos are rejected. Most galaxies are too, but most other nebulae and comets are not: the model gives them a confident guess among the nebulae it knows. One confidence threshold cannot separate "a nebula I know" from "a nebula I don't" well. (With the augmented model the same test rejected only 26 of 66, because its threshold, 0.36, was lower. Source: `ml/results/metrics.json` as committed in 9280eb1, before the switch.)
 
 Grad-CAM examples (6): _Phase 3_.
 
