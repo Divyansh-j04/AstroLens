@@ -17,6 +17,7 @@ Usage (from the project root):
 import argparse
 import csv
 import hashlib
+import http.client
 import io
 import json
 import random
@@ -51,6 +52,7 @@ HEADERS = {"User-Agent": "AstroLensAssetFetcher/0.1 (student project, one-off do
 THUMB_WIDTH = 500  # one of Commons' standard thumbnail sizes; training uses 224 px
 MIN_SIDE = 256
 MAX_CANDIDATES = 260  # per class; review and de-duplication bring this down to at most 150
+SEARCH_MAX_PAGES = 6  # keyword searches: read at most 6 pages of 50 results
 PER_SOURCE_MAX = 150  # random picks per source, so one huge source cannot crowd out the others
 SEED = 0
 
@@ -66,7 +68,7 @@ EXCLUDE = re.compile(
 
 def fetch(url: str) -> bytes:
     """GET a URL; wait and try again if Wikimedia says "too many requests" (429) or if a
-    connection fails (Wikimedia occasionally serves a certificate chain Python cannot verify;
+    connection fails or is cut off midway (Wikimedia occasionally serves a certificate chain Python cannot verify;
     the next connection is fine). Every attempt is fully verified; nothing is accepted unverified."""
     conn_failures = 0
     for attempt in range(12):
@@ -79,7 +81,7 @@ def fetch(url: str) -> bytes:
             wait = int(err.headers.get("Retry-After") or 15 * (attempt + 1))
             print(f"  rate limited, waiting {wait} s", file=sys.stderr)
             time.sleep(wait)
-        except (urllib.error.URLError, TimeoutError, ConnectionError) as err:
+        except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.IncompleteRead) as err:
             conn_failures += 1
             if conn_failures >= 5:
                 raise
@@ -95,9 +97,11 @@ def api(**params: str | int) -> dict:
     return data
 
 
-def files_with_info(generator_params: dict) -> list[dict]:
-    """All files from a generator (category members or search), with URL, size and licence."""
+def files_with_info(generator_params: dict, max_pages: int | None = None) -> list[dict]:
+    """All files from a generator (category members or search), with URL, size and licence.
+    max_pages limits how many result pages are read (used for keyword searches)."""
     out: list[dict] = []
+    pages = 0
     params = {
         **generator_params,
         "prop": "imageinfo",
@@ -122,7 +126,8 @@ def files_with_info(generator_params: dict) -> list[dict]:
                 "licence": re.sub(r"<[^>]+>", "", meta.get("LicenseShortName", {}).get("value", "")).strip(),
                 "author": re.sub(r"<[^>]+>", "", meta.get("Artist", {}).get("value", "")).strip()[:150],
             })
-        if "continue" not in data:
+        pages += 1
+        if "continue" not in data or (max_pages is not None and pages >= max_pages):
             return out
         params.update(data["continue"])
 
@@ -139,7 +144,7 @@ def subcategories(category: str) -> list[str]:
 
 def search_files(query: str) -> list[dict]:
     return files_with_info({"generator": "search", "gsrsearch": f"{query} filetype:bitmap",
-                            "gsrnamespace": 6, "gsrlimit": 50})
+                            "gsrnamespace": 6, "gsrlimit": 50}, max_pages=SEARCH_MAX_PAGES)
 
 
 def is_photo(f: dict) -> bool:

@@ -4,6 +4,12 @@ Each kept image is a "whole" object view or an identifiable "closeup" (tagged in
 Close-ups are capped at 30% of a class, and the split is made separately for each view type,
 so validation and test both contain whole objects and close-ups in the same proportion.
 
+Short classes (fewer than SHORT_CLASS_MIN images under the normal rules) may use zoomed-in views
+that were first rejected as "ambiguous" and then re-admitted on a second look
+(ml/data/review_readmitted.csv), and their close-ups may make up to 60% of the class. Users often
+upload zoomed-in photos, and these classes have too few whole-object images. Accuracy is still
+reported separately for whole objects and close-ups.
+
 Near-duplicates (the same picture resized, re-compressed or slightly re-edited) are found with a
 difference hash (dHash): shrink the image to 9x8 grey pixels and record, for each pixel, whether it
 is brighter than its right-hand neighbour. That gives 64 bits; two images whose bits differ in at
@@ -51,6 +57,9 @@ HAMMING_LIMIT = 6  # of 64 bits
 FEATURE_SIMILARITY = 0.95  # cosine similarity of EfficientNet-B0 features; same group at or above
 MAX_PER_CLASS = 150
 MAX_CLOSEUP_SHARE = 0.30  # close-ups may be at most 30% of a class
+SHORT_CLASS_MIN = 80  # the plan's minimum per class
+SHORT_CLASS_CLOSEUP_SHARE = 0.60  # close-up limit for classes below SHORT_CLASS_MIN
+READMITTED = ROOT / "ml" / "data" / "review_readmitted.csv"
 FRACTIONS = {"train": 0.70, "val": 0.15}  # test gets the rest (about 15%)
 SEED = 0
 
@@ -114,8 +123,12 @@ def main() -> None:
         with CLOSEUPS.open(encoding="utf-8") as fh:
             closeups = {r["file"] for r in csv.DictReader(fh)}
     reviewed = set(REVIEWED.read_text(encoding="utf-8").split()) if REVIEWED.exists() else set()
+    readmitted: dict[str, str] = {}
+    if READMITTED.exists():
+        with READMITTED.open(encoding="utf-8") as fh:
+            readmitted = {r["file"]: r["class"] for r in csv.DictReader(fh)}
     for r in rows:
-        r["view"] = "closeup" if r["file"] in closeups else "whole"
+        r["view"] = "closeup" if (r["file"] in closeups or r["file"] in readmitted) else "whole"
 
     counts: dict[str, dict[str, int]] = defaultdict(dict)
     for r in rows:
@@ -123,6 +136,20 @@ def main() -> None:
     licence_rejected = [r for r in rows if not licence_ok(r["licence"], r.get("author", ""))]
     for r in licence_rejected:
         counts[r["class"]]["excluded_licence"] = counts[r["class"]].get("excluded_licence", 0) + 1
+    # Which classes are short under the normal rules (re-admitted views not counted)?
+    normal = [r for r in rows if r["file"] in reviewed and r["file"] not in excluded]
+    short_classes = set()
+    for cls in {r["class"] for r in rows}:
+        w = sum(r["class"] == cls and r["view"] == "whole" for r in normal)
+        c = sum(r["class"] == cls and r["view"] == "closeup" for r in normal)
+        n = min(MAX_PER_CLASS, w + c)
+        nc = min(c, int(MAX_CLOSEUP_SHARE * n))
+        nw = min(w, n - nc)
+        nc = min(nc, int(MAX_CLOSEUP_SHARE / (1 - MAX_CLOSEUP_SHARE) * nw))
+        if nw + nc < SHORT_CLASS_MIN:
+            short_classes.add(cls)
+    # Re-admitted zoomed-in views are only used for short classes.
+    excluded = {f for f in excluded if not (f in readmitted and readmitted[f] in short_classes)}
     kept = [r for r in rows if r["file"] in reviewed and r["file"] not in excluded
             and licence_ok(r["licence"], r.get("author", "")) and (IMAGES / r["class"] / r["file"]).exists()]
     for cls in counts:
@@ -179,10 +206,11 @@ def main() -> None:
         for view in by_view:
             rng.shuffle(by_view[view])
         avail = {v: sum(len(m) for m in by_view[v]) for v in by_view}
+        share = SHORT_CLASS_CLOSEUP_SHARE if cls in short_classes else MAX_CLOSEUP_SHARE
         target = min(MAX_PER_CLASS, avail["whole"] + avail["closeup"])
-        quota_close = min(avail["closeup"], int(MAX_CLOSEUP_SHARE * target))
+        quota_close = min(avail["closeup"], int(share * target))
         quota_whole = min(avail["whole"], target - quota_close)
-        quota_close = min(quota_close, int(MAX_CLOSEUP_SHARE / (1 - MAX_CLOSEUP_SHARE) * quota_whole))
+        quota_close = min(quota_close, int(share / (1 - share) * quota_whole))
         used = {}
         for view, quota in (("whole", quota_whole), ("closeup", quota_close)):
             chosen, n = [], 0
@@ -201,6 +229,7 @@ def main() -> None:
                 done += len(members)
         mine = [o for o in out if o["class"] == cls]
         c = Counter(o["split"] for o in mine)
+        counts[cls]["short_class"] = cls in short_classes
         counts[cls].update(used=len(mine), whole=used["whole"], closeup=used["closeup"],
                            train=c["train"], val=c["val"], test=c["test"])
 
@@ -220,6 +249,9 @@ def main() -> None:
         "cross_class_similar_images_dropped": cross_class_groups,
         "max_per_class": MAX_PER_CLASS,
         "max_closeup_share": MAX_CLOSEUP_SHARE,
+        "short_class_min": SHORT_CLASS_MIN,
+        "short_class_closeup_share": SHORT_CLASS_CLOSEUP_SHARE,
+        "short_classes": sorted(short_classes),
         "seed": SEED,
         "licence_rule": "allowed: public domain, CC0, CC BY, CC BY-SA, NASA works (ml/scripts/licences.py)",
         "excluded_by_licence": len(licence_rejected),

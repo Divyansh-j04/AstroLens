@@ -4,6 +4,11 @@ Usage (from the project root):
     python ml/scripts/review_sheets.py sheets [class ...]       # writes ml/data/raw/review/<class>_<k>.jpg
     Use "<class>_topup" instead of "<class>" to review only images added by ml/scripts/topup.py,
     "<class>_wiki" for only the Wikimedia images, or "<class>_new" for images not yet reviewed.
+    python ml/scripts/review_sheets.py sheets <class>_ambiguous
+        -> only images of a class rejected earlier as "ambiguous" (zoomed-in views), for re-checking
+    python ml/scripts/review_sheets.py readmit <class>_ambiguous "3,8"
+        -> re-admits those zoomed-in views as close-ups (ml/data/review_readmitted.csv);
+           split.py uses them only for classes that are short of images
     python ml/scripts/review_sheets.py done GROUP
         -> records every image of GROUP (e.g. "saturn_new") as reviewed in ml/data/review_done.txt
     python ml/scripts/review_sheets.py mark CLASS "3,17,40" "reason"
@@ -30,6 +35,7 @@ REVIEW = ROOT / "ml" / "data" / "raw" / "review"
 EXCLUDED = ROOT / "ml" / "data" / "review_excluded.csv"
 CLOSEUPS = ROOT / "ml" / "data" / "review_closeups.csv"
 DONE = ROOT / "ml" / "data" / "review_done.txt"  # every image that has been looked at
+READMITTED = ROOT / "ml" / "data" / "review_readmitted.csv"  # zoomed-in views re-admitted for short classes
 COLS, ROWS, CELL = 10, 8, 128  # 80 thumbnails per sheet
 
 
@@ -46,6 +52,17 @@ def files_of(cls: str) -> list[Path]:
         return [f for f in files if "_t_" in f.name]
     if cls.endswith("_wiki"):
         return [f for f in files if "_t_" not in f.name]
+    if cls.endswith("_ambiguous"):
+        rejected = {}
+        with EXCLUDED.open(encoding="utf-8") as fh:
+            for r in csv.DictReader(fh):
+                if "ambiguous" in r["reason"].lower():
+                    rejected[r["file"]] = r
+        again = set()
+        if READMITTED.exists():
+            with READMITTED.open(encoding="utf-8") as fh:
+                again = {r["file"] for r in csv.DictReader(fh)}
+        return [f for f in files if f.name in rejected and f.name not in again]
     if cls.endswith("_new"):
         done = set(DONE.read_text(encoding="utf-8").split()) if DONE.exists() else set()
         return [f for f in files if f.name not in done]
@@ -53,9 +70,22 @@ def files_of(cls: str) -> list[Path]:
 
 
 def real_class(cls: str) -> str:
-    for suffix in ("_topup", "_wiki", "_new"):
+    for suffix in ("_topup", "_wiki", "_new", "_ambiguous"):
         cls = cls.removesuffix(suffix)
     return cls
+
+
+def readmit(group: str, numbers: str) -> None:
+    files = files_of(group)
+    picked = [files[int(n)] for n in numbers.replace(" ", "").split(",") if n]
+    new = not READMITTED.exists()
+    with READMITTED.open("a", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        if new:
+            w.writerow(["file", "class", "reason"])
+        for p in picked:
+            w.writerow([p.name, real_class(group), "zoomed-in view of the object, re-admitted for a short class"])
+    print(f"{group}: re-admitted {len(picked)} zoomed-in views")
 
 
 def done(group: str) -> None:
@@ -119,6 +149,8 @@ if __name__ == "__main__":
         mark(sys.argv[2], sys.argv[3], sys.argv[4])
     elif len(sys.argv) == 4 and sys.argv[1] == "closeup":
         closeup(sys.argv[2], sys.argv[3])
+    elif len(sys.argv) == 4 and sys.argv[1] == "readmit":
+        readmit(sys.argv[2], sys.argv[3])
     elif len(sys.argv) == 3 and sys.argv[1] == "done":
         done(sys.argv[2])
     else:

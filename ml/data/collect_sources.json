@@ -1,5 +1,5 @@
 {
-  "_about": "Where training images come from. Each class lists Wikimedia Commons categories (depth 0 = files directly in the category, depth 1 = also files in its direct subcategories) and optional Commons searches. Every candidate is reviewed by eye before use (ml/data/review_excluded.csv). Each source gives at most 150 random picks unless it sets \"max\"; close-up-heavy sources get a lower max.",
+  "_about": "Where training images come from. Each class lists Wikimedia Commons categories (depth 0 = files directly in the category, depth 1 = also files in its direct subcategories) and optional Commons searches. Every candidate is reviewed by eye before use (ml/data/review_excluded.csv). Each source gives at most 150 random picks unless it sets \"max\"; close-up-heavy sources get a lower max. Searches use exact phrases (in quotes) and required words, and read at most 6 result pages.",
   "classes": {
     "sun": [
       {
@@ -304,13 +304,16 @@
         "depth": 0
       },
       {
-        "search": "Praesepe"
+        "search": "\"Praesepe\" cluster"
       },
       {
-        "search": "Beehive Cluster"
+        "search": "\"Beehive Cluster\""
       },
       {
-        "search": "Messier 44"
+        "search": "\"Messier 44\""
+      },
+      {
+        "search": "M44 \"open cluster\""
       }
     ],
     "hercules_cluster": [
