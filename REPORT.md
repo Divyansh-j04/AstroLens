@@ -246,3 +246,10 @@ _Phase 4: the 30 test questions and 40 command phrases._
 
 - **Nov 16, 2026 (Phase 0):** Project set up outside OneDrive with git. objects.json written for all 20 objects (coordinates from SIMBAD, facts from Wikipedia and NASA), validated by 9 passing tests. Star file built with 8,834 stars. Server answers /health; page builds and serves with all frontend libraries. Groq test call answered in 616 ms with gpt-oss-20b. Phase 0 complete.
 - **Nov 16, 2026 (Phase 1):** 3D scene built: HYG star field, textured Solar System with orbit rings, 10 deep-space pictures at their real RA/Dec, GSAP fly-to with mode-switch pull-back, glass panel with the brief card, Home button, loading screen and a temporary dropdown. 21 scene images were downloaded with their licences (`ml/scripts/fetch_scene_images.py`). The browser check passed for all 20 objects, plus the panel, Home, scene-click and sky-alignment checks, with 0 console errors (`ml/results/phase1_scene_check.json`). pytest: 12 passed. Phase 1 complete.
+- **Nov 16, 2026 (Phase 2, in progress, checkpoint):**
+  - **Collection:** candidate images collected from Wikimedia Commons, JPL Photojournal, ESA/Hubble, ESA/Webb, NOIRLab and NASA DSCOVR EPIC. There are 3,324 images on disk, plus 48 unknown-object test photos. Every image downloaded so far has been reviewed by eye, and every rejection is logged with its reason in `ml/data/review_excluded.csv`.
+  - **Not done yet:** the Wikimedia downloads for Neptune, the nebulae, the clusters and the Wikimedia unknown photos, which were rate-limited.
+  - **Manifest:** `manifest.csv` must be rebuilt by re-running `collect.py`. Wikimedia HTTPS now works through two verified Let's Encrypt link certificates in `ml/data/certs/`.
+  - **Duplicates:** the deep-feature duplicate grouping (threshold 0.95) has been added to `split.py`.
+  - **Not run yet:** training, evaluation and the split.
+  - **Waiting on:** the author's decision about classes below 80 images, once the final counts are known.
