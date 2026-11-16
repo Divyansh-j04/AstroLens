@@ -132,9 +132,11 @@ def main() -> None:
     torch.manual_seed(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    classes = [o["id"] for o in json.loads(OBJECTS.read_text(encoding="utf-8"))]
     with SPLIT.open(encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
+    # Classes in objects.json order, minus any left out by split.py for having too few images.
+    present = {r["class"] for r in rows}
+    classes = [o["id"] for o in json.loads(OBJECTS.read_text(encoding="utf-8")) if o["id"] in present]
     train_rows = [r for r in rows if r["split"] == "train"]
     val_rows = [r for r in rows if r["split"] == "val"]
     print(f"{run}: {len(train_rows)} train, {len(val_rows)} val images, device {device}")

@@ -163,6 +163,66 @@
         "esa": "eso",
         "search": "Orion Nebula",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "M42",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "M42",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "M42",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "M42",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Messier 42",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Messier 42",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Messier 42",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Messier 42",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "NGC 1976",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "NGC 1976",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "NGC 1976",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "NGC 1976",
+        "pages": 3
       }
     ],
     "crab_nebula": [
@@ -186,6 +246,66 @@
         "esa": "eso",
         "search": "Crab Nebula",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "M1",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "M1",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "M1",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "M1",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Messier 1",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Messier 1",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Messier 1",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Messier 1",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "NGC 1952",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "NGC 1952",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "NGC 1952",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "NGC 1952",
+        "pages": 3
       }
     ],
     "ring_nebula": [
@@ -209,6 +329,66 @@
         "esa": "eso",
         "search": "Ring Nebula",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "M57",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "M57",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "M57",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "M57",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Messier 57",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Messier 57",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Messier 57",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Messier 57",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "NGC 6720",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "NGC 6720",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "NGC 6720",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "NGC 6720",
+        "pages": 3
       }
     ],
     "eagle_nebula": [
@@ -241,6 +421,61 @@
         "esa": "eso",
         "search": "Messier 16",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "M16",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "M16",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "M16",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "M16",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Messier 16",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Messier 16",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Messier 16",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "NGC 6611",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "NGC 6611",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "NGC 6611",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "NGC 6611",
+        "pages": 3
       }
     ],
     "carina_nebula": [
@@ -264,6 +499,46 @@
         "esa": "eso",
         "search": "Carina Nebula",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "NGC 3372",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "NGC 3372",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "NGC 3372",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "NGC 3372",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Eta Carinae Nebula",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Eta Carinae Nebula",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Eta Carinae Nebula",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Eta Carinae Nebula",
+        "pages": 3
       }
     ],
     "horsehead_nebula": [
@@ -287,6 +562,46 @@
         "esa": "eso",
         "search": "Horsehead",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "Barnard 33",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Barnard 33",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Barnard 33",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Barnard 33",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "IC 434",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "IC 434",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "IC 434",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "IC 434",
+        "pages": 3
       }
     ],
     "pleiades": [
@@ -306,6 +621,66 @@
         "esa": "eso",
         "search": "Pleiades",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "M45",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "M45",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "M45",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "M45",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Messier 45",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Messier 45",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Messier 45",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Messier 45",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Seven Sisters",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Seven Sisters",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Seven Sisters",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Seven Sisters",
+        "pages": 3
       }
     ],
     "beehive_cluster": [
@@ -330,6 +705,66 @@
         "esa": "eso",
         "search": "Messier 44",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "M44",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "M44",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "M44",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "M44",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Praesepe",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Praesepe",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Praesepe",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Praesepe",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "NGC 2632",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "NGC 2632",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "NGC 2632",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "NGC 2632",
+        "pages": 3
       }
     ],
     "hercules_cluster": [
@@ -353,6 +788,61 @@
         "esa": "eso",
         "search": "Messier 13",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "M13",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "M13",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "M13",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "NGC 6205",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "NGC 6205",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "NGC 6205",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "NGC 6205",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Hercules globular",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Hercules globular",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Hercules globular",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Hercules globular",
+        "pages": 3
       }
     ],
     "omega_centauri": [
@@ -376,6 +866,46 @@
         "esa": "eso",
         "search": "Omega Centauri",
         "pages": 2
+      },
+      {
+        "esa": "hubble",
+        "search": "NGC 5139",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "NGC 5139",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "NGC 5139",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "NGC 5139",
+        "pages": 3
+      },
+      {
+        "esa": "hubble",
+        "search": "Omega Cen",
+        "pages": 3
+      },
+      {
+        "esa": "webb",
+        "search": "Omega Cen",
+        "pages": 3
+      },
+      {
+        "esa": "noirlab",
+        "search": "Omega Cen",
+        "pages": 3
+      },
+      {
+        "esa": "eso",
+        "search": "Omega Cen",
+        "pages": 3
       }
     ]
   }

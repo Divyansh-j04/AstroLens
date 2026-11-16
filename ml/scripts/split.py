@@ -57,6 +57,7 @@ MAX_PER_CLASS = 150
 MAX_CLOSEUP_SHARE = 0.30  # close-ups may be at most 30% of a class
 SHORT_CLASS_MIN = 80  # the plan's minimum per class
 SHORT_CLASS_CLOSEUP_SHARE = 0.60  # close-up limit for classes below SHORT_CLASS_MIN
+MIN_CLASS_IMAGES = 50  # a class with fewer usable images is left out of the classifier (author's decision)
 READMITTED = ROOT / "ml" / "data" / "review_readmitted.csv"
 FRACTIONS = {"train": 0.70, "val": 0.15}  # test gets the rest (about 15%)
 SEED = 0
@@ -226,13 +227,18 @@ def main() -> None:
         counts[cls].update(used=len(mine), whole=used["whole"], closeup=used["closeup"],
                            train=c["train"], val=c["val"], test=c["test"])
 
+    # Classes that still have too few images are left out of the classifier (they stay in the 3D scene).
+    dropped_classes = sorted(c for c in counts if counts[c].get("used", 0) < MIN_CLASS_IMAGES)
+    for c in dropped_classes:
+        counts[c]["dropped_from_classifier"] = True
+    out = [o for o in out if o["class"] not in dropped_classes]
     out.sort(key=lambda r: (r["class"], r["split"], r["file"]))
     with SPLIT.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=["file", "class", "view", "split"])
         w.writeheader()
         w.writerows({k: r[k] for k in ("file", "class", "view", "split")} for r in out)
 
-    totals = {k: sum(c.get(k, 0) for c in counts.values()) for k in
+    totals = {k: sum(c.get(k, 0) for cl, c in counts.items() if cl not in dropped_classes) for k in
               ("candidates", "after_review", "after_dedup", "used", "whole", "closeup", "train", "val", "test")}
     result = {
         "script": "ml/scripts/split.py",
@@ -245,6 +251,8 @@ def main() -> None:
         "short_class_min": SHORT_CLASS_MIN,
         "short_class_closeup_share": SHORT_CLASS_CLOSEUP_SHARE,
         "short_classes": sorted(short_classes),
+        "min_class_images": MIN_CLASS_IMAGES,
+        "dropped_classes": dropped_classes,
         "seed": SEED,
         "licence_rule": "allowed: public domain, CC0, CC BY, CC BY-SA, NASA works (ml/scripts/licences.py)",
         "excluded_by_licence": len(licence_rejected),

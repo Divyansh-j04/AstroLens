@@ -22,7 +22,9 @@ def test_model_has_one_output_per_object():
 @pytest.mark.skipif(not CONFIG_FILE.exists(), reason="classifier.json is written by ml/scripts/evaluate.py")
 def test_classifier_config_matches_objects():
     config = json.loads(Path(CONFIG_FILE).read_text(encoding="utf-8"))
-    assert config["classes"] == [o.id for o in load_objects()]  # same ids, same order
+    ids = [o.id for o in load_objects()]
+    assert set(config["classes"]) <= set(ids)  # classes with too few images may be left out
+    assert config["classes"] == [i for i in ids if i in config["classes"]]  # objects.json order
     assert 0 < config["threshold"] < 1
 
 

@@ -70,7 +70,9 @@ def load(run: str, classes: list[str], device):
 def main() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     objects = json.loads(OBJECTS.read_text(encoding="utf-8"))
-    classes = [o["id"] for o in objects]
+    with SPLIT.open(encoding="utf-8") as fh:
+        present = {r["class"] for r in csv.DictReader(fh)}
+    classes = [o["id"] for o in objects if o["id"] in present]  # classes left after split.py
     names = {o["id"]: o["name"] for o in objects}
 
     with SPLIT.open(encoding="utf-8") as fh:
