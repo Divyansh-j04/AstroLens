@@ -15,20 +15,32 @@ EXPECTED_IDS = {
     "sun", "mercury", "venus", "earth", "moon", "mars", "jupiter", "saturn", "uranus", "neptune",
     "orion_nebula", "crab_nebula", "ring_nebula", "eagle_nebula", "carina_nebula", "horsehead_nebula",
     "pleiades", "beehive_cluster", "hercules_cluster", "omega_centauri",
+    # significant moons, added Nov 17
+    "phobos", "deimos", "io", "europa", "ganymede", "callisto", "titan", "enceladus", "mimas", "rhea", "iapetus",
+    "miranda", "ariel", "titania", "oberon", "triton",
 }
 
 
-def test_all_20_objects_validate():
+def test_all_36_objects_validate():
     objects = load_objects()
-    assert len(objects) == 20
+    assert len(objects) == 36  # 20 from the plan + 16 moons added on Nov 17
     assert {o.id for o in objects} == EXPECTED_IDS
 
 
 def test_group_counts_match_the_plan():
     groups = [o.group for o in load_objects()]
-    assert groups.count("solar_system") == 10
+    assert groups.count("solar_system") == 26  # Sun, 8 planets, our Moon, 16 more moons
     assert groups.count("nebula") == 6
     assert groups.count("star_cluster") == 4
+
+
+def test_every_moon_orbits_a_planet_in_the_catalogue():
+    objects = {o.id: o for o in load_objects()}
+    moons = [o for o in objects.values() if o.parent]
+    assert len(moons) == 17
+    for m in moons:
+        assert m.parent in objects and objects[m.parent].orbit_au, m.id
+        assert m.orbit_km and m.orbit_km > objects[m.parent].radius_km, m.id  # orbits outside its planet
 
 
 def test_scene_mode_matches_group():

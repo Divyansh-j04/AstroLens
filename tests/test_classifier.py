@@ -11,12 +11,12 @@ from app.cv.classifier import CONFIG_FILE, IMAGE_SIZE, WEIGHTS_DIR, Classifier, 
 from app.main import load_objects
 
 
-def test_model_has_one_output_per_object():
-    model = build_model(len(load_objects())).eval()
+def test_model_has_one_output_per_class():
+    model = build_model(14).eval()  # the classifier knows 14 objects (classes left out had too few photos)
     x = eval_transform()(Image.new("RGB", (640, 480)))
     assert x.shape == (3, IMAGE_SIZE, IMAGE_SIZE)
     with torch.no_grad():
-        assert model(x.unsqueeze(0)).shape == (1, 20)
+        assert model(x.unsqueeze(0)).shape == (1, 14)
 
 
 @pytest.mark.skipif(not CONFIG_FILE.exists(), reason="classifier.json is written by ml/scripts/evaluate.py")

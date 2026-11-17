@@ -21,6 +21,10 @@ const ORBIT_START = 6 // orbit = 6 + 10 x sqrt(AU): Mercury 12, Earth 16, Neptun
 const ORBIT_PER_SQRT_AU = 10
 const MOON_ORBIT_PER_SQRT_KM = 0.004 // Moon gap above Earth's surface = 0.004 x sqrt(orbit_km)
 const MOON_ANGLE = 2.0 // where the Moon sits on its orbit (radians), a display choice
+const MIN_MOON_RADIUS = 0.06 // tiny moons (Phobos 11 km, Deimos 6 km) are enlarged to stay visible
+export const RINGED = new Set(['saturn']) // planets drawn with rings (a display extra)
+export const RING_INNER = 1.25 // ring edges, as multiples of the planet's display radius
+export const RING_OUTER = 2.3
 
 // Deep-space mode
 export const LY_SCALE = 4 // distance = 4 x sqrt(light-years): Pleiades 84, M13 621
@@ -67,13 +71,17 @@ export function skyToScene(raDeg, decDeg, distance) {
 
 /** Sphere radius on screen for a Solar-system body. */
 export function displayRadius(obj) {
-  return obj.orbit_au === 0 ? SUN_RADIUS : RADIUS_PER_SQRT_KM * Math.sqrt(obj.radius_km)
+  if (obj.orbit_au === 0) return SUN_RADIUS
+  const r = RADIUS_PER_SQRT_KM * Math.sqrt(obj.radius_km)
+  return obj.parent ? Math.max(MIN_MOON_RADIUS, r) : r
 }
 
 /** Radius of the orbit ring: around the Sun, or around the parent planet for a moon. */
 export function orbitRadius(obj) {
   if (obj.parent) {
-    return displayRadius(OBJECTS_BY_ID[obj.parent]) + MOON_ORBIT_PER_SQRT_KM * Math.sqrt(obj.orbit_km)
+    // count from the planet's edge, or from the outer edge of its rings (Saturn's moons orbit outside them)
+    const edge = displayRadius(OBJECTS_BY_ID[obj.parent]) * (RINGED.has(obj.parent) ? RING_OUTER : 1)
+    return edge + MOON_ORBIT_PER_SQRT_KM * Math.sqrt(obj.orbit_km)
   }
   return ORBIT_START + ORBIT_PER_SQRT_AU * Math.sqrt(obj.orbit_au)
 }
@@ -86,7 +94,10 @@ function solarPosition(obj) {
   if (obj.parent) {
     const [px, py, pz] = solarPosition(OBJECTS_BY_ID[obj.parent])
     const d = orbitRadius(obj)
-    return [px + d * Math.cos(MOON_ANGLE), py, pz - d * Math.sin(MOON_ANGLE)]
+    // a planet's moons are spread round it by the golden angle, nearest first (one moon: MOON_ANGLE)
+    const siblings = OBJECTS.filter((o) => o.parent === obj.parent).sort((a, b) => a.orbit_km - b.orbit_km)
+    const angle = MOON_ANGLE + siblings.indexOf(obj) * GOLDEN_ANGLE
+    return [px + d * Math.cos(angle), py, pz - d * Math.sin(angle)]
   }
   if (!obj.orbit_au) return [0, 0, 0] // the Sun sits at the centre
   const angle = (SUN_ORBITERS.indexOf(obj) + 1) * GOLDEN_ANGLE

@@ -4,7 +4,7 @@ import { useCursor, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { OBJECTS } from '../objects'
 import { useStore } from '../store'
-import { POSITIONS, displayRadius, orbitRadius } from './scale'
+import { POSITIONS, RING_INNER, RING_OUTER, displayRadius, orbitRadius } from './scale'
 import { fade } from './fade'
 import { glowTexture } from './glow'
 import ObjectLabel from './ObjectLabel'
@@ -17,8 +17,8 @@ const SPIN_SPEED = 0.05 // radians per second, the same slow spin for every body
 /** A flat ring textured from the inside edge to the outside edge (used for Saturn). */
 function PlanetRing({ radius, texture, materialRef }) {
   const geometry = useMemo(() => {
-    const inner = radius * 1.25
-    const outer = radius * 2.3
+    const inner = radius * RING_INNER
+    const outer = radius * RING_OUTER
     const g = new THREE.RingGeometry(inner, outer, 96, 1)
     const pos = g.attributes.position
     const v = new THREE.Vector3()
@@ -115,7 +115,7 @@ function OrbitRing({ obj }) {
   )
 }
 
-/** The Sun, 8 planets and the Moon, with thin orbit rings. Sizes and distances are compressed. */
+/** The Sun, 8 planets and their significant moons, with thin orbit rings. Sizes and distances are compressed. */
 export default function SolarSystem() {
   const textures = useTexture(Object.fromEntries(BODIES.map((o) => [o.id, `/textures/${o.id}.jpg`])))
   const rings = useTexture(RING_TEXTURES)

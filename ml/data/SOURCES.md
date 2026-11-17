@@ -11,6 +11,8 @@ Retrieved Nov 16, 2026. Raw downloads are kept locally in `ml/data/raw/reference
 | Sky coordinates (RA, Dec) of the 10 deep-space objects | SIMBAD via the CDS Sesame name resolver, `https://cds.unistra.fr/cgi-bin/nph-sesame/-oxp/S?<name>` (queried as M42, M1, M57, M16, NGC3372, Barnard33, M45, M44, M13, NGC5139) | SIMBAD data, free for research and education; cite Wenger et al. 2000, A&AS 143, 9 |
 | Distances, sizes, ages, brightness, constellations of deep-space objects | Wikipedia infobox of each object's article (link in that object's `sources`) | CC BY-SA 4.0 |
 | Planet radius, orbit, day length, temperature, moons; Sun and Moon data | Wikipedia infobox of each body's article (link in `sources`), which cites NASA/JPL fact sheets | CC BY-SA 4.0 |
+| 16 further moons (added Nov 17, 2026): radius, distance from the planet, orbital period, discovery | Wikipedia infobox of each moon's article, read Nov 17, 2026 (Io's distance from the article text; Europa's as the mean of its periapsis and apoapsis; Rhea's radius 764 km as used in its infobox and on NASA's page) | CC BY-SA 4.0 |
+| Moon summaries | Paraphrased from each moon's NASA Science page (`science.nasa.gov/<planet>/moons/<moon>/`, linked in `sources`) | Public domain (NASA) |
 | Background reading linked on each card | NASA Science pages (`science.nasa.gov`), checked to load on Nov 16, 2026 | Public domain (NASA) |
 
 Notes:
@@ -18,6 +20,8 @@ Notes:
 - `orbit_au` for Mars, Jupiter, Saturn and Uranus was converted from the km value in the infobox using 1 AU = 149,597,870.7 km.
 - Moon counts change as new moons are confirmed, so they are marked "as of 2026".
 - Card summaries are short paraphrases of the cited articles, written in plain language.
+
+**Moon textures (added Nov 17, 2026).** `phobos.jpg` is the [Phobos Viking Mosaic](https://commons.wikimedia.org/wiki/File:Phobos_Viking_Mosaic_DLRcontrol_7200.jpg) (Planetary Data System / Phil Stooke, public domain). The other 15 moons currently use plain-colour placeholders made by `ml/scripts/make_placeholder_textures.py` (a display choice, no source), because Wikimedia rate-limited the downloads; the free-licence maps chosen for them are listed in `MOON_MAPS` in `ml/scripts/fetch_scene_images.py` and replace the placeholders when that script is run again.
 
 ## Star catalogue (`frontend/public/data/hyg_stars.json`)
 

@@ -115,6 +115,46 @@
     "sources": ["https://en.wikipedia.org/wiki/Mars", "https://science.nasa.gov/mars/"]
   },
   {
+    "id": "phobos",
+    "name": "Phobos",
+    "aliases": ["Mars I", "larger moon of Mars"],
+    "type": "Moon of Mars",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 11.08,
+    "parent": "mars",
+    "orbit_km": 9375,
+    "facts": {
+      "Size": "27 × 22 × 18 km",
+      "Distance from Mars": "9,375 km (from its centre)",
+      "Orbit": "7.65 hours (three times a Martian day)",
+      "Discovered": "1877, Asaph Hall"
+    },
+    "summary": "Phobos is the larger of Mars' two small moons, a lumpy rock only about 27 km across. It orbits so close to Mars that it goes round three times a day, and from some places on Mars it cannot always be seen.",
+    "suggested_questions": ["How big is Phobos?", "Will Phobos crash into Mars one day?", "Where did Mars's moons come from?"],
+    "sources": ["https://en.wikipedia.org/wiki/Phobos_(moon)", "https://science.nasa.gov/mars/moons/phobos/"]
+  },
+  {
+    "id": "deimos",
+    "name": "Deimos",
+    "aliases": ["Mars II", "smaller moon of Mars"],
+    "type": "Moon of Mars",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 6.27,
+    "parent": "mars",
+    "orbit_km": 23458,
+    "facts": {
+      "Size": "15 × 12 × 11 km",
+      "Distance from Mars": "23,458 km (from its centre)",
+      "Orbit": "30.3 hours",
+      "Discovered": "1877, Asaph Hall"
+    },
+    "summary": "Deimos is the smaller of Mars' two moons, only about 15 km long and less irregular in shape than Phobos. It circles Mars every 30 hours.",
+    "suggested_questions": ["How big is Deimos?", "How long does Deimos take to orbit Mars?", "Who discovered the moons of Mars?"],
+    "sources": ["https://en.wikipedia.org/wiki/Deimos_(moon)", "https://science.nasa.gov/mars/moons/deimos/"]
+  },
+  {
     "id": "jupiter",
     "name": "Jupiter",
     "aliases": ["largest planet", "biggest planet", "the gas giant", "Great Red Spot planet"],
@@ -132,6 +172,86 @@
     "summary": "Jupiter is the largest planet, with a mass nearly 2.5 times that of all the other planets combined. Its striped clouds include the Great Red Spot, a giant storm larger than Earth.",
     "suggested_questions": ["What is the Great Red Spot?", "Does Jupiter have a solid surface?", "Which of Jupiter's moons could have an ocean?"],
     "sources": ["https://en.wikipedia.org/wiki/Jupiter", "https://science.nasa.gov/jupiter/"]
+  },
+  {
+    "id": "io",
+    "name": "Io",
+    "aliases": ["Jupiter I", "volcanic moon"],
+    "type": "Moon of Jupiter",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 1824.2,
+    "parent": "jupiter",
+    "orbit_km": 421700,
+    "facts": {
+      "Radius": "1,824 km",
+      "Distance from Jupiter": "421,700 km",
+      "Orbit": "1.77 days",
+      "Discovered": "1610, Galileo Galilei"
+    },
+    "summary": "Io is the most volcanically active world in the Solar System, with hundreds of volcanoes, some throwing up lava fountains dozens of kilometres high. New lava resurfaces it faster than impacts can leave large craters.",
+    "suggested_questions": ["Why is Io so volcanic?", "How big are Io's volcanoes?", "Which spacecraft have studied Io?"],
+    "sources": ["https://en.wikipedia.org/wiki/Io_(moon)", "https://science.nasa.gov/jupiter/jupiter-moons/io/"]
+  },
+  {
+    "id": "europa",
+    "name": "Europa",
+    "aliases": ["Jupiter II", "ocean moon of Jupiter"],
+    "type": "Moon of Jupiter",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 1560.8,
+    "parent": "jupiter",
+    "orbit_km": 670900,
+    "facts": {
+      "Radius": "1,561 km",
+      "Distance from Jupiter": "about 670,900 km",
+      "Orbit": "3.55 days",
+      "Discovered": "1610, Galileo Galilei"
+    },
+    "summary": "Europa is an icy moon of Jupiter with strong evidence of a salty ocean under its frozen crust. That ocean makes it one of the best places to look for environments where life could exist beyond Earth.",
+    "suggested_questions": ["Is there an ocean under Europa's ice?", "Could Europa have life?", "What is the Europa Clipper mission?"],
+    "sources": ["https://en.wikipedia.org/wiki/Europa_(moon)", "https://science.nasa.gov/jupiter/jupiter-moons/europa/"]
+  },
+  {
+    "id": "ganymede",
+    "name": "Ganymede",
+    "aliases": ["Jupiter III", "biggest moon in the Solar System"],
+    "type": "Moon of Jupiter",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 2632.27,
+    "parent": "jupiter",
+    "orbit_km": 1070400,
+    "facts": {
+      "Radius": "2,632 km (bigger than Mercury)",
+      "Distance from Jupiter": "1,070,400 km",
+      "Orbit": "7.15 days",
+      "Discovered": "1610, Galileo Galilei"
+    },
+    "summary": "Ganymede is the largest moon in the Solar System, bigger even than the planet Mercury, and the only moon with its own magnetic field. It probably hides an underground saltwater ocean.",
+    "suggested_questions": ["Why is Ganymede the biggest moon?", "Does Ganymede have a magnetic field?", "Is there water inside Ganymede?"],
+    "sources": ["https://en.wikipedia.org/wiki/Ganymede_(moon)", "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"]
+  },
+  {
+    "id": "callisto",
+    "name": "Callisto",
+    "aliases": ["Jupiter IV", "most cratered moon"],
+    "type": "Moon of Jupiter",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 2410.3,
+    "parent": "jupiter",
+    "orbit_km": 1882700,
+    "facts": {
+      "Radius": "2,410 km",
+      "Distance from Jupiter": "about 1.88 million km",
+      "Orbit": "16.7 days",
+      "Discovered": "1610, Galileo Galilei"
+    },
+    "summary": "Callisto is Jupiter's second-largest moon and the third-largest moon in the Solar System. It is the most heavily cratered object in the Solar System.",
+    "suggested_questions": ["Why is Callisto so cratered?", "Could Callisto have an ocean?", "How big is Callisto?"],
+    "sources": ["https://en.wikipedia.org/wiki/Callisto_(moon)", "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"]
   },
   {
     "id": "saturn",
@@ -153,6 +273,106 @@
     "sources": ["https://en.wikipedia.org/wiki/Saturn", "https://science.nasa.gov/saturn/"]
   },
   {
+    "id": "titan",
+    "name": "Titan",
+    "aliases": ["Saturn VI", "moon with an atmosphere"],
+    "type": "Moon of Saturn",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 2574.77,
+    "parent": "saturn",
+    "orbit_km": 1221870,
+    "facts": {
+      "Radius": "2,575 km",
+      "Distance from Saturn": "1,221,870 km",
+      "Orbit": "15.9 days",
+      "Discovered": "1655, Christiaan Huygens"
+    },
+    "summary": "Titan is Saturn's largest moon and the only moon with a thick atmosphere. It is the only place besides Earth known to have liquid on its surface: clouds, rain, rivers and seas of methane and ethane.",
+    "suggested_questions": ["What is Titan's atmosphere made of?", "What are Titan's lakes made of?", "What did the Huygens probe find?"],
+    "sources": ["https://en.wikipedia.org/wiki/Titan_(moon)", "https://science.nasa.gov/saturn/moons/titan/"]
+  },
+  {
+    "id": "enceladus",
+    "name": "Enceladus",
+    "aliases": ["Saturn II", "geyser moon"],
+    "type": "Moon of Saturn",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 252.04,
+    "parent": "saturn",
+    "orbit_km": 238037,
+    "facts": {
+      "Radius": "252 km",
+      "Distance from Saturn": "238,037 km",
+      "Orbit": "1.37 days",
+      "Discovered": "1789, William Herschel"
+    },
+    "summary": "Enceladus is a small, icy moon of Saturn with geyser-like jets that spray water vapour and ice into space. The jets come from a salty ocean under its surface, which could be a habitat for life.",
+    "suggested_questions": ["What comes out of Enceladus's geysers?", "Does Enceladus have an ocean?", "Why is Enceladus so bright?"],
+    "sources": ["https://en.wikipedia.org/wiki/Enceladus", "https://science.nasa.gov/saturn/moons/enceladus/"]
+  },
+  {
+    "id": "mimas",
+    "name": "Mimas",
+    "aliases": ["Saturn I", "Death Star moon"],
+    "type": "Moon of Saturn",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 197.49,
+    "parent": "saturn",
+    "orbit_km": 185539,
+    "facts": {
+      "Radius": "197 km",
+      "Distance from Saturn": "185,539 km",
+      "Orbit": "22.6 hours",
+      "Discovered": "1789, William Herschel"
+    },
+    "summary": "Mimas is a small moon of Saturn marked by one giant crater, Herschel, which makes it look like the Death Star from Star Wars. Telescopes saw it only as a dot until the Voyager spacecraft photographed it in 1980.",
+    "suggested_questions": ["Why does Mimas look like the Death Star?", "How big is Herschel crater?", "Could Mimas have an ocean?"],
+    "sources": ["https://en.wikipedia.org/wiki/Mimas_(moon)", "https://science.nasa.gov/saturn/moons/mimas/"]
+  },
+  {
+    "id": "rhea",
+    "name": "Rhea",
+    "aliases": ["Saturn V"],
+    "type": "Moon of Saturn",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 764.0,
+    "parent": "saturn",
+    "orbit_km": 527040,
+    "facts": {
+      "Radius": "764 km",
+      "Distance from Saturn": "527,040 km",
+      "Orbit": "4.52 days",
+      "Discovered": "1672, Giovanni Cassini"
+    },
+    "summary": "Rhea is Saturn's second-largest moon, a small, cold, airless world with less than a third of Titan's radius. Like most large moons it is tidally locked, always showing the same face to Saturn.",
+    "suggested_questions": ["What is Rhea made of?", "Does Rhea have rings?", "How cold is Rhea?"],
+    "sources": ["https://en.wikipedia.org/wiki/Rhea_(moon)", "https://science.nasa.gov/saturn/moons/rhea/"]
+  },
+  {
+    "id": "iapetus",
+    "name": "Iapetus",
+    "aliases": ["Saturn VIII", "yin-yang moon"],
+    "type": "Moon of Saturn",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 734.3,
+    "parent": "saturn",
+    "orbit_km": 3561700,
+    "facts": {
+      "Radius": "734 km",
+      "Distance from Saturn": "3,561,700 km",
+      "Orbit": "79.3 days",
+      "Discovered": "1671, Giovanni Cassini"
+    },
+    "summary": "Iapetus is called the yin and yang of Saturn's moons because one hemisphere is very dark and the other very bright. Giovanni Cassini, who found it in 1671, saw its brightness change as it went round Saturn.",
+    "suggested_questions": ["Why is Iapetus two-toned?", "What is the ridge around Iapetus?", "How far is Iapetus from Saturn?"],
+    "sources": ["https://en.wikipedia.org/wiki/Iapetus_(moon)", "https://science.nasa.gov/saturn/moons/iapetus/"]
+  },
+  {
     "id": "uranus",
     "name": "Uranus",
     "aliases": ["sideways planet", "the tilted planet"],
@@ -172,6 +392,86 @@
     "sources": ["https://en.wikipedia.org/wiki/Uranus", "https://science.nasa.gov/uranus/"]
   },
   {
+    "id": "miranda",
+    "name": "Miranda",
+    "aliases": ["Uranus V", "Frankenstein moon"],
+    "type": "Moon of Uranus",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 235.8,
+    "parent": "uranus",
+    "orbit_km": 129846,
+    "facts": {
+      "Radius": "236 km",
+      "Distance from Uranus": "129,846 km",
+      "Orbit": "1.41 days",
+      "Discovered": "1948, Gerard Kuiper"
+    },
+    "summary": "Miranda looks as if it was pieced together from parts that never quite fitted. For a moon only about 470 km across it has some of the strangest landscapes known, including huge ridged regions called coronae.",
+    "suggested_questions": ["Why does Miranda look patched together?", "How tall are Miranda's cliffs?", "What are coronae on Miranda?"],
+    "sources": ["https://en.wikipedia.org/wiki/Miranda_(moon)", "https://science.nasa.gov/uranus/moons/miranda/"]
+  },
+  {
+    "id": "ariel",
+    "name": "Ariel",
+    "aliases": ["Uranus I"],
+    "type": "Moon of Uranus",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 578.9,
+    "parent": "uranus",
+    "orbit_km": 190929,
+    "facts": {
+      "Radius": "579 km",
+      "Distance from Uranus": "190,929 km",
+      "Orbit": "2.52 days",
+      "Discovered": "1851, William Lassell"
+    },
+    "summary": "Ariel is one of Uranus' larger moons, made of roughly equal amounts of water ice and rock. Carbon dioxide has also been detected on it.",
+    "suggested_questions": ["What is Ariel made of?", "What is Ariel's surface like?", "Who discovered Ariel?"],
+    "sources": ["https://en.wikipedia.org/wiki/Ariel_(moon)", "https://science.nasa.gov/uranus/moons/ariel/"]
+  },
+  {
+    "id": "titania",
+    "name": "Titania",
+    "aliases": ["Uranus III", "largest moon of Uranus"],
+    "type": "Moon of Uranus",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 788.4,
+    "parent": "uranus",
+    "orbit_km": 436298,
+    "facts": {
+      "Radius": "788 km",
+      "Distance from Uranus": "436,298 km",
+      "Orbit": "8.71 days",
+      "Discovered": "1787, William Herschel"
+    },
+    "summary": "Titania is Uranus' largest moon. Voyager 2's images, taken almost 200 years after William Herschel discovered it, showed signs that it was once geologically active.",
+    "suggested_questions": ["How big is Titania?", "Is Titania geologically active?", "Where does Titania's name come from?"],
+    "sources": ["https://en.wikipedia.org/wiki/Titania_(moon)", "https://science.nasa.gov/uranus/moons/titania/"]
+  },
+  {
+    "id": "oberon",
+    "name": "Oberon",
+    "aliases": ["Uranus IV"],
+    "type": "Moon of Uranus",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 761.4,
+    "parent": "uranus",
+    "orbit_km": 583511,
+    "facts": {
+      "Radius": "761 km",
+      "Distance from Uranus": "583,511 km",
+      "Orbit": "13.5 days",
+      "Discovered": "1787, William Herschel"
+    },
+    "summary": "Oberon is Uranus' second-largest moon, a heavily cratered world of roughly half ice and half rock. Little was known about it until Voyager 2 flew past in 1986.",
+    "suggested_questions": ["What is Oberon's surface like?", "How tall is Oberon's mountain?", "What is Oberon made of?"],
+    "sources": ["https://en.wikipedia.org/wiki/Oberon_(moon)", "https://science.nasa.gov/uranus/moons/oberon/"]
+  },
+  {
     "id": "neptune",
     "name": "Neptune",
     "aliases": ["farthest planet", "outermost planet", "the windy planet"],
@@ -189,6 +489,26 @@
     "summary": "Neptune is the farthest planet from the Sun, a deep-blue ice giant with the fastest winds in the Solar System. It was the first planet found by mathematical prediction rather than by simply looking.",
     "suggested_questions": ["How was Neptune discovered?", "Why are Neptune's winds so strong?", "What is Neptune's moon Triton like?"],
     "sources": ["https://en.wikipedia.org/wiki/Neptune", "https://science.nasa.gov/neptune/"]
+  },
+  {
+    "id": "triton",
+    "name": "Triton",
+    "aliases": ["Neptune I", "backwards moon"],
+    "type": "Moon of Neptune",
+    "group": "solar_system",
+    "scene_mode": "solar_system",
+    "radius_km": 1353.4,
+    "parent": "neptune",
+    "orbit_km": 354759,
+    "facts": {
+      "Radius": "1,353 km",
+      "Distance from Neptune": "354,759 km",
+      "Orbit": "5.88 days, retrograde",
+      "Discovered": "1846, William Lassell"
+    },
+    "summary": "Triton is Neptune's largest moon and the only large moon in the Solar System that orbits backwards, against its planet's spin. It was found just 17 days after Neptune itself.",
+    "suggested_questions": ["Why does Triton orbit backwards?", "What are Triton's geysers?", "Did Triton come from the Kuiper Belt?"],
+    "sources": ["https://en.wikipedia.org/wiki/Triton_(moon)", "https://science.nasa.gov/neptune/moons/triton/"]
   },
   {
     "id": "orion_nebula",
