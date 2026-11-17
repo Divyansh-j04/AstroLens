@@ -2,9 +2,9 @@
 
 Upload a photo of a planet, nebula or star cluster. AstroLens recognises it, flies a 3D camera to it, shows a short fact card and a heatmap of what it looked at, and answers your questions from NASA and Wikipedia texts with numbered sources. You can also type where to go ("the red planet", "M42", even "jupitr").
 
-**Live page:** https://astrolens-rho.vercel.app (3D scene; photo upload and chat need the server, see Deploy) · **Code:** https://github.com/Divyansh-j04/Astro-Lens · Course project for CSE471 (Computer Vision) and CSE472 (Natural Language Processing). Full write-up: [REPORT.md](REPORT.md).
+**Live page:** https://astrolens-rho.vercel.app · **Code:** https://github.com/Divyansh-j04/Astro-Lens · Course project for CSE471 (Computer Vision) and CSE472 (Natural Language Processing). Full write-up: [REPORT.md](REPORT.md).
 
-> The server runs on a free Hugging Face Space, which sleeps when nobody uses it. If the page says "Waking up the server…", wait up to a minute.
+> The live page shows the 3D scene only. The server is not deployed yet, so photo upload, chat and typed commands work only when you run AstroLens locally (see [Run it locally](#run-it-locally)).
 
 ## How it works
 
@@ -67,7 +67,7 @@ pip install -r ml\requirements.txt              # training libraries (see the fi
 python ml\scripts\collect.py; python ml\scripts\topup.py   # download candidate images (time-limited runs)
 python ml\scripts\review_sheets.py sheets <class>          # review by eye, see the script's help
 python ml\scripts\split.py                      # licence filter, duplicates, 70/15/15 split
-python ml\scripts\train.py --no-augment         # the app's model (about 1.5 min on an RTX 4060)
+python ml\scripts\train.py --no-augment         # the app's model (1.4 min on an RTX 4060)
 python ml\scripts\train.py                      # comparison run with augmentation
 python ml\scripts\evaluate.py                   # test-set results, threshold, unknown test
 python ml\scripts\predict.py photo.jpg          # top 3 for any photo
@@ -80,6 +80,8 @@ python ml\scripts\eval_rag.py                   # chat and command evaluation
 Browser checks (from `frontend/`, using the installed Microsoft Edge): `node scripts/check-phase1.mjs`, `check-phase3.mjs`, `check-phase4.mjs`.
 
 ## Deploy
+
+Not done yet: these steps put the server online so the live page can use it.
 
 ```powershell
 python deploy\push_space.py --wait              # server -> Hugging Face Space (needs HF_TOKEN in .env)
