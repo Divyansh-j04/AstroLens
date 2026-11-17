@@ -1,4 +1,4 @@
-"""Export REPORT.md to docs/REPORT.pdf.
+"""Export REPORT.md (or another Markdown file) to docs/<name>.pdf.
 
 REPORT.md is turned into an HTML page with markdown-it-py (tables and images included), the
 architecture diagram is drawn by Mermaid (loaded from a CDN at a pinned version), and the
@@ -7,6 +7,7 @@ installed Microsoft Edge prints the page to PDF in headless mode. No new librari
 Usage (from the project root):
     python ml/scripts/report_pdf.py
     python ml/scripts/report_pdf.py --html out.html    # also keep the HTML page (to check it in a browser)
+    python ml/scripts/report_pdf.py --source README.md  # any Markdown file -> docs/<name>.pdf
 """
 
 import html
@@ -18,7 +19,6 @@ from pathlib import Path
 from markdown_it import MarkdownIt
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "docs" / "REPORT.pdf"
 EDGE = [Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"),
         Path(r"C:\Program Files\Microsoft\Edge\Application\msedge.exe")]
 MERMAID = "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"
@@ -42,11 +42,13 @@ img { max-width: 100%; page-break-inside: avoid; }
 
 def main() -> None:
     keep_html = Path(sys.argv[sys.argv.index("--html") + 1]) if "--html" in sys.argv else None
+    source = ROOT / (sys.argv[sys.argv.index("--source") + 1] if "--source" in sys.argv else "REPORT.md")
+    out = ROOT / "docs" / f"{source.stem}.pdf"
     edge = next((e for e in EDGE if e.exists()), None)
     if not edge:
         sys.exit("Microsoft Edge not found.")
     md = MarkdownIt("commonmark", {"html": True}).enable("table")
-    body = md.render((ROOT / "REPORT.md").read_text(encoding="utf-8"))
+    body = md.render(source.read_text(encoding="utf-8"))
     # ```mermaid blocks -> <div class="mermaid"> so Mermaid draws them.
     body = body.replace('<pre><code class="language-mermaid">', '<div class="mermaid">').replace(
         "</code></pre>", "</code></pre>")
@@ -56,11 +58,11 @@ def main() -> None:
         parts[i] = html.unescape(diagram) + "</div>" + rest
     body = '<div class="mermaid">'.join(parts)
     page = f"""<!doctype html><html><head><meta charset="utf-8"><base href="{ROOT.as_uri()}/">
-<title>AstroLens: Project Report</title><style>{CSS}</style>
+<title>AstroLens: {source.stem}</title><style>{CSS}</style>
 <script src="{MERMAID}"></script>
 <script>mermaid.initialize({{ startOnLoad: true, theme: 'neutral', flowchart: {{ htmlLabels: false }} }});</script>
 </head><body>{body}</body></html>"""
-    OUT.parent.mkdir(exist_ok=True)
+    out.parent.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         src = Path(tmp) / "report.html"
         src.write_text(page, encoding="utf-8")
@@ -68,9 +70,9 @@ def main() -> None:
             keep_html.write_text(page, encoding="utf-8")
         subprocess.run([str(edge), "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
                         "--virtual-time-budget=15000", f"--user-data-dir={tmp}\\profile",
-                        f"--print-to-pdf={OUT}", src.as_uri()], check=True, timeout=180,
+                        f"--print-to-pdf={out}", src.as_uri()], check=True, timeout=180,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    print(f"Wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size / 1e6:.1f} MB)")
+    print(f"Wrote {out.relative_to(ROOT)} ({out.stat().st_size / 1e6:.1f} MB)")
 
 
 if __name__ == "__main__":
