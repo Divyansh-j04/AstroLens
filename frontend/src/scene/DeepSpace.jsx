@@ -9,15 +9,16 @@ import { fade } from './fade'
 import { glowTexture } from './glow'
 import ObjectLabel from './ObjectLabel'
 import StarCluster from './StarCluster'
-import { clusterNearness, isCluster } from './clusterLod'
+import NebulaCloud from './NebulaCloud'
+import { isCluster, isNebula, nearness, stepFocus } from './lod'
 
 const DEEP = OBJECTS.filter((o) => o.scene_mode === 'deep_space')
 
 /**
  * One nebula or cluster: its picture on a sprite (a flat image that always faces the camera)
  * at its real RA/Dec direction. Additive blending makes the black sky in the picture invisible.
- * For a star cluster the picture fades to a faint halo as the camera comes close, and a 3D ball
- * of stars (StarCluster) takes over.
+ * Up close the picture fades to a faint halo and a 3D version takes over: a ball of stars for a
+ * cluster (StarCluster), a particle cloud built from the photo for a nebula (NebulaCloud).
  */
 function Marker({ obj, texture }) {
   const sprite = useRef()
@@ -28,12 +29,16 @@ function Marker({ obj, texture }) {
   const aspect = texture.image.width / texture.image.height
 
   const cluster = isCluster(obj)
-  useFrame(({ camera }) => {
+  const nebula = isNebula(obj)
+  const focus = useRef(0)
+  useFrame(({ camera }, dt) => {
+    focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
     const distance = camera.position.distanceTo(sprite.current.position)
     const s = spriteSize(distance)
     sprite.current.scale.set(s * aspect, s, 1)
     sprite.current.visible = fade.deep > 0.01
-    material.current.opacity = fade.deep * (cluster ? 1 - 0.9 * clusterNearness(distance) : 1)
+    const keep = cluster ? 0.1 : nebula ? 0.25 : 1 // how much of the photo stays up close, as a soft glow
+    material.current.opacity = fade.deep * (1 - (1 - keep) * nearness(distance) * focus.current)
   })
 
   const active = () => fade.deep > 0.5
@@ -60,6 +65,7 @@ function Marker({ obj, texture }) {
         />
       </sprite>
       {cluster && <StarCluster obj={obj} />}
+      {nebula && <NebulaCloud obj={obj} texture={texture} />}
       <group position={POSITIONS[obj.id]}>
         <ObjectLabel obj={obj} />
       </group>

@@ -3,7 +3,8 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { POSITIONS } from './scale'
 import { fade } from './fade'
-import { clusterNearness } from './clusterLod'
+import { useStore } from '../store'
+import { nearness as clusterNearness, stepFocus } from './lod'
 
 /**
  * A star cluster as a real 3D ball of stars, shown when the camera is close (from far away the
@@ -120,12 +121,14 @@ const fragmentShader = /* glsl */ `
 
 export default function StarCluster({ obj }) {
   const ref = useRef()
+  const focus = useRef(0)
   const pixelRatio = useThree((s) => s.gl.getPixelRatio())
   const geometry = useMemo(() => buildCluster(obj), [obj])
   const uniforms = useMemo(() => ({ pixelRatio: { value: pixelRatio }, opacity: { value: 0 } }), [pixelRatio])
 
-  useFrame(({ camera }) => {
-    const near = clusterNearness(camera.position.distanceTo(ref.current.position))
+  useFrame(({ camera }, dt) => {
+    focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
+    const near = clusterNearness(camera.position.distanceTo(ref.current.position)) * focus.current
     const opacity = fade.deep * near
     uniforms.opacity.value = opacity
     ref.current.visible = opacity > 0.01
