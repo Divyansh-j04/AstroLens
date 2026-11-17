@@ -2,12 +2,13 @@
 // to prove every fly-to lands in the right place. Not included in production builds.
 import { useStore } from './store'
 import { OBJECTS } from './objects'
-import { POSITIONS, HOME_VIEWS, equatorialToScene, objectView } from './scene/scale'
+import { POSITIONS, HOME_VIEWS, TRUE_POSITIONS, currentPosition, equatorialToScene, objectView } from './scene/scale'
+import { layout } from './scene/layout'
 import { fade } from './scene/fade'
 
 export const debug = {}
 
 if (import.meta.env.DEV) {
-  Object.assign(debug, { store: useStore, objects: OBJECTS, positions: POSITIONS, homeViews: HOME_VIEWS, objectView, equatorialToScene, fade })
+  Object.assign(debug, { store: useStore, objects: OBJECTS, positions: POSITIONS, truePositions: TRUE_POSITIONS, currentPosition, layout, homeViews: HOME_VIEWS, objectView, equatorialToScene, fade })
   window.astrolens = debug
 }

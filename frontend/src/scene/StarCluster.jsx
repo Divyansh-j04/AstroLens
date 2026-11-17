@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame, useLoader, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { POSITIONS, equatorialToScene } from './scale'
+import { POSITIONS, currentPosition, equatorialToScene } from './scale'
 import { ciToColor } from './starColor'
 import { fade } from './fade'
 import { useStore } from '../store'
@@ -177,6 +177,7 @@ export default function StarCluster({ obj }) {
   const uniforms = useMemo(() => ({ pixelRatio: { value: pixelRatio }, opacity: { value: 0 } }), [pixelRatio])
 
   useFrame(({ camera }, dt) => {
+    ref.current.position.set(...currentPosition(obj.id)) // follow the distance layout
     focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
     const near = clusterNearness(camera.position.distanceTo(ref.current.position)) * focus.current
     const opacity = fade.deep * near

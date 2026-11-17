@@ -31,7 +31,7 @@ export default function SpaceScene() {
           dampingFactor={0.08}
           enablePan={false}
           minDistance={0.8}
-          maxDistance={2500}
+          maxDistance={6000} // room for the "True distances" overview
           autoRotate={!entered} // the sky turns slowly behind the landing page
           autoRotateSpeed={0.35}
         />

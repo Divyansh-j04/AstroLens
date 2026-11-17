@@ -9,6 +9,7 @@
  * right ascension 0h on +x, the same frame as the HYG star file.
  */
 import { OBJECTS, OBJECTS_BY_ID } from '../objects'
+import { layout } from './layout'
 
 const DEG = Math.PI / 180
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)) // spreads planets round the Sun so none line up
@@ -23,6 +24,7 @@ const MOON_ANGLE = 2.0 // where the Moon sits on its orbit (radians), a display 
 
 // Deep-space mode
 export const LY_SCALE = 4 // distance = 4 x sqrt(light-years): Pleiades 84, M13 621
+export const TRUE_LY_SCALE = 0.1 // "True distances" layout: 100 units = 1,000 light-years (Pleiades 44, M13 2,410)
 export const SPRITE_SIZE = 14 // size of a nebula or cluster picture up close
 export const DEEP_VIEW_DISTANCE = 35 // a fly-to stops this far in front of a nebula or cluster
 
@@ -34,6 +36,17 @@ export const MODE_SWITCH_SECONDS = 2.5
 export const HOME_VIEWS = {
   solar_system: { position: [0, 55, 105], target: [0, 0, 0] },
   deep_space: { position: [0, 700, 1250], target: [0, 0, 0] },
+}
+
+/** The overview for a scene mode, for the current deep-space layout (see layout.js). */
+export function homeView(mode) {
+  if (mode !== 'deep_space') return HOME_VIEWS[mode]
+  const t = layout.t
+  const mix = (a, b) => a.map((v, i) => v + (b[i] - v) * t)
+  return {
+    position: mix(HOME_VIEWS.deep_space.position, TRUE_DEEP_HOME.position),
+    target: mix(HOME_VIEWS.deep_space.target, TRUE_DEEP_HOME.target),
+  }
 }
 
 /** Equatorial x, y, z (x to RA 0h, y to RA 6h, z to the north pole) to scene x, y, z (y up). */
@@ -90,10 +103,43 @@ export const POSITIONS = Object.fromEntries(
   OBJECTS.map((o) => [o.id, o.scene_mode === 'deep_space' ? deepPosition(o) : solarPosition(o)]),
 )
 
+/** Deep-space objects at their true, linear distance (same directions). */
+export const TRUE_POSITIONS = Object.fromEntries(
+  OBJECTS.filter((o) => o.scene_mode === 'deep_space').map((o) => [
+    o.id,
+    skyToScene(o.ra_deg, o.dec_deg, TRUE_LY_SCALE * o.distance_ly),
+  ]),
+)
+
+/**
+ * Overview for the true layout, computed so everything fits: aim at the middle of all deep-space
+ * objects and the Sun, and back off (from the same angle as the normal overview) until the
+ * farthest one is inside the view.
+ */
+const TRUE_DEEP_HOME = (() => {
+  const pts = [[0, 0, 0], ...Object.values(TRUE_POSITIONS)]
+  const lo = [0, 1, 2].map((i) => Math.min(...pts.map((p) => p[i])))
+  const hi = [0, 1, 2].map((i) => Math.max(...pts.map((p) => p[i])))
+  const centre = lo.map((v, i) => (v + hi[i]) / 2)
+  const radius = Math.max(...pts.map((p) => Math.hypot(p[0] - centre[0], p[1] - centre[1], p[2] - centre[2])))
+  const [dx, dy, dz] = HOME_VIEWS.deep_space.position
+  const len = Math.hypot(dx, dy, dz)
+  const distance = (radius / Math.sin((25 * Math.PI) / 180)) * 1.08 // a sphere of this radius fits the 50 deg view
+  return { position: centre.map((c, i) => c + ([dx, dy, dz][i] / len) * distance), target: centre }
+})()
+
+/** Where an object is drawn right now: deep-space objects move between the two layouts. */
+export function currentPosition(id) {
+  const a = POSITIONS[id]
+  const b = TRUE_POSITIONS[id]
+  if (!b || layout.t === 0) return a
+  return a.map((v, i) => v + (b[i] - v) * layout.t)
+}
+
 /** Where the camera stops (position) and what it looks at (target) for one object. */
 export function objectView(id) {
   const obj = OBJECTS_BY_ID[id]
-  const [x, y, z] = POSITIONS[id]
+  const [x, y, z] = currentPosition(id)
   if (obj.scene_mode === 'deep_space') {
     // Stop on the line from Earth to the object, so the stars behind it are its real constellation.
     const k = 1 - DEEP_VIEW_DISTANCE / Math.hypot(x, y, z)

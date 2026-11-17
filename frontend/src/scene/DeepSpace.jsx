@@ -4,7 +4,7 @@ import { Html, useCursor, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { OBJECTS } from '../objects'
 import { useStore } from '../store'
-import { POSITIONS, spriteSize } from './scale'
+import { POSITIONS, currentPosition, spriteSize } from './scale'
 import { fade } from './fade'
 import { glowTexture } from './glow'
 import ObjectLabel from './ObjectLabel'
@@ -22,6 +22,7 @@ const DEEP = OBJECTS.filter((o) => o.scene_mode === 'deep_space')
  */
 function Marker({ obj, texture }) {
   const sprite = useRef()
+  const tag = useRef()
   const material = useRef()
   const [hovered, setHovered] = useState(false)
   const selectObject = useStore((s) => s.selectObject)
@@ -32,6 +33,10 @@ function Marker({ obj, texture }) {
   const nebula = isNebula(obj)
   const focus = useRef(0)
   useFrame(({ camera }, dt) => {
+    // follow the current distance layout (square-root or true distances)
+    const p = currentPosition(obj.id)
+    sprite.current.position.set(...p)
+    tag.current.position.set(...p)
     focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
     const distance = camera.position.distanceTo(sprite.current.position)
     const s = spriteSize(distance)
@@ -69,7 +74,7 @@ function Marker({ obj, texture }) {
       </sprite>
       {cluster && <StarCluster obj={obj} />}
       {nebula && <NebulaCloud obj={obj} texture={texture} />}
-      <group position={POSITIONS[obj.id]}>
+      <group ref={tag} position={POSITIONS[obj.id]}>
         <ObjectLabel obj={obj} />
       </group>
     </>

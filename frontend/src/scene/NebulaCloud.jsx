@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { DEEP_VIEW_DISTANCE, POSITIONS, SPRITE_SIZE } from './scale'
+import { DEEP_VIEW_DISTANCE, POSITIONS, SPRITE_SIZE, currentPosition } from './scale'
 import { fade } from './fade'
 import { useStore } from '../store'
 import { headOn, nearness, stepFocus } from './lod'
@@ -136,6 +136,7 @@ export default function NebulaCloud({ obj, texture }) {
   }, [position])
 
   useFrame((_, dt) => {
+    ref.current.position.set(...currentPosition(obj.id)) // follow the distance layout (same direction)
     focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
     const near = nearness(camera.position.distanceTo(ref.current.position)) * focus.current
     // head-on the sharp photo is shown instead (DeepSpace Marker); the cloud takes over off-axis
