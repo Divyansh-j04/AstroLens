@@ -8,12 +8,16 @@ import { POSITIONS, spriteSize } from './scale'
 import { fade } from './fade'
 import { glowTexture } from './glow'
 import ObjectLabel from './ObjectLabel'
+import StarCluster from './StarCluster'
+import { clusterNearness, isCluster } from './clusterLod'
 
 const DEEP = OBJECTS.filter((o) => o.scene_mode === 'deep_space')
 
 /**
  * One nebula or cluster: its picture on a sprite (a flat image that always faces the camera)
  * at its real RA/Dec direction. Additive blending makes the black sky in the picture invisible.
+ * For a star cluster the picture fades to a faint halo as the camera comes close, and a 3D ball
+ * of stars (StarCluster) takes over.
  */
 function Marker({ obj, texture }) {
   const sprite = useRef()
@@ -23,11 +27,13 @@ function Marker({ obj, texture }) {
   useCursor(hovered)
   const aspect = texture.image.width / texture.image.height
 
+  const cluster = isCluster(obj)
   useFrame(({ camera }) => {
-    const s = spriteSize(camera.position.distanceTo(sprite.current.position))
+    const distance = camera.position.distanceTo(sprite.current.position)
+    const s = spriteSize(distance)
     sprite.current.scale.set(s * aspect, s, 1)
     sprite.current.visible = fade.deep > 0.01
-    material.current.opacity = fade.deep
+    material.current.opacity = fade.deep * (cluster ? 1 - 0.9 * clusterNearness(distance) : 1)
   })
 
   const active = () => fade.deep > 0.5
@@ -53,6 +59,7 @@ function Marker({ obj, texture }) {
           blending={THREE.AdditiveBlending}
         />
       </sprite>
+      {cluster && <StarCluster obj={obj} />}
       <group position={POSITIONS[obj.id]}>
         <ObjectLabel obj={obj} />
       </group>
