@@ -1,7 +1,8 @@
 import { useMemo, useRef } from 'react'
-import { useFrame, useThree } from '@react-three/fiber'
+import { useFrame, useLoader, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { POSITIONS } from './scale'
+import { POSITIONS, equatorialToScene } from './scale'
+import { ciToColor } from './starColor'
 import { fade } from './fade'
 import { useStore } from '../store'
 import { nearness as clusterNearness, stepFocus } from './lod'
@@ -12,11 +13,23 @@ import { nearness as clusterNearness, stepFocus } from './lod'
  * open clusters are a loose Gaussian swarm, globular clusters follow a Plummer profile
  * (density ~ (1 + r²/a²)^-5/2), the standard simple model of a globular cluster.
  * A fixed seed per cluster gives the same shape on every visit. Sizes are illustrative.
+ *
+ * The cluster's REAL bright members are added from the HYG star catalogue the page already loads:
+ * every catalogue star within MEMBER_RADIUS_DEG of the cluster's direction and at a similar distance
+ * (objects.json's distance_ly, see MEMBER_DISTANCE), placed in its true sky pattern, so head-on the
+ * Pleiades shows its real "little dipper" of Alcyone, Atlas, Electra, Maia, Merope, Taygeta... Their
+ * depth is a small random spread (catalogue distances are too uncertain to show real depth).
  */
+
+const STAR_FILE = '/data/hyg_stars.json'
+const MEMBER_RADIUS_DEG = 1.0
+const MEMBER_DISTANCE = [0.8, 1.15] // catalogue distance / distance_ly: excludes stars in front or behind
+const UNITS_PER_DEG = 6 // how big one degree of sky is drawn around the cluster
+const LY_PER_PARSEC = 3.2616
 
 // Display style per cluster (colours and counts are looks, not facts; facts stay in objects.json).
 const STYLE = {
-  pleiades: { count: 420, spread: 3.2, bright: 7, palette: ['#9bb0ff', '#aabfff', '#cad7ff', '#e6ecff'] },
+  pleiades: { count: 380, spread: 4.6, bright: 7, dim: 0.6, palette: ['#9bb0ff', '#aabfff', '#cad7ff', '#e6ecff'] },
   beehive_cluster: { count: 380, spread: 3.6, bright: 5, palette: ['#fff4ea', '#f8f7ff', '#ffe2b8', '#ffd2a1'], giants: '#ffb56c' },
   hercules_cluster: { count: 22000, core: 0.9, extent: 9, palette: ['#ffe9c4', '#ffd9a0', '#fff2dc', '#ffcf8f'], giants: '#ff9c5a', blue: '#a9c1ff' },
   omega_centauri: { count: 30000, core: 1.2, extent: 11, palette: ['#ffe4b8', '#ffd59a', '#fff0d6', '#ffc985'], giants: '#ff9150', blue: '#a9c1ff' },
@@ -48,17 +61,51 @@ function randomDirection(rand) {
   return [s * Math.cos(t), s * Math.sin(t), z]
 }
 
-function buildCluster(obj) {
+/** The cluster's real bright members from the HYG catalogue, as local positions, colours and sizes. */
+function catalogueMembers(obj, hygText) {
+  const pos = POSITIONS[obj.id]
+  const d0 = new THREE.Vector3(...pos).normalize()
+  const cosMax = Math.cos(THREE.MathUtils.degToRad(MEMBER_RADIUS_DEG))
+  const radPerUnit = 180 / Math.PI
+  const out = []
+  const c = new THREE.Color()
+  for (const [x, y, z, mag, ci] of JSON.parse(hygText).stars) {
+    const v = new THREE.Vector3(...equatorialToScene(x, y, z))
+    const ly = v.length() * LY_PER_PARSEC
+    v.normalize()
+    const cosAngle = v.dot(d0)
+    if (cosAngle < cosMax) continue
+    const ratio = ly / obj.distance_ly
+    if (ratio < MEMBER_DISTANCE[0] || ratio > MEMBER_DISTANCE[1]) continue
+    // gnomonic projection: the offset on the sky, perpendicular to the line of sight (radians)
+    const offset = v.divideScalar(cosAngle).sub(d0).multiplyScalar(radPerUnit * UNITS_PER_DEG)
+    ciToColor(ci, c)
+    c.multiplyScalar(1.35) // the members are the stars you see by eye: make them stand out
+    out.push({ position: offset.toArray(), color: [c.r, c.g, c.b], size: 8 + (6.5 - mag) * 4.2 })
+  }
+  return out
+}
+
+function buildCluster(obj, members) {
   const globular = isGlobular(obj)
   const style = STYLE[obj.id] ?? (globular ? DEFAULT_GLOBULAR : DEFAULT_OPEN)
   const rand = rng(obj.id)
-  const n = style.count
+  const n = style.count + members.length
   const positions = new Float32Array(n * 3)
   const colors = new Float32Array(n * 3)
   const sizes = new Float32Array(n)
   const c = new THREE.Color()
 
-  for (let i = 0; i < n; i++) {
+  // the real bright members first, with a small random depth
+  members.forEach((m, i) => {
+    const [x, y, z] = m.position
+    const depth = gauss(rand) * 0.8
+    const d0 = new THREE.Vector3(...POSITIONS[obj.id]).normalize().multiplyScalar(depth)
+    positions.set([x + d0.x, y + d0.y, z + d0.z], i * 3)
+    colors.set(m.color, i * 3)
+    sizes[i] = m.size
+  })
+  for (let i = members.length; i < n; i++) {
     let r
     if (globular) {
       // Plummer radius from a uniform number, cut at the cluster's visible edge
@@ -84,9 +131,10 @@ function buildCluster(obj) {
       colour = style.giants
       size += 1.5
     }
-    if (!globular && i < style.bright) size = 7 + rand() * 2.5 // the few stars you see by eye (e.g. the Seven Sisters)
+    // with no catalogue members, a few generated stars stand in for the ones you see by eye
+    if (!globular && !members.length && i < style.bright) size = 7 + rand() * 2.5
     // globular cores hold thousands of stars that add up; dimmer faint stars keep the core from turning pure white
-    c.set(colour).multiplyScalar((globular ? 0.28 : 0.55) + (globular ? 0.6 : 0.45) * Math.min(1, size / 5))
+    c.set(colour).multiplyScalar(((globular ? 0.28 : 0.55) + (globular ? 0.6 : 0.45) * Math.min(1, size / 5)) * (members.length ? style.dim ?? 1 : 1))
     colors.set([c.r, c.g, c.b], i * 3)
     sizes[i] = size
   }
@@ -95,6 +143,7 @@ function buildCluster(obj) {
   g.setAttribute('starColor', new THREE.BufferAttribute(colors, 3))
   g.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
   g.computeBoundingSphere()
+  if (import.meta.env.DEV) (window.__clusterMembers ??= {})[obj.id] = members.length
   return g
 }
 
@@ -115,7 +164,7 @@ const fragmentShader = /* glsl */ `
   varying vec3 vColor;
   void main() {
     float d = length(gl_PointCoord - 0.5);
-    gl_FragColor = vec4(vColor, smoothstep(0.5, 0.1, d) * opacity);
+    gl_FragColor = vec4(vColor, exp(-d * d * 22.0) * opacity); // soft glow; big bright stars get a halo
   }
 `
 
@@ -123,7 +172,8 @@ export default function StarCluster({ obj }) {
   const ref = useRef()
   const focus = useRef(0)
   const pixelRatio = useThree((s) => s.gl.getPixelRatio())
-  const geometry = useMemo(() => buildCluster(obj), [obj])
+  const hygText = useLoader(THREE.FileLoader, STAR_FILE) // already loaded by StarField (cached)
+  const geometry = useMemo(() => buildCluster(obj, catalogueMembers(obj, hygText)), [obj, hygText])
   const uniforms = useMemo(() => ({ pixelRatio: { value: pixelRatio }, opacity: { value: 0 } }), [pixelRatio])
 
   useFrame(({ camera }, dt) => {

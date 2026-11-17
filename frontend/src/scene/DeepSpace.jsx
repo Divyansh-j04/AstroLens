@@ -37,9 +37,10 @@ function Marker({ obj, texture }) {
     const s = spriteSize(distance)
     sprite.current.scale.set(s * aspect, s, 1)
     sprite.current.visible = fade.deep > 0.01
-    // How much of the photo stays up close: a faint halo for a cluster; for a nebula the full photo
+    // How much of the photo stays up close: a faint halo for a cluster (more for the Pleiades, whose
+    // blue reflection nebula is part of its look); for a nebula the full photo
     // when seen head-on (sharpest view), fading to a soft glow as the camera orbits away.
-    const keep = cluster ? 0.1 : nebula ? 0.25 + 0.75 * headOn(sprite.current.position, camera.position) : 1
+    const keep = cluster ? (obj.id === 'pleiades' ? 0.35 : 0.1) : nebula ? 0.25 + 0.75 * headOn(sprite.current.position, camera.position) : 1
     material.current.opacity = fade.deep * (1 - (1 - keep) * nearness(distance) * focus.current)
   })
 

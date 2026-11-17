@@ -5,6 +5,7 @@ import GlassPanel from './panel/GlassPanel'
 import UploadZone from './upload/UploadZone'
 import ObjectBrowser from './panel/ObjectBrowser'
 import Landing from './ui/Landing'
+import RevealHint from './ui/RevealHint'
 import { useStore } from './store'
 import './debug'
 
@@ -20,6 +21,7 @@ export default function App() {
           <ScaleNote />
           <GlassPanel />
           <ObjectBrowser />
+          <RevealHint />
         </>
       )}
       <Landing />

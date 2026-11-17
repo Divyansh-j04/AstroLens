@@ -8,12 +8,17 @@ import { fade } from './fade'
 import { debug } from '../debug'
 
 const EASE = 'power2.inOut'
+const REVEAL_DELAY = 1.0 // seconds after landing at a nebula or cluster
+const REVEAL_ANGLE = 30 // degrees: far enough for the 3D version to take over from the photo
+const REVEAL_SECONDS = 2.2 // each way
 
 /**
  * flyTo: every time the store's flyRequest changes, animate the camera with GSAP.
  *  - If the target is in the other scene mode, first pull back to that mode's overview
  *    (past Neptune, or back in) while the planets and deep-space pictures cross-fade.
  *  - Then fly to the object. Mouse controls are locked for the whole flight.
+ *  - At a nebula or cluster, after a short pause, swing the camera 30 degrees to one side and back
+ *    so its 3D shape shows itself. Grabbing the mouse stops the swing at once.
  */
 export default function CameraRig() {
   const camera = useThree((s) => s.camera)
@@ -27,7 +32,7 @@ export default function CameraRig() {
 
   useEffect(() => {
     if (!controls || flyRequest === 0) return undefined
-    const { currentObjectId, mode, setMode, setFlying } = useStore.getState()
+    const { currentObjectId, mode, setMode, setFlying, setArrived } = useStore.getState()
     const obj = currentObjectId ? OBJECTS_BY_ID[currentObjectId] : null
     const targetMode = obj ? obj.scene_mode : 'solar_system'
     const finalView = obj ? objectView(obj.id) : HOME_VIEWS.solar_system
@@ -37,13 +42,36 @@ export default function CameraRig() {
     controls.enabled = false
     controls.enableDamping = false
     setFlying(true)
+    setArrived(null)
     if (switching) setMode(targetMode)
+
+    let reveal = null
+    const stopReveal = () => reveal?.kill()
+    const startReveal = () => {
+      // Orbit the camera around the object about the vertical axis: out to REVEAL_ANGLE and back.
+      const offset = camera.position.clone().sub(controls.target)
+      const swing = { deg: 0 }
+      const apply = () => {
+        const rotated = offset.clone().applyAxisAngle(camera.up, (swing.deg * Math.PI) / 180)
+        camera.position.copy(controls.target).add(rotated)
+        controls.update()
+      }
+      reveal = gsap
+        .timeline({ delay: REVEAL_DELAY })
+        .to(swing, { deg: REVEAL_ANGLE, duration: REVEAL_SECONDS, ease: 'sine.inOut', onUpdate: apply })
+        .to(swing, { deg: 0, duration: REVEAL_SECONDS, ease: 'sine.inOut', onUpdate: apply })
+      controls.addEventListener('start', stopReveal) // the user grabbed the view
+    }
 
     const tl = gsap.timeline({
       onComplete: () => {
         controls.enabled = true
         controls.enableDamping = true
         setFlying(false)
+        if (obj && obj.scene_mode === 'deep_space') {
+          setArrived(obj.id)
+          startReveal()
+        }
       },
     })
     const leg = (view, duration) => {
@@ -73,7 +101,11 @@ export default function CameraRig() {
     const fadeTo = { solar: targetMode === 'solar_system' ? 1 : 0, deep: targetMode === 'deep_space' ? 1 : 0 }
     tl.to(fade, { ...fadeTo, duration: switching ? MODE_SWITCH_SECONDS : 0.6, ease: 'power1.inOut' }, 0)
 
-    return () => tl.kill() // a new request interrupts the old flight
+    return () => {
+      tl.kill() // a new request interrupts the old flight
+      stopReveal()
+      controls.removeEventListener('start', stopReveal)
+    }
   }, [flyRequest, camera, controls])
 
   return null
