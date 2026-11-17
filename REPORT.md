@@ -275,7 +275,7 @@ What the heatmaps show:
 
 ## 8. Chat and command matching
 
-The chat uses retrieval-augmented generation (RAG). It looks up the paragraphs most related to the question, and the language model may only answer from those. Nothing is trained in this phase: both models are used as they are, and this phase's work is the texts, the search, the prompt rules and the evaluation.
+The chat uses retrieval-augmented generation (RAG). It looks up the paragraphs most related to the question, and the language model may only answer from those. Nothing was trained in Phase 4: both models were used as they are, and that phase's work was the texts, the search, the prompt rules and the evaluation. After Phase 5 the search model (MiniLM) was fine-tuned on astronomy questions; see "Search model fine-tuning" at the end of Section 9.
 
 - **Texts** (`ml/scripts/collect_texts.py`, `ml/data/SOURCES.md`):
   - 124 documents, 275,307 words, 3 to 5 per object (the 16 moons added on Nov 17 have 3 each).
@@ -286,7 +286,7 @@ The chat uses retrieval-augmented generation (RAG). It looks up the paragraphs m
   - The plan said about 300 words, but MiniLM reads only the first 256 word pieces (about 190 words) and ignores the rest. 300-word chunks would be only partly searchable.
   - Each chunk keeps its object, title, link and section heading.
 - **Embeddings:**
-  - `all-MiniLM-L6-v2` (sentence-transformers, 384 numbers per text), pinned to one exact model version.
+  - `all-MiniLM-L6-v2` (sentence-transformers, 384 numbers per text), pinned to one exact model version, then fine-tuned on astronomy questions after Phase 5 (`backend/weights/minilm-astro/`). The index records which model built it (`backend/app/data/index/model.json`), and the server loads the same one.
   - The text embedded is "object name - section: chunk", so a chunk about "its rings" still says which object it is about.
   - Building the index took 1.23 min on the CPU (`ml/scripts/build_index.py`).
 - **Search** (`backend/app/nlp/retriever.py`):
@@ -316,7 +316,7 @@ Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/re
 
 | Measure | Result |
 | --- | --- |
-| Questions where the right source was in the top 5 (of 38): the tagged document / any chunk containing the answer | 28 / 38 |
+| Questions where the right source was in the top 5 (of 38): the tagged document / any chunk containing the answer (fine-tuned search model) | 30 / 38 |
 | Answers fully supported by the sources, manual check (of 10) | _author to check: `ml/results/rag_manual_check.csv`_ |
 | Answers containing the expected fact, automatic check (of 38) | 36 |
 | Answers citing at least one source (of 38) | 38 |
@@ -331,8 +331,12 @@ Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/re
 
 | Setting | Tagged doc @1 / @3 / @5 | Answer found @1 / @3 / @5 |
 | --- | --- | --- |
-| Question only (no object context) | 18 / 27 / 28 | 23 / 33 / 38 |
-| App: object name in front + current-object bonus | 17 / 26 / 28 | 24 / 35 / 38 |
+| Question only (no object context) | 20 / 27 / 29 | 24 / 34 / 38 |
+| App: object name in front + current-object bonus | 19 / 27 / 30 | 24 / 33 / 38 |
+| *Before fine-tuning (original MiniLM):* question only | 18 / 27 / 28 | 23 / 33 / 38 |
+| *Before fine-tuning (original MiniLM):* app | 17 / 26 / 28 | 24 / 35 / 38 |
+
+The search rows are from `eval_rag.py --no-llm` with the fine-tuned model (Nov 18). The answer rows of Table C (facts, citations, refusals, time) are from the last full run, which searched with the original MiniLM: the free Groq daily allowance was used up by the fine-tuning questions, so the language-model part was not re-run.
 
 **Reading the results:**
 - **Object context:** it makes little difference on these 38 questions, because each one already names its object or a distinctive topic. It is there for follow-ups that do not name the object. The browser check's follow-up "How long is a day there?" was answered about Mars, and the tests check that the current object's texts come first.
@@ -381,11 +385,11 @@ Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/re
 
 | Setting | Exact | Nicknames | Typos | Moons | All | Asked "did you mean" | Median time (ms) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| MiniLM only | 15/15 | 12/15 | 3/10 | 6/7 | 36/47 | 4 | 6.4 |
-| MiniLM + spelling | 15/15 | 12/15 | 9/10 | 6/7 | 42/47 | 1 | 7.9 |
-| MiniLM + spelling + margin (app) | 15/15 | 12/15 | 9/10 | 5/7 | 41/47 | 3 | 8.0 |
+| MiniLM only | 15/15 | 12/15 | 3/10 | 6/7 | 36/47 | 4 | 8.0 |
+| MiniLM + spelling | 15/15 | 12/15 | 9/10 | 6/7 | 42/47 | 1 | 8.5 |
+| MiniLM + spelling + margin (app) | 15/15 | 12/15 | 9/10 | 5/7 | 41/47 | 4 | 8.3 |
 
-The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated word pieces). The margin makes a bare "nebula" ask instead of guessing; with the moons added it also turns "Jupiter's biggest moon" (Ganymede and Titania almost tied) into a question, which this test counts as wrong. The phrases the app still gets wrong: "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (fly_to neptune, expected jupiter); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula); "Jupiter's biggest moon" (clarify, expected ganymede); "neptune's moon" (fly_to neptune, expected triton).
+The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated word pieces). The margin makes a bare "nebula" ask instead of guessing; with the moons added it also turns "Jupiter's biggest moon" (Ganymede and Titania almost tied) into a question, which this test counts as wrong. The phrases the app still gets wrong: "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (clarify, expected jupiter; the original MiniLM flew to Neptune); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula); "Jupiter's biggest moon" (clarify, expected ganymede); "neptune's moon" (fly_to neptune, expected triton).
 
 **Phase 4 browser check.** Source: `ml/results/phase4_chat_check.json`, written by `node scripts/check-phase4.mjs` (run from `frontend/`), with the real server and language model in Microsoft Edge. Screenshots are in `ml/results/phase4_screens/`.
 
@@ -400,6 +404,40 @@ The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated wor
 | Command "jupitr" | flew to jupiter |
 | Command "how hot is Venus?" | flew to venus and answered in the chat with 3 cited sources |
 | Browser console errors | 0 |
+
+### Search model fine-tuning (after Phase 5)
+
+The original MiniLM was trained on general web text. To make the chat's search understand astronomy questions better, it was trained further on astronomy question–paragraph pairs (Nov 18).
+
+- **Training data** (`ml/scripts/make_pairs.py`; counts in `ml/results/pairs_summary.json`):
+  - The 124 documents were split 80/10/10 into training, validation and test **by document** (seed 42; `ml/data/retrieval_split.json`): 100 / 12 / 12. No text from a test document is trained on.
+  - For each paragraph, a language model on Groq (gpt-oss-20b and gpt-oss-120b, half each) wrote 2 questions it answers: one naming the object, one describing it without its name ("the ringed planet").
+  - The free tier allows 200,000 tokens a day per model, so the run stopped after 885 of the 1,961 paragraphs (21 of those got no usable questions). Training used 1,510 questions on 755 training paragraphs (22 of the 36 objects, because paragraphs were processed in alphabetical order); validation 176 questions; test 42.
+- **Training** (`ml/scripts/finetune_embedder.py`; log in `ml/results/finetune_embedder.json`):
+  - Contrastive learning with in-batch negatives, written in plain PyTorch: a batch of 64 questions and their 64 paragraphs gives a 64 × 64 table of similarities (× 20); cross-entropy pulls each question towards its own paragraph and away from the other 63. No two questions in a batch share a paragraph.
+  - AdamW, learning rate 2e-5 with 10% warm-up, 3 epochs, on the RTX 4060: 0.83 minutes.
+  - Validation recall@5 (all 1,961 chunks searched): 0.466 before, 0.602 / 0.591 / 0.619 after epochs 1 / 2 / 3; epoch 3 was kept.
+- **Test** (`ml/scripts/eval_retrieval.py`; `ml/results/retrieval_compare.json` and `.csv`): each question searches all 1,961 chunks with no current-object bonus, so only the model counts. Both test sets come only from the 12 test documents:
+  - **hand-written:** 32 questions I wrote as paraphrases, without the object's name or with an indirect one (`ml/data/eval/retrieval_hard.json`); "gold" is the chunk or chunks holding the answer;
+  - **generated:** the 42 language-model questions for the test documents.
+
+**Table F: search model before and after fine-tuning (test documents only)**
+
+| Test set | Model | recall@1 | recall@5 | MRR@10 | Right object first |
+| --- | --- | --- | --- | --- | --- |
+| Hand-written (32) | original MiniLM | 0.156 (5) | 0.500 (16) | 0.297 | 0.688 (22) |
+| Hand-written (32) | fine-tuned | **0.313** (10) | **0.594** (19) | **0.442** | **0.781** (25) |
+| Generated (42) | original MiniLM | 0.071 (3) | 0.452 (19) | 0.210 | 0.833 (35) |
+| Generated (42) | fine-tuned | **0.214** (9) | **0.571** (24) | **0.354** | **0.857** (36) |
+
+recall@k = share of questions with a gold chunk in the first k results; MRR@10 = mean of 1 / rank of the first gold chunk (0 if not in the top 10). Commands (Table D's 47 phrases) score 41 of 47 with both models; one wrong answer changed from a wrong flight to a question ("the planet with the giant storm": original flew to Neptune, fine-tuned asks "did you mean").
+
+**Reading the results:**
+- The fine-tuned model is better on every measure on both test sets. The clearest gain is at rank 1: the paragraph holding the answer comes first twice as often on the hand-written set (10 of 32 against 5).
+- Most of the gain is on objects the model trained on through their *other* documents. On the hand-written set (`by_object` in `retrieval_compare.json`): for the 17 questions about objects with training questions (Carina, Crab, Eagle, Miranda, Neptune), top-1 rose from 2 to 6 and top-5 from 7 to 9. For the 15 about objects with none (Oberon, Omega Centauri, Phobos, Pleiades, Ring Nebula, Saturn, all after the point where the run stopped), top-1 rose only from 3 to 4 and top-5 from 9 to 10. Finishing the training questions for every object should therefore help the most.
+- The sets are small: on the hand-written set the recall@5 gain is 3 questions out of 32. The direction is the same on both sets and on validation, but the size of the gain is uncertain.
+- 11 of the 42 generated test questions are vague ("What is Neptune?") with one specific gold paragraph, so that set is strict for both models.
+- By the rule set before the test (keep the new model only if recall@5 and MRR both improve on the hand-written set), the app now uses the fine-tuned model: the index was rebuilt with it (`python ml/scripts/build_index.py --model fine-tuned`).
 
 ## 10. Features delivered
 
@@ -447,6 +485,7 @@ The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated wor
 | After 5 | Landing page with three doors (photo, chat, explore); draggable upload pill; Objects drawer by category | Done |
 | After 5 | 3D star clusters (real HYG members plus generated stars) and 3D nebula clouds made from their photos, with a short camera swing on arrival | Done |
 | After 5 | 16 significant moons: 3D spheres round their planets, cards, command matcher and chat texts | Done (15 surface maps still placeholders) |
+| After 5 | MiniLM fine-tuned on astronomy questions (contrastive learning, plain PyTorch); the app's search now uses it (Table F) | Done (training questions for 885 of 1,961 paragraphs) |
 | After 5 | True distances for everything (moons, planets, nebulae, clusters) in one space, with unlimited zoom, + / − buttons, a distance readout and "powers of ten" fly-to | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
@@ -547,7 +586,8 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 - The chat knows only its 124 documents. Questions about anything else get "I don't know from my sources.", even when the language model itself would know the answer. That is intended.
 - The answers depend on an outside service (Groq's free tier). If it is slow or down, the chat shows an error, and many fast questions in a row are slowed down by its limits.
 - The automatic fact check in Table C only looks for a key phrase. Whether each sentence is supported by its cited source needs the manual check (`ml/results/rag_manual_check.csv`).
-- The command matcher does not understand descriptions it was not given, such as "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (fly_to neptune, expected jupiter); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula). More nicknames in `objects.json` would fix these one by one.
+- The command matcher does not understand descriptions it was not given, such as "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (clarify, expected jupiter); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula). More nicknames in `objects.json` would fix these one by one.
+- The search model was fine-tuned on questions written by a language model, not by real visitors, and only 885 of the 1,961 paragraphs got questions before the free daily allowance ran out (Section 9). The test sets are small (32 hand-written, 42 generated questions), so the size of the gain is uncertain. The fine-tuned weights are not in git (like the classifier's), so a fresh copy of the project must run `finetune_embedder.py`, or rebuild the index with `--model original`.
 - Search uses one embedding model and no re-ranking step (the full plan's BM25 and cross-encoder were left out to keep it simple). Wikipedia articles are long, so they supply most chunks.
 - Star clusters are now 3D balls of stars up close (added after Phase 5 at the author's request), but most of their stars are generated, not catalogued: open clusters as a loose Gaussian swarm, globular clusters with a Plummer profile, with illustrative counts and colours. Only the bright members in the HYG catalogue are real (13 for the Pleiades, 2 for the Beehive, none for the distant globulars), placed in their true sky pattern; their depth is illustrative because catalogue distances are too uncertain. From far away the cluster's photo is shown instead.
 - Nebulae are now 3D particle clouds up close, built from the pixels of their own photo (added after Phase 5 at the author's request). The depth is illustrative: the real 3D shape of most nebulae is not known, so each cloud is simply thicker in the middle, with brighter gas a little closer. Only the selected nebula or cluster turns 3D; the others stay photos.
@@ -561,6 +601,7 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 - Selvaraju, R. et al. (2017). Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization. ICCV. Written for this project (`backend/app/cv/gradcam.py`); the pytorch-grad-cam package from the plan was not used.
 - Lewis, P. et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. NeurIPS.
 - Reimers, N. and Gurevych, I. (2019). Sentence-BERT. EMNLP. Wang, W. et al. (2020). MiniLM. NeurIPS. Model: [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) (Apache 2.0), revision `1110a243`.
+- Henderson, M. et al. (2017). Efficient Natural Language Response Suggestion for Smart Reply. arXiv:1705.00652 (the in-batch negatives loss used to fine-tune MiniLM).
 - Language model: `openai/gpt-oss-20b` (open weights, Apache 2.0) served by [Groq](https://groq.com).
 - FAISS was planned but not used: a NumPy matrix product does the same flat search at this size (Decisions).
 
@@ -745,6 +786,7 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | NumPy | Fast arrays of numbers; used for the evaluation sums and percentiles | Phase 2 |
 | NASA Images API, JPL Photojournal, DSCOVR EPIC | NASA's image search, its archive of spacecraft pictures (PIA numbers), and the daily whole-Earth photos from the DSCOVR satellite | Phase 2 |
 | ESA/Hubble, ESA/Webb, NOIRLab, ESO archives | The image archives of the Hubble and Webb telescopes and of two ground observatories; all CC BY 4.0 | Phase 2 |
+| Contrastive learning with in-batch negatives | Training that shows the model a question with its right paragraph and treats the other paragraphs in the same batch as wrong answers, so it learns to put matching texts close together | After Phase 5 (search fine-tuning) |
 
 ## Decisions
 
@@ -801,6 +843,12 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Nov 16, 2026 | Evaluation calls spaced 15 s apart; answer key widened once for equivalent values, with the answers re-checked, not re-generated | Back-to-back calls measure the free tier's limit; the widening is listed in Section 9 so the change is visible |
 | Nov 17, 2026 | 16 significant moons added to `objects.json` (numbers from Wikipedia infoboxes, summaries from NASA pages); in the scene, a planet's moons are spread round it by the golden angle, Saturn's moons count their distance from the outer edge of its drawn rings, and moon labels in crowded systems (Mars, Jupiter, Saturn, Uranus) show only within 30 units of the planet | objects.json stays the only source of facts; the golden angle stops moons stacking at one spot; the ring rule keeps Mimas outside the rings, as it really is; the label rule stops a pile of overlapping names in the overview |
 | Nov 17, 2026 | A "True distances" switch instead of replacing the square-root layout | The square-root layout keeps every object comfortably on screen for normal use; the switch shows the real proportions on demand (the four nearest objects huddle round the Sun, M13 is 54 times farther than the Pleiades), so both can be shown in the viva. The mouse zoom-out limit was raised from 2,500 to 6,000 units so the true overview fits |
+| Nov 18, 2026 | Fine-tune MiniLM, the chat's search model, on astronomy question–paragraph pairs | The project's NLP side only used pretrained models; this trains one, and the search gain is measured on documents it never saw |
+| Nov 18, 2026 | Training questions written by a language model (2 per paragraph) instead of by hand | 1,961 paragraphs are too many to write questions for by hand; the 32 test questions were hand-written so the test does not only reward the generator's style |
+| Nov 18, 2026 | Split the documents, not the chunks, into train / validation / test | Neighbouring chunks share 40 words and the same topic; a chunk split would let the test paragraphs leak into training |
+| Nov 18, 2026 | Training loop written in plain PyTorch instead of the sentence-transformers trainer | The trainer needs two new packages (datasets, accelerate); the loss is a few lines of PyTorch, which is already installed and easier to explain |
+| Nov 18, 2026 | Trained on the 44% of paragraphs that got questions before Groq's daily limit, instead of waiting a day | The full pipeline and a first measured result now; the rest of the questions can be added later with the same scripts (they resume) |
+| Nov 18, 2026 | The search index records which model built it (`index/model.json`), and the server loads that model | Questions and paragraphs must be embedded by the same model; a mismatch would give wrong search results without any error |
 | Nov 18, 2026 | The True distances view now covers everything in one space (moons, planets, Sun, nebulae, clusters), drawn relative to the object in view with a zoom number, instead of the first version that only glided the deep-space pictures to their real distances | The author asked for real distances in the Solar System too and a zoom that travels from the planets out to the nebulae. Drawing relative to the focus is the simple, standard fix for the 32-bit precision limit; a logarithmic scale was the alternative, but it would make the distances look real without being real |
 | Nov 18, 2026 | Nebula and cluster pictures sized from a real radius (`radius_ly`, added to `objects.json`) in the true view, with a 36-pixel minimum; bodies get a minimum pixel size and are hidden when they would overlap what they orbit | Real sizes where they can be seen, and still visible where they cannot; hiding overlapping bodies stops a pile of labels on the Sun when zoomed far out |
 | Nov 17, 2026 | Arriving at a nebula or cluster: after 1 s the camera swings 30 degrees to one side and back (about 4.5 s), and a hint says "Drag to look around: it's 3D"; grabbing the view stops the swing | Head-on the sharp photo is shown, so without the swing most visitors would never discover the 3D version; the 1 s delay leaves the fly-to's end position unchanged for the browser checks |
@@ -846,6 +894,11 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
     - 12 of 12 unanswerable questions refused;
     - commands 41 of 47 right (moons 5 of 7).
   - Tests: pytest, 56 passed.
+- **Nov 18, 2026 (after Phase 5: search model fine-tuning):**
+  - 1,510 training questions written by gpt-oss on Groq for 755 training paragraphs, until the free daily allowance ran out (`ml/results/pairs_summary.json`).
+  - MiniLM fine-tuned on the RTX 4060 in 0.83 min; validation recall@5 0.466 → 0.619 (`ml/results/finetune_embedder.json`).
+  - Test (Table F, `ml/results/retrieval_compare.json`): hand-written recall@5 0.500 → 0.594, MRR 0.297 → 0.442; commands unchanged at 41 of 47. Kept; index rebuilt with it.
+  - Tests: pytest, 62 passed (6 new in `tests/test_embedder.py`).
 - **Nov 18, 2026 (after Phase 5: true distances):**
   - The True distances view now holds everything at its real distance, from the moons to M13, with unlimited zoom, + / − buttons, a distance readout and "powers of ten" flights.
   - `radius_ly` added for the 10 nebulae and clusters (`objects.json`, required by the schema; sources in `ml/data/SOURCES.md`).

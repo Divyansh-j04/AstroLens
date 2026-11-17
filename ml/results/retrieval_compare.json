@@ -1,0 +1,96 @@
+{
+  "script": "ml/scripts/eval_retrieval.py",
+  "chunks_searched": 1961,
+  "models": {
+    "original": {
+      "search": {
+        "hand": {
+          "questions": 32,
+          "recall_at_1": 0.1562,
+          "recall_at_5": 0.5,
+          "mrr_at_10": 0.2972,
+          "object_at_1": 0.6875,
+          "embed_ms_per_question": 2.55,
+          "by_object": {
+            "objects_seen_in_training": {
+              "questions": 17,
+              "at_1": 2,
+              "at_5": 7
+            },
+            "objects_not_in_training": {
+              "questions": 15,
+              "at_1": 3,
+              "at_5": 9
+            }
+          }
+        },
+        "generated": {
+          "questions": 42,
+          "recall_at_1": 0.0714,
+          "recall_at_5": 0.4524,
+          "mrr_at_10": 0.2095,
+          "object_at_1": 0.8333,
+          "embed_ms_per_question": 2.44
+        }
+      },
+      "commands": {
+        "phrases": 47,
+        "correct": 41,
+        "wrong": [
+          "the hottest planet -> clarify",
+          "Earth's natural satellite -> clarify",
+          "the planet with the giant storm -> fly_to neptune",
+          "can you show me the ring nebula please -> chat ring_nebula",
+          "Jupiter's biggest moon -> clarify",
+          "neptune's moon -> fly_to neptune"
+        ],
+        "median_ms": 16.0
+      }
+    },
+    "fine-tuned": {
+      "search": {
+        "hand": {
+          "questions": 32,
+          "recall_at_1": 0.3125,
+          "recall_at_5": 0.5938,
+          "mrr_at_10": 0.4417,
+          "object_at_1": 0.7812,
+          "embed_ms_per_question": 2.08,
+          "by_object": {
+            "objects_seen_in_training": {
+              "questions": 17,
+              "at_1": 6,
+              "at_5": 9
+            },
+            "objects_not_in_training": {
+              "questions": 15,
+              "at_1": 4,
+              "at_5": 10
+            }
+          }
+        },
+        "generated": {
+          "questions": 42,
+          "recall_at_1": 0.2143,
+          "recall_at_5": 0.5714,
+          "mrr_at_10": 0.3541,
+          "object_at_1": 0.8571,
+          "embed_ms_per_question": 1.95
+        }
+      },
+      "commands": {
+        "phrases": 47,
+        "correct": 41,
+        "wrong": [
+          "the hottest planet -> clarify",
+          "Earth's natural satellite -> clarify",
+          "the planet with the giant storm -> clarify",
+          "can you show me the ring nebula please -> chat ring_nebula",
+          "Jupiter's biggest moon -> clarify",
+          "neptune's moon -> fly_to neptune"
+        ],
+        "median_ms": 16.4
+      }
+    }
+  }
+}

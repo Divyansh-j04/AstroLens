@@ -6,15 +6,18 @@
    link and section heading.
 3. Turn each chunk into a MiniLM embedding. The text embedded is "<object name> - <section>:
    <chunk>", so a chunk about "its rings" still carries which object it is about.
-4. Save backend/app/data/index/chunks.json (text and metadata) and embeddings.npy (one row per chunk).
+4. Save backend/app/data/index/chunks.json (text and metadata), embeddings.npy (one row per chunk)
+   and model.json (which MiniLM built it: "original" or "fine-tuned"; the server loads the same one).
 
 Search is a plain matrix product over all chunks with NumPy (backend/app/nlp/retriever.py), which
 is exactly what FAISS's basic "flat" index does; at about 1,500 chunks it takes about a millisecond.
 
 Usage (from the project root):
-    python ml/scripts/build_index.py
+    python ml/scripts/build_index.py                      # the original MiniLM
+    python ml/scripts/build_index.py --model fine-tuned   # the fine-tuned one (backend/weights/minilm-astro/)
 """
 
+import argparse
 import json
 import re
 import sys
@@ -25,7 +28,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
-from app.nlp.embedder import MODEL_NAME, MODEL_REVISION, embed  # noqa: E402
+from app.nlp.embedder import FINETUNED_DIR, INDEX_MODEL_FILE, MODEL_NAME, MODEL_REVISION, MODELS, embed, use_model  # noqa: E402
 from app.nlp.retriever import CHUNKS_FILE, CORPUS, EMBEDDINGS_FILE, INDEX_DIR  # noqa: E402
 
 OBJECTS = ROOT / "backend" / "app" / "data" / "objects.json"
@@ -62,6 +65,10 @@ def chunk(text: str) -> list[tuple[str, str]]:
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", choices=MODELS, default="original")
+    model = ap.parse_args().model
+    use_model(model)
     names = {o["id"]: o["name"] for o in json.loads(OBJECTS.read_text(encoding="utf-8"))}
     chunks: list[dict] = []
     for path in sorted(CORPUS.glob("*/*.md")):
@@ -77,11 +84,13 @@ def main() -> None:
     INDEX_DIR.mkdir(parents=True, exist_ok=True)
     CHUNKS_FILE.write_text(json.dumps(chunks, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
     np.save(EMBEDDINGS_FILE, vectors)
+    INDEX_MODEL_FILE.write_text(json.dumps({"model": model}) + "\n", encoding="utf-8")
     per_object = {i: sum(c["object_id"] == i for c in chunks) for i in names}
     SUMMARY.write_text(json.dumps({
         "script": "ml/scripts/build_index.py",
         "embedding_model": MODEL_NAME,
         "model_revision": MODEL_REVISION,
+        "model_version": model if model == "original" else f"fine-tuned ({FINETUNED_DIR.relative_to(ROOT).as_posix()}, from the revision above)",
         "dimensions": int(vectors.shape[1]),
         "chunk_words": CHUNK_WORDS,
         "overlap_words": OVERLAP_WORDS,

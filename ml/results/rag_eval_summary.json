@@ -2,20 +2,20 @@
   "script": "ml/scripts/eval_rag.py",
   "retrieval": {
     "question only": {
-      "tagged_doc_at_1": 18,
+      "tagged_doc_at_1": 20,
       "tagged_doc_at_3": 27,
-      "tagged_doc_at_5": 28,
-      "answer_found_at_1": 23,
-      "answer_found_at_3": 33,
+      "tagged_doc_at_5": 29,
+      "answer_found_at_1": 24,
+      "answer_found_at_3": 34,
       "answer_found_at_5": 38,
       "questions": 38
     },
     "app (card open)": {
-      "tagged_doc_at_1": 17,
-      "tagged_doc_at_3": 26,
-      "tagged_doc_at_5": 28,
+      "tagged_doc_at_1": 19,
+      "tagged_doc_at_3": 27,
+      "tagged_doc_at_5": 30,
       "answer_found_at_1": 24,
-      "answer_found_at_3": 35,
+      "answer_found_at_3": 33,
       "answer_found_at_5": 38,
       "questions": 38
     }
@@ -46,7 +46,7 @@
       "all_correct": 36,
       "phrases": 47,
       "clarification_asked": 4,
-      "median_ms": 6.4
+      "median_ms": 8.0
     },
     "MiniLM + spelling": {
       "exact_correct": 15,
@@ -60,7 +60,7 @@
       "all_correct": 42,
       "phrases": 47,
       "clarification_asked": 1,
-      "median_ms": 7.9
+      "median_ms": 8.5
     },
     "MiniLM + spelling + margin (app)": {
       "exact_correct": 15,
@@ -73,8 +73,8 @@
       "moon_phrases": 7,
       "all_correct": 41,
       "phrases": 47,
-      "clarification_asked": 3,
-      "median_ms": 8.0
+      "clarification_asked": 4,
+      "median_ms": 8.3
     }
   },
   "command_thresholds": {

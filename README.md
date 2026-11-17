@@ -20,7 +20,7 @@ flowchart LR
 ```
 
 - **Recognising photos (Computer Vision):** EfficientNet-B0, fine-tuned by transfer learning. Below a confidence threshold it says "not one of my known objects" instead of guessing. Grad-CAM shows which part of the photo decided the answer.
-- **Answering questions (NLP, retrieval-augmented generation):** the question is turned into a MiniLM embedding, the 5 closest paragraphs are found, and the language model may answer only from them, citing [1], [2]. If they don't hold the answer, it says "I don't know from my sources."
+- **Answering questions (NLP, retrieval-augmented generation):** the question is turned into a MiniLM embedding (MiniLM fine-tuned on astronomy questions by contrastive learning), the 5 closest paragraphs are found, and the language model may answer only from them, citing [1], [2]. If they don't hold the answer, it says "I don't know from my sources."
 - **Typed commands (NLP):** text is compared with every object's name and nicknames by meaning (MiniLM) and by spelling, then the page flies there, asks "did you mean", or treats the text as a question.
 - **3D scene:** 8,834 real stars, the Solar System with 16 moons, and nebulae and clusters at their real sky positions. The normal view is compressed; the **True distances** switch puts everything at its real distance, and the zoom (wheel or + / −) travels from the moons out past the farthest cluster.
 
@@ -36,6 +36,7 @@ Every number comes from a file in [`ml/results/`](ml/results); see [REPORT.md](R
 | Chat: questions the texts cannot answer, refused | 12 of 12 | `rag_eval_summary.json` |
 | Chat: answers containing the expected fact / citing a source | 36 of 38 / 38 of 38 | `rag_eval_summary.json` |
 | Typed commands sent to the right object | 41 of 47 | `rag_eval_summary.json` |
+| Search fine-tuning, 32 hand-written questions on unseen documents: right paragraph first / in top 5 | 5 → 10 / 16 → 19 | `retrieval_compare.json` |
 
 Six of the 20 objects (Ring, Horsehead, Pleiades, Beehive, M13, Omega Centauri) had too few free-licence photos to train on; they are in the scene and the chat, but the classifier does not recognise them.
 
@@ -58,7 +59,7 @@ cd frontend; npm install; npm run dev           # http://localhost:5173
 pytest tests
 ```
 
-The trained weights are not in git. To classify photos locally, rebuild them (below) or copy `efficientnet_b0_noaug.pt` into `backend/weights/`.
+The trained weights are not in git. To classify photos locally, rebuild them (below) or copy `efficientnet_b0_noaug.pt` into `backend/weights/`. The chat's search index is built with the fine-tuned MiniLM (`backend/weights/minilm-astro/`): rebuild it with `finetune_embedder.py` (below), or switch to the original model with `python ml\scripts\build_index.py --model original`.
 
 ## Rebuild everything from scratch
 
@@ -73,7 +74,10 @@ python ml\scripts\evaluate.py                   # test-set results, threshold, u
 python ml\scripts\predict.py photo.jpg          # top 3 for any photo
 
 python ml\scripts\collect_texts.py              # chat texts (Wikipedia, NASA)
-python ml\scripts\build_index.py                # MiniLM index
+python ml\scripts\make_pairs.py                 # training questions for the search model (Groq; resumes)
+python ml\scripts\finetune_embedder.py          # fine-tune MiniLM (under 1 min on an RTX 4060)
+python ml\scripts\eval_retrieval.py             # original vs fine-tuned search (REPORT Table F)
+python ml\scripts\build_index.py --model fine-tuned   # MiniLM index
 python ml\scripts\eval_rag.py                   # chat and command evaluation
 ```
 

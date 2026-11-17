@@ -1,0 +1,149 @@
+model,question,kind,gold,rank,top1
+original,Which star in the big southern nebula could explode as a supernova at any time?,hand,carina_nebula/simple-wikipedia#1,,crab_nebula/wikipedia#19
+original,How far away is the Great Nebula in the constellation of the keel?,hand,carina_nebula/simple-wikipedia#0,,carina_nebula/wikipedia-eta-carinae#30
+original,What spinning dead star sits in the middle of the remnant of the 1054 explosion?,hand,crab_nebula/wikipedia-crab-pulsar#0,,crab_nebula/nasa#1
+original,Which unit of X-ray brightness is named after a nebula?,hand,crab_nebula/wikipedia-crab-pulsar#1 crab_nebula/wikipedia-crab-pulsar#2,,crab_nebula/simple-wikipedia#1
+original,Did a missile early-warning radar ever pick up the Crab's pulsar?,hand,crab_nebula/wikipedia-crab-pulsar#5 crab_nebula/wikipedia-crab-pulsar#6,1,crab_nebula/wikipedia-crab-pulsar#6
+original,Has the Crab been seen giving off ultra-high-energy gamma rays?,hand,crab_nebula/wikipedia-crab-pulsar#7 crab_nebula/wikipedia-crab-pulsar#8,2,crab_nebula/wikipedia#10
+original,How tall are the Pillars of Creation?,hand,eagle_nebula/nasa#0 eagle_nebula/nasa#1,,eagle_nebula/wikipedia-pillars-of-creation#3
+original,What is slowly eroding the dusty towers in M16?,hand,eagle_nebula/nasa#1,,callisto/wikipedia#18
+original,"Who found the smallest of the five big Uranian moons, and when?",hand,miranda/simple-wikipedia#0,,ariel/wikipedia#1
+original,Which Shakespeare character is Uranus V named after?,hand,miranda/simple-wikipedia#0,,uranus/wikipedia#9
+original,How was the planet beyond Uranus found with maths instead of a telescope?,hand,neptune/simple-wikipedia#0 neptune/simple-wikipedia#1,,neptune/simple-wikipedia#2
+original,Did Galileo see the eighth planet long before it was discovered?,hand,neptune/simple-wikipedia#1 neptune/simple-wikipedia#2,2,jupiter/wikipedia#39
+original,What gives the farthest planet its blue colour?,hand,neptune/simple-wikipedia#6 neptune/simple-wikipedia#7,3,neptune/simple-wikipedia#0
+original,What happened to the Great Dark Spot?,hand,neptune/simple-wikipedia#10 neptune/simple-wikipedia#16 neptune/simple-wikipedia#17,5,neptune/wikipedia#30
+original,How much is the magnetic field of the outermost planet tilted?,hand,neptune/simple-wikipedia#10 neptune/simple-wikipedia#11,,uranus/wikipedia#47
+original,Which of the sea-god planet's moons has the most stretched-out orbit?,hand,neptune/simple-wikipedia#13 neptune/simple-wikipedia#14,3,neptune/wikipedia#42
+original,What mission will fly past Neptune in 2038 to study Triton?,hand,neptune/simple-wikipedia#17 neptune/simple-wikipedia#18,1,neptune/simple-wikipedia#18
+original,Which big moon of Uranus is heavily cratered like Umbriel?,hand,oberon/nasa#0,4,oberon/simple-wikipedia#0
+original,How many stars are in the largest globular cluster of the Milky Way?,hand,omega_centauri/simple-wikipedia#0,,omega_centauri/wikipedia-globular-cluster#5
+original,Can you see Omega Cen without a telescope?,hand,omega_centauri/simple-wikipedia#0 omega_centauri/simple-wikipedia#1,7,neptune/wikipedia#35
+original,How dark is the surface of Mars's inner moon?,hand,phobos/wikipedia#1 phobos/wikipedia#6,,moon/wikipedia#2
+original,What is the giant crater on Phobos called and how wide is it?,hand,phobos/wikipedia#7,6,phobos/wikipedia#9
+original,Will the bigger Martian moon break up into a ring around Mars?,hand,phobos/wikipedia#12 phobos/wikipedia#13,3,mars/wikipedia#5
+original,Why did some scientists once think Phobos was hollow?,hand,phobos/wikipedia#3 phobos/wikipedia#4,3,phobos/wikipedia#5
+original,Which mission plans to land on Phobos and bring samples back?,hand,phobos/wikipedia#19 phobos/wikipedia#20,6,phobos/wikipedia#22
+original,What is the brightest star of the Seven Sisters?,hand,pleiades/simple-wikipedia#0,4,pleiades/wikipedia-pleiades-in-folklore-and-literature#25
+original,Why are planetary nebulae called that if they have nothing to do with planets?,hand,ring_nebula/wikipedia-planetary-nebula#0,1,ring_nebula/wikipedia-planetary-nebula#0
+original,What mysterious element did astronomers once think made nebulae glow?,hand,ring_nebula/wikipedia-planetary-nebula#5 ring_nebula/wikipedia-planetary-nebula#6,1,ring_nebula/wikipedia-planetary-nebula#6
+original,How long is a day on the ringed planet?,hand,saturn/nasa-facts#1 saturn/nasa-facts#2,2,earth/nasa-facts#2
+original,What is the six-sided pattern at Saturn's north pole?,hand,saturn/nasa-facts#6 saturn/nasa-facts#7,2,saturn/wikipedia#14
+original,What is the gap between Saturn's A and B rings called?,hand,saturn/nasa-facts#3 saturn/nasa-facts#4,1,saturn/nasa-facts#4
+original,What are the rings of the sixth planet made of?,hand,saturn/nasa-facts#3,,saturn/simple-wikipedia#8
+original,What is the Carina Nebula?,generated,carina_nebula/simple-wikipedia#0,1,carina_nebula/simple-wikipedia#0
+original,"Which bright southern sky region contains 14,000 stars?",generated,carina_nebula/simple-wikipedia#0,,pleiades/wikipedia#0
+original,What is Trumpler 14?,generated,carina_nebula/simple-wikipedia#1,5,carina_nebula/wikipedia#8
+original,Which cluster holds the massive HD 93129 A/B stars?,generated,carina_nebula/simple-wikipedia#1,,carina_nebula/wikipedia#11
+original,What is the Crab Pulsar?,generated,crab_nebula/wikipedia-crab-pulsar#0,3,crab_nebula/wikipedia-crab-pulsar#6
+original,Which neutron star sits at the center of the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#0,6,crab_nebula/simple-wikipedia#0
+original,Why is the Crab Nebula used in X‑ray astronomy?,generated,crab_nebula/wikipedia-crab-pulsar#1,2,crab_nebula/wikipedia#22
+original,What makes the Crab Nebula a standard candle for X‑ray detectors?,generated,crab_nebula/wikipedia-crab-pulsar#1,3,crab_nebula/wikipedia#22
+original,What does a millicrab measure?,generated,crab_nebula/wikipedia-crab-pulsar#2,,crab_nebula/wikipedia-sn-1054#22
+original,How is the unit 'millicrab' defined in X‑ray astronomy?,generated,crab_nebula/wikipedia-crab-pulsar#2,3,crab_nebula/wikipedia-crab-pulsar#1
+original,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#3,,crab_nebula/wikipedia#0
+original,What is the pulsar discovered in 1968 that proved pulsars are neutron stars?,generated,crab_nebula/wikipedia-crab-pulsar#3,6,crab_nebula/wikipedia-crab-pulsar#4
+original,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#8,,crab_nebula/wikipedia#0
+original,Which object emits gamma rays over 100 TeV?,generated,crab_nebula/wikipedia-crab-pulsar#8,3,crab_nebula/wikipedia#10
+original,What are the Pillars of Creation?,generated,eagle_nebula/nasa#1,,eagle_nebula/wikipedia-pillars-of-creation#3
+original,What famous gas pillars can be seen in the Eagle Nebula?,generated,eagle_nebula/nasa#1,6,eagle_nebula/nasa#0
+original,When can you see the Eagle Nebula?,generated,eagle_nebula/nasa#2,,eagle_nebula/nasa#1
+original,What month is best for spotting the Eagle Nebula with a small telescope?,generated,eagle_nebula/nasa#2,,eagle_nebula/nasa#1
+original,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#4,,crab_nebula/wikipedia#0
+original,Which nebula is powered by a pulsar’s spin‑down energy?,generated,crab_nebula/wikipedia-crab-pulsar#4,4,crab_nebula/wikipedia-crab-pulsar#7
+original,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#5,,crab_nebula/wikipedia#0
+original,Which nebula was seen flashing by a woman at the University of Chicago telescope?,generated,crab_nebula/wikipedia-crab-pulsar#5,,crab_nebula/wikipedia#0
+original,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#6,,crab_nebula/wikipedia#0
+original,Which nebula’s pulsar was first detected by an Alaskan radar system in 1967?,generated,crab_nebula/wikipedia-crab-pulsar#6,4,crab_nebula/wikipedia-crab-pulsar#5
+original,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#7,,crab_nebula/wikipedia#0
+original,Which nebula was observed emitting gamma rays above 100 TeV in 2019?,generated,crab_nebula/wikipedia-crab-pulsar#7,,crab_nebula/wikipedia#10
+original,What are the Pillars of Creation in the Eagle Nebula?,generated,eagle_nebula/nasa#0,2,eagle_nebula/wikipedia-pillars-of-creation#3
+original,Which nebula contains towering dust columns that hide newborn stars?,generated,eagle_nebula/nasa#0,1,eagle_nebula/nasa#0
+original,What is Miranda?,generated,miranda/simple-wikipedia#0,5,miranda/wikipedia#28
+original,Which Uranus moon is also called Uranus V and has deep grooves and troughs?,generated,miranda/simple-wikipedia#0,5,uranus/nasa-facts#3
+original,How many times farther is Neptune from the Sun than Earth?,generated,neptune/nasa#0,,neptune/nasa-facts#2
+original,Which planet was first located using mathematical predictions instead of direct observation?,generated,neptune/nasa#0,,neptune/wikipedia#5
+original,When was Neptune's moon Triton discovered?,generated,neptune/nasa#1,,triton/nasa#0
+original,What kinds of home‑activity resources are available for learning about ice giants?,generated,neptune/nasa#1,2,uranus/nasa#1
+original,What is Neptune?,generated,neptune/simple-wikipedia#0,3,neptune/simple-wikipedia#6
+original,Which blue ice giant has the strongest winds in the Solar System?,generated,neptune/simple-wikipedia#0,3,neptune/nasa-facts#7
+original,What is Neptune?,generated,neptune/simple-wikipedia#5,,neptune/simple-wikipedia#6
+original,Which planet was once called the planet exterior to Uranus?,generated,neptune/simple-wikipedia#5,,uranus/nasa-facts#0
+original,What is Neptune?,generated,neptune/simple-wikipedia#6,1,neptune/simple-wikipedia#6
+original,Which ice giant is slightly darker than Uranus and has a methane-blue hue?,generated,neptune/simple-wikipedia#6,5,uranus/nasa-facts#5
+original,What is Neptune?,generated,neptune/simple-wikipedia#7,,neptune/simple-wikipedia#6
+original,Which distant planet is the coldest in the Solar System?,generated,neptune/simple-wikipedia#7,2,mercury/nasa-facts#0
+fine-tuned,Which star in the big southern nebula could explode as a supernova at any time?,hand,carina_nebula/simple-wikipedia#1,6,carina_nebula/wikipedia-eta-carinae#56
+fine-tuned,How far away is the Great Nebula in the constellation of the keel?,hand,carina_nebula/simple-wikipedia#0,,carina_nebula/wikipedia-eta-carinae#29
+fine-tuned,What spinning dead star sits in the middle of the remnant of the 1054 explosion?,hand,crab_nebula/wikipedia-crab-pulsar#0,4,crab_nebula/wikipedia-sn-1054#25
+fine-tuned,Which unit of X-ray brightness is named after a nebula?,hand,crab_nebula/wikipedia-crab-pulsar#1 crab_nebula/wikipedia-crab-pulsar#2,1,crab_nebula/wikipedia-crab-pulsar#2
+fine-tuned,Did a missile early-warning radar ever pick up the Crab's pulsar?,hand,crab_nebula/wikipedia-crab-pulsar#5 crab_nebula/wikipedia-crab-pulsar#6,1,crab_nebula/wikipedia-crab-pulsar#5
+fine-tuned,Has the Crab been seen giving off ultra-high-energy gamma rays?,hand,crab_nebula/wikipedia-crab-pulsar#7 crab_nebula/wikipedia-crab-pulsar#8,1,crab_nebula/wikipedia-crab-pulsar#8
+fine-tuned,How tall are the Pillars of Creation?,hand,eagle_nebula/nasa#0 eagle_nebula/nasa#1,,eagle_nebula/wikipedia-pillars-of-creation#3
+fine-tuned,What is slowly eroding the dusty towers in M16?,hand,eagle_nebula/nasa#1,,phobos/wikipedia#9
+fine-tuned,"Who found the smallest of the five big Uranian moons, and when?",hand,miranda/simple-wikipedia#0,,miranda/nasa#2
+fine-tuned,Which Shakespeare character is Uranus V named after?,hand,miranda/simple-wikipedia#0,,uranus/wikipedia#9
+fine-tuned,How was the planet beyond Uranus found with maths instead of a telescope?,hand,neptune/simple-wikipedia#0 neptune/simple-wikipedia#1,6,neptune/simple-wikipedia#2
+fine-tuned,Did Galileo see the eighth planet long before it was discovered?,hand,neptune/simple-wikipedia#1 neptune/simple-wikipedia#2,1,neptune/simple-wikipedia#2
+fine-tuned,What gives the farthest planet its blue colour?,hand,neptune/simple-wikipedia#6 neptune/simple-wikipedia#7,1,neptune/simple-wikipedia#7
+fine-tuned,What happened to the Great Dark Spot?,hand,neptune/simple-wikipedia#10 neptune/simple-wikipedia#16 neptune/simple-wikipedia#17,4,neptune/wikipedia#31
+fine-tuned,How much is the magnetic field of the outermost planet tilted?,hand,neptune/simple-wikipedia#10 neptune/simple-wikipedia#11,6,neptune/wikipedia#19
+fine-tuned,Which of the sea-god planet's moons has the most stretched-out orbit?,hand,neptune/simple-wikipedia#13 neptune/simple-wikipedia#14,2,neptune/wikipedia#42
+fine-tuned,What mission will fly past Neptune in 2038 to study Triton?,hand,neptune/simple-wikipedia#17 neptune/simple-wikipedia#18,1,neptune/simple-wikipedia#18
+fine-tuned,Which big moon of Uranus is heavily cratered like Umbriel?,hand,oberon/nasa#0,1,oberon/nasa#0
+fine-tuned,How many stars are in the largest globular cluster of the Milky Way?,hand,omega_centauri/simple-wikipedia#0,4,omega_centauri/wikipedia#0
+fine-tuned,Can you see Omega Cen without a telescope?,hand,omega_centauri/simple-wikipedia#0 omega_centauri/simple-wikipedia#1,,crab_nebula/nasa#3
+fine-tuned,How dark is the surface of Mars's inner moon?,hand,phobos/wikipedia#1 phobos/wikipedia#6,,mars/wikipedia#13
+fine-tuned,What is the giant crater on Phobos called and how wide is it?,hand,phobos/wikipedia#7,4,phobos/wikipedia#9
+fine-tuned,Will the bigger Martian moon break up into a ring around Mars?,hand,phobos/wikipedia#12 phobos/wikipedia#13,1,phobos/wikipedia#13
+fine-tuned,Why did some scientists once think Phobos was hollow?,hand,phobos/wikipedia#3 phobos/wikipedia#4,2,phobos/wikipedia#5
+fine-tuned,Which mission plans to land on Phobos and bring samples back?,hand,phobos/wikipedia#19 phobos/wikipedia#20,6,phobos/wikipedia#22
+fine-tuned,What is the brightest star of the Seven Sisters?,hand,pleiades/simple-wikipedia#0,5,pleiades/wikipedia#18
+fine-tuned,Why are planetary nebulae called that if they have nothing to do with planets?,hand,ring_nebula/wikipedia-planetary-nebula#0,7,moon/wikipedia#6
+fine-tuned,What mysterious element did astronomers once think made nebulae glow?,hand,ring_nebula/wikipedia-planetary-nebula#5 ring_nebula/wikipedia-planetary-nebula#6,2,orion_nebula/wikipedia#4
+fine-tuned,How long is a day on the ringed planet?,hand,saturn/nasa-facts#1 saturn/nasa-facts#2,1,saturn/nasa-facts#2
+fine-tuned,What is the six-sided pattern at Saturn's north pole?,hand,saturn/nasa-facts#6 saturn/nasa-facts#7,2,saturn/wikipedia#14
+fine-tuned,What is the gap between Saturn's A and B rings called?,hand,saturn/nasa-facts#3 saturn/nasa-facts#4,1,saturn/nasa-facts#4
+fine-tuned,What are the rings of the sixth planet made of?,hand,saturn/nasa-facts#3,8,uranus/simple-wikipedia#9
+fine-tuned,What is the Carina Nebula?,generated,carina_nebula/simple-wikipedia#0,1,carina_nebula/simple-wikipedia#0
+fine-tuned,"Which bright southern sky region contains 14,000 stars?",generated,carina_nebula/simple-wikipedia#0,1,carina_nebula/simple-wikipedia#0
+fine-tuned,What is Trumpler 14?,generated,carina_nebula/simple-wikipedia#1,4,carina_nebula/wikipedia#8
+fine-tuned,Which cluster holds the massive HD 93129 A/B stars?,generated,carina_nebula/simple-wikipedia#1,,carina_nebula/wikipedia#11
+fine-tuned,What is the Crab Pulsar?,generated,crab_nebula/wikipedia-crab-pulsar#0,1,crab_nebula/wikipedia-crab-pulsar#0
+fine-tuned,Which neutron star sits at the center of the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#0,4,crab_nebula/wikipedia-crab-pulsar#3
+fine-tuned,Why is the Crab Nebula used in X‑ray astronomy?,generated,crab_nebula/wikipedia-crab-pulsar#1,2,crab_nebula/wikipedia#22
+fine-tuned,What makes the Crab Nebula a standard candle for X‑ray detectors?,generated,crab_nebula/wikipedia-crab-pulsar#1,2,crab_nebula/wikipedia#22
+fine-tuned,What does a millicrab measure?,generated,crab_nebula/wikipedia-crab-pulsar#2,,crab_nebula/wikipedia-sn-1054#22
+fine-tuned,How is the unit 'millicrab' defined in X‑ray astronomy?,generated,crab_nebula/wikipedia-crab-pulsar#2,1,crab_nebula/wikipedia-crab-pulsar#2
+fine-tuned,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#3,,crab_nebula/wikipedia-sn-1054#54
+fine-tuned,What is the pulsar discovered in 1968 that proved pulsars are neutron stars?,generated,crab_nebula/wikipedia-crab-pulsar#3,3,crab_nebula/wikipedia#8
+fine-tuned,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#8,,crab_nebula/wikipedia-sn-1054#54
+fine-tuned,Which object emits gamma rays over 100 TeV?,generated,crab_nebula/wikipedia-crab-pulsar#8,3,crab_nebula/wikipedia#10
+fine-tuned,What are the Pillars of Creation?,generated,eagle_nebula/nasa#1,,eagle_nebula/wikipedia#2
+fine-tuned,What famous gas pillars can be seen in the Eagle Nebula?,generated,eagle_nebula/nasa#1,4,eagle_nebula/nasa#0
+fine-tuned,When can you see the Eagle Nebula?,generated,eagle_nebula/nasa#2,,eagle_nebula/nasa#1
+fine-tuned,What month is best for spotting the Eagle Nebula with a small telescope?,generated,eagle_nebula/nasa#2,,crab_nebula/wikipedia-sn-1054#44
+fine-tuned,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#4,,crab_nebula/wikipedia-sn-1054#54
+fine-tuned,Which nebula is powered by a pulsar’s spin‑down energy?,generated,crab_nebula/wikipedia-crab-pulsar#4,1,crab_nebula/wikipedia-crab-pulsar#4
+fine-tuned,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#5,,crab_nebula/wikipedia-sn-1054#54
+fine-tuned,Which nebula was seen flashing by a woman at the University of Chicago telescope?,generated,crab_nebula/wikipedia-crab-pulsar#5,1,crab_nebula/wikipedia-crab-pulsar#5
+fine-tuned,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#6,,crab_nebula/wikipedia-sn-1054#54
+fine-tuned,Which nebula’s pulsar was first detected by an Alaskan radar system in 1967?,generated,crab_nebula/wikipedia-crab-pulsar#6,2,crab_nebula/wikipedia-crab-pulsar#5
+fine-tuned,What is the Crab Nebula?,generated,crab_nebula/wikipedia-crab-pulsar#7,,crab_nebula/wikipedia-sn-1054#54
+fine-tuned,Which nebula was observed emitting gamma rays above 100 TeV in 2019?,generated,crab_nebula/wikipedia-crab-pulsar#7,,crab_nebula/wikipedia-crab-pulsar#8
+fine-tuned,What are the Pillars of Creation in the Eagle Nebula?,generated,eagle_nebula/nasa#0,5,eagle_nebula/wikipedia#2
+fine-tuned,Which nebula contains towering dust columns that hide newborn stars?,generated,eagle_nebula/nasa#0,1,eagle_nebula/nasa#0
+fine-tuned,What is Miranda?,generated,miranda/simple-wikipedia#0,6,miranda/wikipedia#8
+fine-tuned,Which Uranus moon is also called Uranus V and has deep grooves and troughs?,generated,miranda/simple-wikipedia#0,3,uranus/nasa-facts#3
+fine-tuned,How many times farther is Neptune from the Sun than Earth?,generated,neptune/nasa#0,9,neptune/nasa-facts#2
+fine-tuned,Which planet was first located using mathematical predictions instead of direct observation?,generated,neptune/nasa#0,,neptune/simple-wikipedia#3
+fine-tuned,When was Neptune's moon Triton discovered?,generated,neptune/nasa#1,,triton/wikipedia#2
+fine-tuned,What kinds of home‑activity resources are available for learning about ice giants?,generated,neptune/nasa#1,2,uranus/nasa#1
+fine-tuned,What is Neptune?,generated,neptune/simple-wikipedia#0,1,neptune/simple-wikipedia#0
+fine-tuned,Which blue ice giant has the strongest winds in the Solar System?,generated,neptune/simple-wikipedia#0,3,neptune/nasa-facts#7
+fine-tuned,What is Neptune?,generated,neptune/simple-wikipedia#5,,neptune/simple-wikipedia#0
+fine-tuned,Which planet was once called the planet exterior to Uranus?,generated,neptune/simple-wikipedia#5,1,neptune/simple-wikipedia#5
+fine-tuned,What is Neptune?,generated,neptune/simple-wikipedia#6,2,neptune/simple-wikipedia#0
+fine-tuned,Which ice giant is slightly darker than Uranus and has a methane-blue hue?,generated,neptune/simple-wikipedia#6,5,uranus/nasa-facts#5
+fine-tuned,What is Neptune?,generated,neptune/simple-wikipedia#7,9,neptune/simple-wikipedia#0
+fine-tuned,Which distant planet is the coldest in the Solar System?,generated,neptune/simple-wikipedia#7,2,mercury/nasa-facts#0

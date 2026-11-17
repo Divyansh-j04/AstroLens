@@ -1,0 +1,22 @@
+{
+  "script": "ml/scripts/make_pairs.py",
+  "models": "openai/gpt-oss-20b and openai/gpt-oss-120b (two shards), on Groq",
+  "documents": {
+    "train": 100,
+    "val": 12,
+    "test": 12
+  },
+  "chunks_with_questions": {
+    "train": 755,
+    "val": 88,
+    "test": 21
+  },
+  "chunks_without_questions": 21,
+  "questions": {
+    "train": 1510,
+    "val": 176,
+    "test": 42
+  },
+  "chunks_total": 1961,
+  "chunks_processed": 885
+}

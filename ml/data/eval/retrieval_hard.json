@@ -1,0 +1,282 @@
+{
+  "note": "Hand-written hard search questions (paraphrases, no object name or an indirect one), answered only by the 12 TEST documents of ml/data/retrieval_split.json. gold = chunks holding the answer (neighbouring chunks overlap by 40 words, so some answers are in two).",
+  "questions": [
+    {
+      "question": "Which star in the big southern nebula could explode as a supernova at any time?",
+      "object_id": "carina_nebula",
+      "gold": [
+        "carina_nebula/simple-wikipedia#1"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "How far away is the Great Nebula in the constellation of the keel?",
+      "object_id": "carina_nebula",
+      "gold": [
+        "carina_nebula/simple-wikipedia#0"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What spinning dead star sits in the middle of the remnant of the 1054 explosion?",
+      "object_id": "crab_nebula",
+      "gold": [
+        "crab_nebula/wikipedia-crab-pulsar#0"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Which unit of X-ray brightness is named after a nebula?",
+      "object_id": "crab_nebula",
+      "gold": [
+        "crab_nebula/wikipedia-crab-pulsar#1",
+        "crab_nebula/wikipedia-crab-pulsar#2"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Did a missile early-warning radar ever pick up the Crab's pulsar?",
+      "object_id": "crab_nebula",
+      "gold": [
+        "crab_nebula/wikipedia-crab-pulsar#5",
+        "crab_nebula/wikipedia-crab-pulsar#6"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Has the Crab been seen giving off ultra-high-energy gamma rays?",
+      "object_id": "crab_nebula",
+      "gold": [
+        "crab_nebula/wikipedia-crab-pulsar#7",
+        "crab_nebula/wikipedia-crab-pulsar#8"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "How tall are the Pillars of Creation?",
+      "object_id": "eagle_nebula",
+      "gold": [
+        "eagle_nebula/nasa#0",
+        "eagle_nebula/nasa#1"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What is slowly eroding the dusty towers in M16?",
+      "object_id": "eagle_nebula",
+      "gold": [
+        "eagle_nebula/nasa#1"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Who found the smallest of the five big Uranian moons, and when?",
+      "object_id": "miranda",
+      "gold": [
+        "miranda/simple-wikipedia#0"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Which Shakespeare character is Uranus V named after?",
+      "object_id": "miranda",
+      "gold": [
+        "miranda/simple-wikipedia#0"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "How was the planet beyond Uranus found with maths instead of a telescope?",
+      "object_id": "neptune",
+      "gold": [
+        "neptune/simple-wikipedia#0",
+        "neptune/simple-wikipedia#1"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Did Galileo see the eighth planet long before it was discovered?",
+      "object_id": "neptune",
+      "gold": [
+        "neptune/simple-wikipedia#1",
+        "neptune/simple-wikipedia#2"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What gives the farthest planet its blue colour?",
+      "object_id": "neptune",
+      "gold": [
+        "neptune/simple-wikipedia#6",
+        "neptune/simple-wikipedia#7"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What happened to the Great Dark Spot?",
+      "object_id": "neptune",
+      "gold": [
+        "neptune/simple-wikipedia#10",
+        "neptune/simple-wikipedia#16",
+        "neptune/simple-wikipedia#17"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "How much is the magnetic field of the outermost planet tilted?",
+      "object_id": "neptune",
+      "gold": [
+        "neptune/simple-wikipedia#10",
+        "neptune/simple-wikipedia#11"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Which of the sea-god planet's moons has the most stretched-out orbit?",
+      "object_id": "neptune",
+      "gold": [
+        "neptune/simple-wikipedia#13",
+        "neptune/simple-wikipedia#14"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What mission will fly past Neptune in 2038 to study Triton?",
+      "object_id": "neptune",
+      "gold": [
+        "neptune/simple-wikipedia#17",
+        "neptune/simple-wikipedia#18"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Which big moon of Uranus is heavily cratered like Umbriel?",
+      "object_id": "oberon",
+      "gold": [
+        "oberon/nasa#0"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "How many stars are in the largest globular cluster of the Milky Way?",
+      "object_id": "omega_centauri",
+      "gold": [
+        "omega_centauri/simple-wikipedia#0"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Can you see Omega Cen without a telescope?",
+      "object_id": "omega_centauri",
+      "gold": [
+        "omega_centauri/simple-wikipedia#0",
+        "omega_centauri/simple-wikipedia#1"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "How dark is the surface of Mars's inner moon?",
+      "object_id": "phobos",
+      "gold": [
+        "phobos/wikipedia#1",
+        "phobos/wikipedia#6"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What is the giant crater on Phobos called and how wide is it?",
+      "object_id": "phobos",
+      "gold": [
+        "phobos/wikipedia#7"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Will the bigger Martian moon break up into a ring around Mars?",
+      "object_id": "phobos",
+      "gold": [
+        "phobos/wikipedia#12",
+        "phobos/wikipedia#13"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Why did some scientists once think Phobos was hollow?",
+      "object_id": "phobos",
+      "gold": [
+        "phobos/wikipedia#3",
+        "phobos/wikipedia#4"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Which mission plans to land on Phobos and bring samples back?",
+      "object_id": "phobos",
+      "gold": [
+        "phobos/wikipedia#19",
+        "phobos/wikipedia#20"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What is the brightest star of the Seven Sisters?",
+      "object_id": "pleiades",
+      "gold": [
+        "pleiades/simple-wikipedia#0"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "Why are planetary nebulae called that if they have nothing to do with planets?",
+      "object_id": "ring_nebula",
+      "gold": [
+        "ring_nebula/wikipedia-planetary-nebula#0"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What mysterious element did astronomers once think made nebulae glow?",
+      "object_id": "ring_nebula",
+      "gold": [
+        "ring_nebula/wikipedia-planetary-nebula#5",
+        "ring_nebula/wikipedia-planetary-nebula#6"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "How long is a day on the ringed planet?",
+      "object_id": "saturn",
+      "gold": [
+        "saturn/nasa-facts#1",
+        "saturn/nasa-facts#2"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What is the six-sided pattern at Saturn's north pole?",
+      "object_id": "saturn",
+      "gold": [
+        "saturn/nasa-facts#6",
+        "saturn/nasa-facts#7"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What is the gap between Saturn's A and B rings called?",
+      "object_id": "saturn",
+      "gold": [
+        "saturn/nasa-facts#3",
+        "saturn/nasa-facts#4"
+      ],
+      "kind": "hand"
+    },
+    {
+      "question": "What are the rings of the sixth planet made of?",
+      "object_id": "saturn",
+      "gold": [
+        "saturn/nasa-facts#3"
+      ],
+      "kind": "hand"
+    }
+  ]
+}
