@@ -19,5 +19,16 @@ export function stepFocus(current, selected, dt) {
   return current + (target - current) * Math.min(1, dt * 4)
 }
 
+/**
+ * 1 when the camera looks at a nebula from the front (from Earth's side, like the photo was taken),
+ * falling to 0 at about 30 degrees off that line. Head-on the sharp photo is shown; as the camera
+ * orbits away, the 3D particle cloud takes over.
+ */
+export function headOn(objectPosition, cameraPosition) {
+  const toCamera = new THREE.Vector3().subVectors(cameraPosition, objectPosition).normalize()
+  const toEarth = new THREE.Vector3().copy(objectPosition).negate().normalize()
+  return THREE.MathUtils.smoothstep(toCamera.dot(toEarth), 0.86, 0.985)
+}
+
 export const isCluster = (obj) => obj.group === 'star_cluster'
 export const isNebula = (obj) => obj.group === 'nebula'

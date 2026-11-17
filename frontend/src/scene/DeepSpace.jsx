@@ -10,7 +10,7 @@ import { glowTexture } from './glow'
 import ObjectLabel from './ObjectLabel'
 import StarCluster from './StarCluster'
 import NebulaCloud from './NebulaCloud'
-import { isCluster, isNebula, nearness, stepFocus } from './lod'
+import { headOn, isCluster, isNebula, nearness, stepFocus } from './lod'
 
 const DEEP = OBJECTS.filter((o) => o.scene_mode === 'deep_space')
 
@@ -37,7 +37,9 @@ function Marker({ obj, texture }) {
     const s = spriteSize(distance)
     sprite.current.scale.set(s * aspect, s, 1)
     sprite.current.visible = fade.deep > 0.01
-    const keep = cluster ? 0.1 : nebula ? 0.25 : 1 // how much of the photo stays up close, as a soft glow
+    // How much of the photo stays up close: a faint halo for a cluster; for a nebula the full photo
+    // when seen head-on (sharpest view), fading to a soft glow as the camera orbits away.
+    const keep = cluster ? 0.1 : nebula ? 0.25 + 0.75 * headOn(sprite.current.position, camera.position) : 1
     material.current.opacity = fade.deep * (1 - (1 - keep) * nearness(distance) * focus.current)
   })
 

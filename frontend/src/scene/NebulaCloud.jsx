@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { DEEP_VIEW_DISTANCE, POSITIONS, SPRITE_SIZE } from './scale'
 import { fade } from './fade'
 import { useStore } from '../store'
-import { nearness, stepFocus } from './lod'
+import { headOn, nearness, stepFocus } from './lod'
 
 /**
  * A nebula as a 3D cloud of glowing particles, built from its own photo and shown when the camera
@@ -19,10 +19,10 @@ import { nearness, stepFocus } from './lod'
  * orbiting around it shows the depth. Only the selected nebula turns 3D (see stepFocus). A fixed seed per nebula gives the same cloud on every visit.
  */
 
-const SAMPLE = 170 // pixels across the longer side of the photo
+const SAMPLE = 420 // pixels across the longer side of the photo (the photos are 960 px)
 const THRESHOLD = 0.07 // darker pixels are empty space and get no particle
 const THICKNESS = 4.5 // scene units: how deep the cloud is in the middle
-const PARTICLE_SIZE = 3.4 // particle size relative to one sampled pixel (overlap keeps the gas smooth)
+const PARTICLE_SIZE = 1.8 // particle size relative to one sampled pixel (a little overlap keeps the gas smooth)
 
 function rng(seedText) {
   let a = 2166136261
@@ -71,9 +71,12 @@ function buildCloud(obj, image) {
       const z = gauss(rand) * thickness * 0.5 + (lum - 0.3) * thickness * 0.6
       // undo perspective for the fly-to viewpoint, DEEP_VIEW_DISTANCE in front (+z faces the viewer)
       const k0 = (DEEP_VIEW_DISTANCE - z) / DEEP_VIEW_DISTANCE
-      positions.push(nx * worldW * k0, -ny * worldH * k0, z)
+      // a random offset within the pixel hides the sampling grid
+      const jx = (rand() - 0.5) * cell
+      const jy = (rand() - 0.5) * cell
+      positions.push((nx * worldW + jx) * k0, (-ny * worldH + jy) * k0, z)
       const fadeEdge = 1 - THREE.MathUtils.smoothstep(edge, 0.7, 1)
-      const k = 0.3 * fadeEdge // faint particles that overlap blend into smooth gas
+      const k = 0.5 * fadeEdge // less overlap than before, so each particle is brighter
       colors.push(r * k, g * k, b * k)
       sizes.push(cell * PARTICLE_SIZE * (0.8 + 0.5 * Math.min(1, lum * 2)))
     }
@@ -83,6 +86,7 @@ function buildCloud(obj, image) {
   geom.setAttribute('gasColor', new THREE.Float32BufferAttribute(colors, 3))
   geom.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1))
   geom.computeBoundingSphere()
+  if (import.meta.env.DEV) (window.__nebulaParticles ??= {})[obj.id] = positions.length / 3
   return geom
 }
 
@@ -98,9 +102,10 @@ const vertexShader = /* glsl */ `
     // particles dim as the view turns edge-on (full brightness head-on, as in the photo).
     vec3 facingAxis = normalize(normalMatrix * vec3(0.0, 0.0, 1.0));
     float facing = abs(dot(facingAxis, normalize(-mv.xyz)));
-    vColor = gasColor * mix(0.3, 1.0, facing);
+    vColor = gasColor * mix(0.45, 1.0, facing);
     gl_Position = projectionMatrix * mv;
-    gl_PointSize = max(1.0, size * projScale / -mv.z);
+    // sharp particles head-on (the photo's detail), bigger soft ones edge-on (gas, not dust)
+    gl_PointSize = max(1.0, size * mix(2.4, 1.0, facing) * projScale / -mv.z);
   }
 `
 
@@ -133,7 +138,8 @@ export default function NebulaCloud({ obj, texture }) {
   useFrame((_, dt) => {
     focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
     const near = nearness(camera.position.distanceTo(ref.current.position)) * focus.current
-    const opacity = fade.deep * near
+    // head-on the sharp photo is shown instead (DeepSpace Marker); the cloud takes over off-axis
+    const opacity = fade.deep * near * (1 - headOn(ref.current.position, camera.position))
     uniforms.opacity.value = opacity
     // screen pixels per scene unit at distance 1 (point sizes are in device pixels)
     uniforms.projScale.value = (pixelRatio * size.height) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2))
