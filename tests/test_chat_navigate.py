@@ -95,6 +95,8 @@ def test_chat_rejects_unknown_object_and_empty_message():
         ("M42", "fly_to", "orion_nebula"),
         ("how hot is Mars?", "chat", "mars"),  # a question goes to the chat, about Mars
         ("what is the meaning of life", "chat", None),
+        ("take me to Titan", "fly_to", "titan"),  # moons added Nov 17
+        ("the volcanic moon", "fly_to", "io"),
     ],
 )
 def test_navigate(text, intent, object_id):
@@ -109,3 +111,11 @@ def test_ambiguous_text_asks_which_object():
     assert body["intent"] == "clarify" and body["needs_clarification"] is True
     assert len(body["candidates"]) == 2
     assert all(c["name"].endswith("Nebula") for c in body["candidates"])
+
+
+@needs_index
+def test_moon_questions_find_the_moons_texts(fake_llm):
+    fake_llm()
+    body = client.post("/chat", json={"message": "What are its lakes made of?", "object_id": "titan"}).json()
+    assert body["citations"][0]["object_id"] == "titan"
+

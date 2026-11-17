@@ -1,47 +1,399 @@
 {
-  "_about": "Chat test set (Phase 4), used by ml/scripts/eval_rag.py. answerable: 30 questions, each with the object it is asked about, the corpus document that contains the answer (backend/app/data/corpus/<object_id>/<doc>.md) and a short phrase the correct answer must contain (`expect`; any one of the alternatives; after the first run, equivalent values that are in the sources were added: 4.5/4.57 billion years for the Sun, 70.8% for Earth's water, 9.9 hours for Jupiter's day). unanswerable: 10 questions the collected texts cannot answer; the right reply is \"I don't know from my sources.\"",
+  "_about": "Chat test set (Phase 4), used by ml/scripts/eval_rag.py. answerable: 38 questions (30 from Phase 4, 8 about moons added Nov 17), each with the object it is asked about, the corpus document that contains the answer (backend/app/data/corpus/<object_id>/<doc>.md) and a short phrase the correct answer must contain (`expect`; any one of the alternatives; after the first run, equivalent values that are in the sources were added: 4.5/4.57 billion years for the Sun, 70.8% for Earth's water, 9.9 hours for Jupiter's day). unanswerable: 12 questions (2 about moons added Nov 17) the collected texts cannot answer; the right reply is \"I don't know from my sources.\"",
   "answerable": [
-    {"q": "How old is the Sun?", "object_id": "sun", "doc": "nasa-facts", "expect": ["4.6 billion", "4.5 billion", "4.57 billion", "4.567 billion"]},
-    {"q": "How hot is the Sun's core?", "object_id": "sun", "doc": "nasa-facts", "expect": ["27 million", "15 million"]},
-    {"q": "How long is a year on Mercury?", "object_id": "mercury", "doc": "nasa-facts", "expect": ["88"]},
-    {"q": "Does Mercury have any moons?", "object_id": "mercury", "doc": "nasa-facts", "expect": ["no moons", "no natural satellites", "has no"]},
-    {"q": "Why is Venus the hottest planet?", "object_id": "venus", "doc": "nasa-facts", "expect": ["greenhouse"]},
-    {"q": "Which way does Venus spin compared with most planets?", "object_id": "venus", "doc": "nasa-facts", "expect": ["backward", "retrograde", "east to west", "opposite"]},
-    {"q": "How much of Earth's surface is covered by water?", "object_id": "earth", "doc": "nasa-facts", "expect": ["71", "70.8"]},
-    {"q": "How old is the Earth?", "object_id": "earth", "doc": "wikipedia", "expect": ["4.5"]},
-    {"q": "How did the Moon form?", "object_id": "moon", "doc": "nasa-facts", "expect": ["Mars-sized", "collision", "impact", "Theia"]},
-    {"q": "When did humans first land on the Moon?", "object_id": "moon", "doc": "wikipedia", "expect": ["1969"]},
-    {"q": "What is the largest volcano on Mars?", "object_id": "mars", "doc": "nasa-facts", "expect": ["Olympus Mons"]},
-    {"q": "What are the names of the moons of Mars?", "object_id": "mars", "doc": "nasa-facts", "expect": ["Phobos"]},
-    {"q": "What is the Great Red Spot?", "object_id": "jupiter", "doc": "nasa-facts", "expect": ["storm"]},
-    {"q": "How long is a day on Jupiter?", "object_id": "jupiter", "doc": "nasa-facts", "expect": ["10 hours", "about 10", "9.9 hours", "9.93"]},
-    {"q": "What are Saturn's rings made of?", "object_id": "saturn", "doc": "nasa-facts", "expect": ["ice"]},
-    {"q": "How long does Saturn take to orbit the Sun?", "object_id": "saturn", "doc": "nasa-facts", "expect": ["29"]},
-    {"q": "Why does Uranus spin on its side?", "object_id": "uranus", "doc": "nasa-facts", "expect": ["collision", "collided", "Earth-sized", "impact"]},
-    {"q": "Who discovered Uranus?", "object_id": "uranus", "doc": "wikipedia", "expect": ["Herschel"]},
-    {"q": "How fast are the winds on Neptune?", "object_id": "neptune", "doc": "nasa-facts", "expect": ["1,200", "2,000", "supersonic"]},
-    {"q": "How was Neptune discovered?", "object_id": "neptune", "doc": "wikipedia", "expect": ["mathematical", "prediction", "Le Verrier"]},
-    {"q": "How far away is the Orion Nebula?", "object_id": "orion_nebula", "doc": "wikipedia", "expect": ["1,267", "1267", "1,344", "1344"]},
-    {"q": "What is the Trapezium?", "object_id": "orion_nebula", "doc": "wikipedia-trapezium-cluster", "expect": ["cluster"]},
-    {"q": "In what year was the supernova that made the Crab Nebula seen?", "object_id": "crab_nebula", "doc": "wikipedia-sn-1054", "expect": ["1054"]},
-    {"q": "How fast does the Crab Pulsar spin?", "object_id": "crab_nebula", "doc": "wikipedia-crab-pulsar", "expect": ["30 times", "33 milli", "33.5"]},
-    {"q": "What kind of object is the Ring Nebula?", "object_id": "ring_nebula", "doc": "wikipedia", "expect": ["planetary nebula"]},
-    {"q": "When did Hubble first photograph the Pillars of Creation?", "object_id": "eagle_nebula", "doc": "wikipedia-pillars-of-creation", "expect": ["1995"]},
-    {"q": "What is Eta Carinae?", "object_id": "carina_nebula", "doc": "wikipedia-eta-carinae", "expect": ["star system", "stellar system", "two stars", "binary"]},
-    {"q": "What makes the Horsehead Nebula look dark?", "object_id": "horsehead_nebula", "doc": "wikipedia", "expect": ["dust"]},
-    {"q": "How old are the stars in the Pleiades?", "object_id": "pleiades", "doc": "wikipedia", "expect": ["100 million", "115 million"]},
-    {"q": "What message was sent toward M13, and when?", "object_id": "hercules_cluster", "doc": "wikipedia-arecibo-message", "expect": ["1974"]}
+    {
+      "q": "How old is the Sun?",
+      "object_id": "sun",
+      "doc": "nasa-facts",
+      "expect": [
+        "4.6 billion",
+        "4.5 billion",
+        "4.57 billion",
+        "4.567 billion"
+      ]
+    },
+    {
+      "q": "How hot is the Sun's core?",
+      "object_id": "sun",
+      "doc": "nasa-facts",
+      "expect": [
+        "27 million",
+        "15 million"
+      ]
+    },
+    {
+      "q": "How long is a year on Mercury?",
+      "object_id": "mercury",
+      "doc": "nasa-facts",
+      "expect": [
+        "88"
+      ]
+    },
+    {
+      "q": "Does Mercury have any moons?",
+      "object_id": "mercury",
+      "doc": "nasa-facts",
+      "expect": [
+        "no moons",
+        "no natural satellites",
+        "has no"
+      ]
+    },
+    {
+      "q": "Why is Venus the hottest planet?",
+      "object_id": "venus",
+      "doc": "nasa-facts",
+      "expect": [
+        "greenhouse"
+      ]
+    },
+    {
+      "q": "Which way does Venus spin compared with most planets?",
+      "object_id": "venus",
+      "doc": "nasa-facts",
+      "expect": [
+        "backward",
+        "retrograde",
+        "east to west",
+        "opposite"
+      ]
+    },
+    {
+      "q": "How much of Earth's surface is covered by water?",
+      "object_id": "earth",
+      "doc": "nasa-facts",
+      "expect": [
+        "71",
+        "70.8"
+      ]
+    },
+    {
+      "q": "How old is the Earth?",
+      "object_id": "earth",
+      "doc": "wikipedia",
+      "expect": [
+        "4.5"
+      ]
+    },
+    {
+      "q": "How did the Moon form?",
+      "object_id": "moon",
+      "doc": "nasa-facts",
+      "expect": [
+        "Mars-sized",
+        "collision",
+        "impact",
+        "Theia"
+      ]
+    },
+    {
+      "q": "When did humans first land on the Moon?",
+      "object_id": "moon",
+      "doc": "wikipedia",
+      "expect": [
+        "1969"
+      ]
+    },
+    {
+      "q": "What is the largest volcano on Mars?",
+      "object_id": "mars",
+      "doc": "nasa-facts",
+      "expect": [
+        "Olympus Mons"
+      ]
+    },
+    {
+      "q": "What are the names of the moons of Mars?",
+      "object_id": "mars",
+      "doc": "nasa-facts",
+      "expect": [
+        "Phobos"
+      ]
+    },
+    {
+      "q": "What is the Great Red Spot?",
+      "object_id": "jupiter",
+      "doc": "nasa-facts",
+      "expect": [
+        "storm"
+      ]
+    },
+    {
+      "q": "How long is a day on Jupiter?",
+      "object_id": "jupiter",
+      "doc": "nasa-facts",
+      "expect": [
+        "10 hours",
+        "about 10",
+        "9.9 hours",
+        "9.93"
+      ]
+    },
+    {
+      "q": "What are Saturn's rings made of?",
+      "object_id": "saturn",
+      "doc": "nasa-facts",
+      "expect": [
+        "ice"
+      ]
+    },
+    {
+      "q": "How long does Saturn take to orbit the Sun?",
+      "object_id": "saturn",
+      "doc": "nasa-facts",
+      "expect": [
+        "29"
+      ]
+    },
+    {
+      "q": "Why does Uranus spin on its side?",
+      "object_id": "uranus",
+      "doc": "nasa-facts",
+      "expect": [
+        "collision",
+        "collided",
+        "Earth-sized",
+        "impact"
+      ]
+    },
+    {
+      "q": "Who discovered Uranus?",
+      "object_id": "uranus",
+      "doc": "wikipedia",
+      "expect": [
+        "Herschel"
+      ]
+    },
+    {
+      "q": "How fast are the winds on Neptune?",
+      "object_id": "neptune",
+      "doc": "nasa-facts",
+      "expect": [
+        "1,200",
+        "2,000",
+        "supersonic"
+      ]
+    },
+    {
+      "q": "How was Neptune discovered?",
+      "object_id": "neptune",
+      "doc": "wikipedia",
+      "expect": [
+        "mathematical",
+        "prediction",
+        "Le Verrier"
+      ]
+    },
+    {
+      "q": "How far away is the Orion Nebula?",
+      "object_id": "orion_nebula",
+      "doc": "wikipedia",
+      "expect": [
+        "1,267",
+        "1267",
+        "1,344",
+        "1344"
+      ]
+    },
+    {
+      "q": "What is the Trapezium?",
+      "object_id": "orion_nebula",
+      "doc": "wikipedia-trapezium-cluster",
+      "expect": [
+        "cluster"
+      ]
+    },
+    {
+      "q": "In what year was the supernova that made the Crab Nebula seen?",
+      "object_id": "crab_nebula",
+      "doc": "wikipedia-sn-1054",
+      "expect": [
+        "1054"
+      ]
+    },
+    {
+      "q": "How fast does the Crab Pulsar spin?",
+      "object_id": "crab_nebula",
+      "doc": "wikipedia-crab-pulsar",
+      "expect": [
+        "30 times",
+        "33 milli",
+        "33.5"
+      ]
+    },
+    {
+      "q": "What kind of object is the Ring Nebula?",
+      "object_id": "ring_nebula",
+      "doc": "wikipedia",
+      "expect": [
+        "planetary nebula"
+      ]
+    },
+    {
+      "q": "When did Hubble first photograph the Pillars of Creation?",
+      "object_id": "eagle_nebula",
+      "doc": "wikipedia-pillars-of-creation",
+      "expect": [
+        "1995"
+      ]
+    },
+    {
+      "q": "What is Eta Carinae?",
+      "object_id": "carina_nebula",
+      "doc": "wikipedia-eta-carinae",
+      "expect": [
+        "star system",
+        "stellar system",
+        "two stars",
+        "binary"
+      ]
+    },
+    {
+      "q": "What makes the Horsehead Nebula look dark?",
+      "object_id": "horsehead_nebula",
+      "doc": "wikipedia",
+      "expect": [
+        "dust"
+      ]
+    },
+    {
+      "q": "How old are the stars in the Pleiades?",
+      "object_id": "pleiades",
+      "doc": "wikipedia",
+      "expect": [
+        "100 million",
+        "115 million"
+      ]
+    },
+    {
+      "q": "What message was sent toward M13, and when?",
+      "object_id": "hercules_cluster",
+      "doc": "wikipedia-arecibo-message",
+      "expect": [
+        "1974"
+      ]
+    },
+    {
+      "q": "How many volcanoes does Io have?",
+      "object_id": "io",
+      "doc": "nasa",
+      "expect": [
+        "hundreds"
+      ]
+    },
+    {
+      "q": "Is Ganymede bigger than Mercury?",
+      "object_id": "ganymede",
+      "doc": "nasa",
+      "expect": [
+        "bigger than",
+        "larger than"
+      ]
+    },
+    {
+      "q": "What are Titan's lakes made of?",
+      "object_id": "titan",
+      "doc": "nasa",
+      "expect": [
+        "methane"
+      ]
+    },
+    {
+      "q": "What sprays out of Enceladus's geysers?",
+      "object_id": "enceladus",
+      "doc": "nasa",
+      "expect": [
+        "water vapor",
+        "water vapour",
+        "water"
+      ]
+    },
+    {
+      "q": "Which way does Triton orbit Neptune?",
+      "object_id": "triton",
+      "doc": "nasa",
+      "expect": [
+        "retrograde",
+        "opposite",
+        "backward"
+      ]
+    },
+    {
+      "q": "Who discovered Phobos?",
+      "object_id": "phobos",
+      "doc": "wikipedia",
+      "expect": [
+        "Asaph Hall"
+      ]
+    },
+    {
+      "q": "What is the giant crater on Mimas called?",
+      "object_id": "mimas",
+      "doc": "wikipedia",
+      "expect": [
+        "Herschel"
+      ]
+    },
+    {
+      "q": "How far is Callisto from Jupiter?",
+      "object_id": "callisto",
+      "doc": "wikipedia",
+      "expect": [
+        "1.88",
+        "1,882,700",
+        "1.9 million",
+        "1,883,000"
+      ]
+    }
   ],
   "unanswerable": [
-    {"q": "Who won the 2022 football World Cup?", "object_id": "earth"},
-    {"q": "What is the best telescope to buy for under 500 dollars?", "object_id": "saturn"},
-    {"q": "How much does a ticket to Mars cost?", "object_id": "mars"},
-    {"q": "What will the weather be like on Venus next Tuesday?", "object_id": "venus"},
-    {"q": "What is the phone number of the Hubble Space Telescope team?", "object_id": "eagle_nebula"},
-    {"q": "Which restaurant is closest to the Arecibo Observatory?", "object_id": "hercules_cluster"},
-    {"q": "What is my zodiac sign if I was born in March?", "object_id": "pleiades"},
-    {"q": "How many students in my class have seen the Orion Nebula?", "object_id": "orion_nebula"},
-    {"q": "What is the recipe for a chocolate cake?", "object_id": "moon"},
-    {"q": "Which streaming service has the most space documentaries?", "object_id": "jupiter"}
+    {
+      "q": "Who won the 2022 football World Cup?",
+      "object_id": "earth"
+    },
+    {
+      "q": "What is the best telescope to buy for under 500 dollars?",
+      "object_id": "saturn"
+    },
+    {
+      "q": "How much does a ticket to Mars cost?",
+      "object_id": "mars"
+    },
+    {
+      "q": "What will the weather be like on Venus next Tuesday?",
+      "object_id": "venus"
+    },
+    {
+      "q": "What is the phone number of the Hubble Space Telescope team?",
+      "object_id": "eagle_nebula"
+    },
+    {
+      "q": "Which restaurant is closest to the Arecibo Observatory?",
+      "object_id": "hercules_cluster"
+    },
+    {
+      "q": "What is my zodiac sign if I was born in March?",
+      "object_id": "pleiades"
+    },
+    {
+      "q": "How many students in my class have seen the Orion Nebula?",
+      "object_id": "orion_nebula"
+    },
+    {
+      "q": "What is the recipe for a chocolate cake?",
+      "object_id": "moon"
+    },
+    {
+      "q": "Which streaming service has the most space documentaries?",
+      "object_id": "jupiter"
+    },
+    {
+      "q": "What is the name of the hotel on Titan?",
+      "object_id": "titan"
+    },
+    {
+      "q": "How much does a holiday trip to Europa cost?",
+      "object_id": "europa"
+    }
   ]
 }

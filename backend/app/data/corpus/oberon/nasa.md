@@ -1,0 +1,18 @@
+---
+title: "Oberon"
+url: "https://science.nasa.gov/uranus/moons/oberon/"
+object_id: "oberon"
+source: "NASA Science"
+licence: "Public domain (NASA; not copyrighted in the United States)"
+retrieved_on: "2026-11-17"
+---
+
+## Discovery
+
+## Overview
+
+Oberon is the second largest moon of Uranus. Discovered in 1787, little was known about this moon until Voyager 2 passed it during its flyby of Uranus in January 1986. Oberon is heavily cratered―similar to Umbriel―especially when compared to three other moons of Uranus: Ariel, Titania and Miranda. Like all of Uranus' large moons, Oberon is composed of roughly half ice and half rock. Oberon has at least one large mountain that rises about 6 km off the surface.
+
+## How Oberon Got its Name
+
+Named by Herschel's son John in early 19th century for the king of the fairies in Shakespeare's "A Midsummer Night's Dream."

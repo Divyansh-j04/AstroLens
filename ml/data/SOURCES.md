@@ -77,15 +77,15 @@ Retrieved Nov 15-16, 2026. Every image's title, page link, author and licence is
 
 Credit line for the archive images, as the licences ask: NASA, ESA, ESO, NOIRLab/NSF/AURA, ESA/Webb and the individual authors named in the manifests.
 
-## Chat texts (Phase 4)
+## Chat texts (Phase 4; moons added Nov 17, 2026)
 
-Retrieved 2026-11-16 by `ml/scripts/collect_texts.py` (source list: each object's `sources` in `objects.json` plus `ml/data/text_sources.json`). Each text is kept in `backend/app/data/corpus/<object_id>/` with its title, link, licence and date at the top, and the chat cites it by that title and link. 76 documents, 195,241 words (`ml/results/corpus_counts.json`).
+Retrieved by `ml/scripts/collect_texts.py` (source list: each object's `sources` in `objects.json` plus `ml/data/text_sources.json`): the 20 original objects on Nov 16, 2026, the 16 moons on Nov 17, 2026. Each text is kept in `backend/app/data/corpus/<object_id>/` with its title, link, licence and date at the top, and the chat cites it by that title and link. 124 documents, 275,307 words (`ml/results/corpus_counts.json`).
 
 | Source | Documents | Licence |
 | --- | --- | --- |
-| English Wikipedia | 33 | CC BY-SA 4.0 (Wikipedia contributors); reference lists and "See also" sections removed |
-| Simple English Wikipedia | 16 | CC BY-SA 4.0 (Wikipedia contributors) |
-| NASA Science (`science.nasa.gov`) | 27 | Public domain (NASA; not copyrighted in the United States) |
+| English Wikipedia | 49 | CC BY-SA 4.0 (Wikipedia contributors); reference lists and "See also" sections removed |
+| Simple English Wikipedia | 32 | CC BY-SA 4.0 (Wikipedia contributors) |
+| NASA Science (`science.nasa.gov`) | 43 | Public domain (NASA; not copyrighted in the United States) |
 
 Simple English Wikipedia has no article for the Ring Nebula, Eagle Nebula, Beehive Cluster or M13; those objects have 3 documents each.
 
@@ -97,10 +97,26 @@ Simple English Wikipedia has no article for the Ring Nebula, Eagle Nebula, Beehi
 | Earth | 4 | 18,684 | [Wikipedia: Earth](https://en.wikipedia.org/wiki/Earth); [NASA Science: Earth](https://science.nasa.gov/earth/); [Simple English Wikipedia: Earth](https://simple.wikipedia.org/wiki/Earth); [NASA Science: Facts About Earth](https://science.nasa.gov/earth/facts/) |
 | Moon | 4 | 17,059 | [Wikipedia: Moon](https://en.wikipedia.org/wiki/Moon); [NASA Science: Earth's Moon](https://science.nasa.gov/moon/); [Simple English Wikipedia: Moon](https://simple.wikipedia.org/wiki/Moon); [NASA Science: Moon Facts](https://science.nasa.gov/moon/facts/) |
 | Mars | 4 | 14,518 | [Wikipedia: Mars](https://en.wikipedia.org/wiki/Mars); [NASA Science: Mars](https://science.nasa.gov/mars/); [Simple English Wikipedia: Mars](https://simple.wikipedia.org/wiki/Mars); [NASA Science: Mars: Facts](https://science.nasa.gov/mars/facts/) |
+| Phobos | 3 | 4,537 | [Wikipedia: Phobos (moon)](https://en.wikipedia.org/wiki/Phobos_(moon)); [NASA Science: Phobos](https://science.nasa.gov/mars/moons/phobos/); [Simple English Wikipedia: Phobos (moon)](https://simple.wikipedia.org/wiki/Phobos_(moon)) |
+| Deimos | 3 | 2,110 | [Wikipedia: Deimos (moon)](https://en.wikipedia.org/wiki/Deimos_(moon)); [NASA Science: Deimos](https://science.nasa.gov/mars/moons/deimos/); [Simple English Wikipedia: Deimos (moon)](https://simple.wikipedia.org/wiki/Deimos_(moon)) |
 | Jupiter | 4 | 12,268 | [Wikipedia: Jupiter](https://en.wikipedia.org/wiki/Jupiter); [NASA Science: Jupiter](https://science.nasa.gov/jupiter/); [Simple English Wikipedia: Jupiter](https://simple.wikipedia.org/wiki/Jupiter); [NASA Science: Jupiter Facts](https://science.nasa.gov/jupiter/facts/) |
+| Io | 3 | 8,322 | [Wikipedia: Io (moon)](https://en.wikipedia.org/wiki/Io_(moon)); [NASA Science: Io](https://science.nasa.gov/jupiter/jupiter-moons/io/); [Simple English Wikipedia: Io (moon)](https://simple.wikipedia.org/wiki/Io_(moon)) |
+| Europa | 3 | 7,641 | [Wikipedia: Europa (moon)](https://en.wikipedia.org/wiki/Europa_(moon)); [NASA Science: Europa](https://science.nasa.gov/jupiter/jupiter-moons/europa/); [Simple English Wikipedia: Europa (moon)](https://simple.wikipedia.org/wiki/Europa_(moon)) |
+| Ganymede | 3 | 6,863 | [Wikipedia: Ganymede (moon)](https://en.wikipedia.org/wiki/Ganymede_(moon)); [NASA Science: Ganymede](https://science.nasa.gov/jupiter/jupiter-moons/ganymede/); [Simple English Wikipedia: Ganymede (moon)](https://simple.wikipedia.org/wiki/Ganymede_(moon)) |
+| Callisto | 3 | 5,304 | [Wikipedia: Callisto (moon)](https://en.wikipedia.org/wiki/Callisto_(moon)); [NASA Science: Callisto](https://science.nasa.gov/jupiter/jupiter-moons/callisto/); [Simple English Wikipedia: Callisto (moon)](https://simple.wikipedia.org/wiki/Callisto_(moon)) |
 | Saturn | 4 | 9,205 | [Wikipedia: Saturn](https://en.wikipedia.org/wiki/Saturn); [NASA Science: Saturn](https://science.nasa.gov/saturn/); [Simple English Wikipedia: Saturn](https://simple.wikipedia.org/wiki/Saturn); [NASA Science: Saturn: Facts](https://science.nasa.gov/saturn/facts/) |
+| Titan | 3 | 7,507 | [Wikipedia: Titan (moon)](https://en.wikipedia.org/wiki/Titan_(moon)); [NASA Science: Titan](https://science.nasa.gov/saturn/moons/titan/); [Simple English Wikipedia: Titan (moon)](https://simple.wikipedia.org/wiki/Titan_(moon)) |
+| Enceladus | 3 | 8,379 | [Wikipedia: Enceladus](https://en.wikipedia.org/wiki/Enceladus); [NASA Science: Enceladus](https://science.nasa.gov/saturn/moons/enceladus/); [Simple English Wikipedia: Enceladus](https://simple.wikipedia.org/wiki/Enceladus) |
+| Mimas | 3 | 2,347 | [Wikipedia: Mimas](https://en.wikipedia.org/wiki/Mimas); [NASA Science: Mimas](https://science.nasa.gov/saturn/moons/mimas/); [Simple English Wikipedia: Mimas (moon)](https://simple.wikipedia.org/wiki/Mimas_(moon)) |
+| Rhea | 3 | 3,040 | [Wikipedia: Rhea (moon)](https://en.wikipedia.org/wiki/Rhea_(moon)); [NASA Science: Rhea](https://science.nasa.gov/saturn/moons/rhea/); [Simple English Wikipedia: Rhea (moon)](https://simple.wikipedia.org/wiki/Rhea_(moon)) |
+| Iapetus | 3 | 3,902 | [Wikipedia: Iapetus (moon)](https://en.wikipedia.org/wiki/Iapetus_(moon)); [NASA Science: Iapetus](https://science.nasa.gov/saturn/moons/iapetus/); [Simple English Wikipedia: Iapetus (moon)](https://simple.wikipedia.org/wiki/Iapetus_(moon)) |
 | Uranus | 4 | 11,753 | [Wikipedia: Uranus](https://en.wikipedia.org/wiki/Uranus); [NASA Science: Uranus](https://science.nasa.gov/uranus/); [Simple English Wikipedia: Uranus](https://simple.wikipedia.org/wiki/Uranus); [NASA Science: Uranus: Facts](https://science.nasa.gov/uranus/facts/) |
+| Miranda | 3 | 4,756 | [Wikipedia: Miranda (moon)](https://en.wikipedia.org/wiki/Miranda_(moon)); [NASA Science: Miranda](https://science.nasa.gov/uranus/moons/miranda/); [Simple English Wikipedia: Miranda (moon)](https://simple.wikipedia.org/wiki/Miranda_(moon)) |
+| Ariel | 3 | 3,873 | [Wikipedia: Ariel (moon)](https://en.wikipedia.org/wiki/Ariel_(moon)); [NASA Science: Ariel](https://science.nasa.gov/uranus/moons/ariel/); [Simple English Wikipedia: Ariel (moon)](https://simple.wikipedia.org/wiki/Ariel_(moon)) |
+| Titania | 3 | 3,595 | [Wikipedia: Titania (moon)](https://en.wikipedia.org/wiki/Titania_(moon)); [NASA Science: Titania](https://science.nasa.gov/uranus/moons/titania/); [Simple English Wikipedia: Titania (moon)](https://simple.wikipedia.org/wiki/Titania_(moon)) |
+| Oberon | 3 | 2,514 | [Wikipedia: Oberon (moon)](https://en.wikipedia.org/wiki/Oberon_(moon)); [NASA Science: Oberon](https://science.nasa.gov/uranus/moons/oberon/); [Simple English Wikipedia: Oberon (moon)](https://simple.wikipedia.org/wiki/Oberon_(moon)) |
 | Neptune | 4 | 11,164 | [Wikipedia: Neptune](https://en.wikipedia.org/wiki/Neptune); [NASA Science: Neptune](https://science.nasa.gov/neptune/); [Simple English Wikipedia: Neptune](https://simple.wikipedia.org/wiki/Neptune); [NASA Science: Neptune: Facts](https://science.nasa.gov/neptune/facts/) |
+| Triton | 3 | 5,376 | [Wikipedia: Triton (moon)](https://en.wikipedia.org/wiki/Triton_(moon)); [NASA Science: Triton](https://science.nasa.gov/neptune/moons/triton/); [Simple English Wikipedia: Triton (moon)](https://simple.wikipedia.org/wiki/Triton_(moon)) |
 | Orion Nebula | 4 | 4,282 | [Wikipedia: Orion Nebula](https://en.wikipedia.org/wiki/Orion_Nebula); [NASA Science: Messier 42 (The Orion Nebula)](https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-42/); [Simple English Wikipedia: Orion nebula](https://simple.wikipedia.org/wiki/Orion_nebula); [Wikipedia: Trapezium Cluster](https://en.wikipedia.org/wiki/Trapezium_Cluster) |
 | Crab Nebula | 5 | 13,447 | [Wikipedia: Crab Nebula](https://en.wikipedia.org/wiki/Crab_Nebula); [NASA Science: Messier 1 (The Crab Nebula)](https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-1/); [Simple English Wikipedia: Crab Nebula](https://simple.wikipedia.org/wiki/Crab_Nebula); [Wikipedia: Crab Pulsar](https://en.wikipedia.org/wiki/Crab_Pulsar); [Wikipedia: SN 1054](https://en.wikipedia.org/wiki/SN_1054) |
 | Ring Nebula | 3 | 4,442 | [Wikipedia: Ring Nebula](https://en.wikipedia.org/wiki/Ring_Nebula); [NASA Science: Messier 57 (The Ring Nebula)](https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-57/); [Wikipedia: Planetary nebula](https://en.wikipedia.org/wiki/Planetary_nebula) |

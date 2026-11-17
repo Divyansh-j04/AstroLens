@@ -15,7 +15,7 @@ flowchart LR
     P -->|POST /navigate| S
     P -->|POST /chat| S
     S --> C[EfficientNet-B0<br>+ Grad-CAM]
-    S --> M[MiniLM embeddings<br>nicknames + 1,385 text chunks]
+    S --> M[MiniLM embeddings<br>nicknames + 1,961 text chunks]
     S -->|5 numbered chunks + rules| L[Language model<br>gpt-oss-20b on Groq]
 ```
 
@@ -32,10 +32,10 @@ Every number comes from a file in [`ml/results/`](ml/results); see [REPORT.md](R
 | --- | --- | --- |
 | Photo recognition, test set (189 photos, 14 objects) | 93.1% top-1, 98.4% top-3, macro F1 0.919 | `metrics.json` |
 | Out-of-scope photos rejected ("not one of my objects") | 40 of 66 (all 18 everyday photos) | `metrics.json` |
-| Chat: answer among the top 5 retrieved paragraphs | 30 of 30 questions | `rag_eval_summary.json` |
-| Chat: questions the texts cannot answer, refused | 10 of 10 | `rag_eval_summary.json` |
-| Chat: answers containing the expected fact / citing a source | 29 of 30 / 29 of 30 | `rag_eval_summary.json` |
-| Typed commands sent to the right object | 36 of 40 | `rag_eval_summary.json` |
+| Chat: answer among the top 5 retrieved paragraphs | 38 of 38 questions | `rag_eval_summary.json` |
+| Chat: questions the texts cannot answer, refused | 12 of 12 | `rag_eval_summary.json` |
+| Chat: answers containing the expected fact / citing a source | 36 of 38 / 38 of 38 | `rag_eval_summary.json` |
+| Typed commands sent to the right object | 41 of 47 | `rag_eval_summary.json` |
 
 Six of the 20 objects (Ring, Horsehead, Pleiades, Beehive, M13, Omega Centauri) had too few free-licence photos to train on; they are in the scene and the chat, but the classifier does not recognise them.
 
@@ -99,7 +99,7 @@ All training images, chat texts and scene pictures are free-licence (public doma
 
 - The classifier knows 14 objects. Other galaxies and nebulae often get a confident wrong guess instead of "not one of my objects".
 - Most training photos are processed archive images (Hubble, Webb, spacecraft); phone photos through a small telescope may score lower, and sideways photos are harder.
-- The chat knows only its 76 documents, and answers depend on Groq's free service.
+- The chat knows only its 124 documents, and answers depend on Groq's free service.
 - The 3D scene compresses sizes and distances, and the planets do not move along their orbits.
 
 More in [REPORT.md, section 11](REPORT.md#11-limitations-and-future-work).

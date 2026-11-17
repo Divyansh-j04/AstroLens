@@ -16,6 +16,7 @@ ml/results/corpus_counts.json.
 
 Usage (from the project root):
     python ml/scripts/collect_texts.py
+    python ml/scripts/collect_texts.py --only=io,europa    # just these objects (others keep their texts)
 """
 
 import datetime as dt
@@ -101,8 +102,14 @@ def save(obj_id: str, name: str, title: str, url: str, source: str, licence: str
 def main() -> None:
     objects = json.loads(OBJECTS.read_text(encoding="utf-8"))
     extra = json.loads(EXTRA.read_text(encoding="utf-8"))["objects"]
+    only = next((a.split("=", 1)[1].split(",") for a in sys.argv[1:] if a.startswith("--only=")), None)
     summary: dict[str, list[dict]] = {}
     failures: list[str] = []
+    if only and COUNTS.exists():  # keep the other objects' records from the last full run
+        old = json.loads(COUNTS.read_text(encoding="utf-8"))
+        summary = {k: v for k, v in old["per_object"].items() if k not in only}
+        failures = [f for f in old["failures"] if f.split(":", 1)[0] not in only]
+        objects = [o for o in objects if o["id"] in only]
     for o in objects:
         jobs = []  # (file name, source label, licence, function, argument)
         for s in o["sources"]:
@@ -137,6 +144,7 @@ def main() -> None:
         "script": "ml/scripts/collect_texts.py",
         "retrieved_on": dt.date.today().isoformat(),
         "documents": sum(len(v) for v in summary.values()),
+        "objects": len(summary),
         "words": sum(d["words"] for v in summary.values() for d in v),
         "failures": failures,
         "per_object": summary,

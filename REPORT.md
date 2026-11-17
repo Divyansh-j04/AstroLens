@@ -17,8 +17,8 @@ AstroLens is a web page where a user uploads a photo of a planet, nebula or star
 - **Recognition:** an EfficientNet-B0 network, fine-tuned by transfer learning on 1,401 free-licence images of 14 objects. On held-out test photos it gets 93.1% top-1 and 98.4% top-3 accuracy (macro F1 0.919).
 - **Not one of my objects:** a confidence threshold chosen on validation data rejects 40 of 66 out-of-scope photos, including every everyday photo.
 - **Explanation:** a Grad-CAM heatmap shows which part of the photo decided the answer.
-- **Questions:** retrieval-augmented generation over 76 Wikipedia and NASA documents (MiniLM embeddings, a language model told to answer only from the retrieved text). The answer was in the top 5 retrieved paragraphs for 30 of 30 test questions, and 10 of 10 unanswerable questions were refused.
-- **Typed commands:** names, nicknames and typos reach the right object 36 of 40 times.
+- **Questions:** retrieval-augmented generation over 124 Wikipedia and NASA documents (MiniLM embeddings, a language model told to answer only from the retrieved text). The answer was in the top 5 retrieved paragraphs for 38 of 38 test questions, and 12 of 12 unanswerable questions were refused.
+- **Typed commands:** names, nicknames and typos reach the right object 41 of 47 times.
 
 ## 3. Problem and objectives
 
@@ -43,7 +43,7 @@ flowchart LR
     P -->|POST /navigate| S
     P -->|POST /chat| S
     S --> C[EfficientNet-B0<br>+ Grad-CAM]
-    S --> M[MiniLM embeddings<br>nicknames + 1,385 chunks]
+    S --> M[MiniLM embeddings<br>nicknames + 1,961 chunks]
     S -->|5 numbered chunks + rules| L[Language model<br>gpt-oss-20b on Groq]
     C -->|top 3, unknown?, heatmap| P
     M --> S
@@ -272,11 +272,11 @@ What the heatmaps show:
 The chat uses retrieval-augmented generation (RAG). It looks up the paragraphs most related to the question, and the language model may only answer from those. Nothing is trained in this phase: both models are used as they are, and this phase's work is the texts, the search, the prompt rules and the evaluation.
 
 - **Texts** (`ml/scripts/collect_texts.py`, `ml/data/SOURCES.md`):
-  - 76 documents, 195,241 words, 3 to 5 per object.
+  - 124 documents, 275,307 words, 3 to 5 per object (the 16 moons added on Nov 17 have 3 each).
   - Sources: the English Wikipedia article, the Simple English Wikipedia article (a plain-language explainer), the NASA Science page and, for planets, its "facts" page. Deep-sky objects also get related Wikipedia articles, such as "Pillars of Creation" for the Eagle Nebula and "Arecibo message" for M13.
   - Saved as text files with the title, link, licence and date at the top (`backend/app/data/corpus/`).
 - **Chunks:**
-  - 180 words each, overlapping by 40 words, so a fact on a boundary is whole in one chunk. That gives 1,385 chunks (`ml/results/index_summary.json`).
+  - 180 words each, overlapping by 40 words, so a fact on a boundary is whole in one chunk. That gives 1,961 chunks (`ml/results/index_summary.json`).
   - The plan said about 300 words, but MiniLM reads only the first 256 word pieces (about 190 words) and ignores the rest. 300-word chunks would be only partly searchable.
   - Each chunk keeps its object, title, link and section heading.
 - **Embeddings:**
@@ -284,7 +284,7 @@ The chat uses retrieval-augmented generation (RAG). It looks up the paragraphs m
   - The text embedded is "object name - section: chunk", so a chunk about "its rings" still says which object it is about.
   - Building the index took 1.23 min on the CPU (`ml/scripts/build_index.py`).
 - **Search** (`backend/app/nlp/retriever.py`):
-  - The question becomes a vector, and its cosine similarity with all 1,385 chunk vectors is one NumPy matrix product. This is the same computation as FAISS's basic "flat" index.
+  - The question becomes a vector, and its cosine similarity with all 1,961 chunk vectors is one NumPy matrix product. This is the same computation as FAISS's basic "flat" index.
   - The top 5 chunks are kept. Chunks about the object on screen get +0.10, and the object's name is put in front of the question, so "how far is it?" on the Venus card searches as "Venus: how far is it?".
 - **Language model:**
   - `openai/gpt-oss-20b` on Groq, temperature 0.2, reasoning effort "low" (`backend/app/nlp/chat.py`).
@@ -303,34 +303,34 @@ The chat uses retrieval-augmented generation (RAG). It looks up the paragraphs m
 ## 9. Chat results
 
 Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/results/navigate_eval.csv`, written by `ml/scripts/eval_rag.py`. The test sets are `ml/data/eval/rag_questions.json` and `ml/data/eval/commands.json`.
-- **Chat test set:** 30 questions, each tagged with the document that holds its answer and a short phrase the answer must contain, plus 10 questions the texts cannot answer.
-- **Command test set:** 40 phrases. 10 of the 15 nicknames are listed in `objects.json`; the other 5 ("the hottest planet", "our nearest star", ...) are paraphrases the matcher has never seen.
+- **Chat test set:** 38 questions (30 from Phase 4 and 8 about moons added on Nov 17), each tagged with the document that holds its answer and a short phrase the answer must contain, plus 12 questions the texts cannot answer (2 of them about moons).
+- **Command test set:** 47 phrases (40 from Phase 4 and 7 about moons). 10 of the 15 nicknames are listed in `objects.json`; the other 5 ("the hottest planet", "our nearest star", ...) are paraphrases the matcher has never seen, as are 2 of the moon phrases ("Jupiter's biggest moon", "neptune's moon").
 
 **Table C: chat retrieval and answers**
 
 | Measure | Result |
 | --- | --- |
-| Questions where the right source was in the top 5 (of 30): the tagged document / any chunk containing the answer | 22 / 30 |
+| Questions where the right source was in the top 5 (of 38): the tagged document / any chunk containing the answer | 28 / 38 |
 | Answers fully supported by the sources, manual check (of 10) | _author to check: `ml/results/rag_manual_check.csv`_ |
-| Answers containing the expected fact, automatic check (of 30) | 29 |
-| Answers citing at least one source (of 30) | 29 |
-| Answers citing the tagged document (of 30) | 17 |
-| Answerable questions wrongly refused (of 30) | 0 |
-| Unanswerable questions correctly refused (of 10) | 10 |
-| Median answer time (seconds; search 46.8 ms + language model 812.2 ms) | 0.91 |
+| Answers containing the expected fact, automatic check (of 38) | 36 |
+| Answers citing at least one source (of 38) | 38 |
+| Answers citing the tagged document (of 38) | 23 |
+| Answerable questions wrongly refused (of 38) | 0 |
+| Unanswerable questions correctly refused (of 12) | 12 |
+| Median answer time (seconds; search 10.2 ms + language model 786.4 ms) | 0.79 |
 
-**Search detail (of 30 questions).**
+**Search detail (of 38 questions).**
 - "Tagged document" means a chunk from the document tagged as holding the answer.
 - "Answer found" means any chunk that contains the expected answer. The same fact is often in Wikipedia and in NASA, so this is the fairer test.
 
 | Setting | Tagged doc @1 / @3 / @5 | Answer found @1 / @3 / @5 |
 | --- | --- | --- |
-| Question only (no object context) | 14 / 22 / 22 | 19 / 26 / 30 |
-| App: object name in front + current-object bonus | 14 / 21 / 22 | 18 / 27 / 30 |
+| Question only (no object context) | 18 / 27 / 28 | 23 / 33 / 38 |
+| App: object name in front + current-object bonus | 17 / 26 / 28 | 24 / 35 / 38 |
 
 **Reading the results:**
-- **Object context:** it makes no difference on these 30 questions, because each one already names its object or a distinctive topic. It is there for follow-ups that do not name the object. The browser check's follow-up "How long is a day there?" was answered about Mars, and the tests check that the current object's texts come first.
-- **The automatic fact check:** it is strict. After the first run, three equivalent values that are in the sources were added to the answer key (4.5 billion years for the Sun, 70.8% for Earth's water, 9.9 hours for Jupiter's day). No-break spaces the model writes inside numbers ("15 million") are now treated as normal spaces. The saved answers, and the search results, were then re-checked against the updated key without asking the model again (`eval_rag.py --rescore`). The one remaining miss quotes Wikipedia's 2,200 km/h for Neptune's winds rather than NASA's 1,200 mph in the key, so the key is stricter than the answer. One correct answer (how Neptune was discovered) has no [n] markers and so counts as uncited.
+- **Object context:** it makes little difference on these 38 questions, because each one already names its object or a distinctive topic. It is there for follow-ups that do not name the object. The browser check's follow-up "How long is a day there?" was answered about Mars, and the tests check that the current object's texts come first.
+- **The automatic fact check:** it is strict. After the first run, three equivalent values that are in the sources were added to the answer key (4.5 billion years for the Sun, 70.8% for Earth's water, 9.9 hours for Jupiter's day). No-break spaces the model writes inside numbers ("15 million") are now treated as normal spaces. The saved answers, and the search results, were then re-checked against the updated key without asking the model again (`eval_rag.py --rescore`). In the latest run the two misses are both correct answers worded differently from the key: Wikipedia's 2,200 km/h for Neptune's winds (the key has NASA's 1,200 mph), and "more than 400 active volcanoes" on Io (the key says "hundreds"). The key was not widened a second time.
 - **Timing:** the evaluation waits 15 s between questions. In a first run with only 2 s between them, the free Groq tier slowed back-to-back calls to a median of 9533.6 ms (`ml/results/rag_eval_summary_2s_spacing.json`), which measures the free tier's limit, not one user's wait.
 - **Repeat runs:** the language model runs at temperature 0.2, so a repeat run can word answers differently.
 
@@ -354,10 +354,9 @@ Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/re
    > **A:** I don't know from my sources.
 
 **Two failures:**
-1. **An answer without citations.**
-   - Asked "How was Neptune discovered?", the model gave a correct answer but left out the [n] markers:
-     > Neptune was first predicted by mathematicians Urbain Le Verrier and John Couch Adams, who calculated that an unseen planet was tugging on Uranus’s orbit. Their calculations led astronomer Johann Galle…
-   - The page then lists no sources under that answer, even though the paragraphs were retrieved. The rule "cite every fact" is followed in 29 of 30 answers, not all of them.
+1. **A moon described rather than named.**
+   - "Jupiter's biggest moon" scored highest for Ganymede, but Titania came within the 0.05 margin, so the app asked "Did you mean Ganymede or Titania?" instead of flying. "neptune's moon" flew to Neptune itself (`ml/results/navigate_eval.csv`).
+   - The matcher compares meaning with names and nicknames only; it does not understand "X's moon" as a relation. Nicknames such as "Jupiter's largest moon" in `objects.json` would fix these cases.
 2. **A nickname the matcher was not given.**
    - "the planet with the giant storm" went to Neptune instead of Jupiter (`ml/results/navigate_eval.csv`).
    - MiniLM found Neptune's nickname "the windy planet" closer in meaning than any of Jupiter's nicknames ("the gas giant", "Great Red Spot planet"). The only fix is more nicknames in `objects.json`.
@@ -369,17 +368,18 @@ Source: `ml/results/rag_eval_summary.json`, `ml/results/rag_eval.csv` and `ml/re
 | Exact names | 15 | 100 (15 of 15) |
 | Nicknames | 15 | 80 (12 of 15) |
 | Typos or extra words | 10 | 90 (9 of 10) |
-| **All** | 40 | **90** (36 of 40) |
+| Moons (names, nicknames, paraphrases, a typo; added Nov 17) | 7 | 71 (5 of 7) |
+| **All** | 47 | **87** (41 of 47) |
 
-**What each part adds (same 40 phrases):**
+**What each part adds (same 47 phrases):**
 
-| Setting | Exact | Nicknames | Typos | All | Asked "did you mean" | Median time (ms) |
-| --- | --- | --- | --- | --- | --- | --- |
-| MiniLM only | 15/15 | 12/15 | 3/10 | 30/40 | 4 | 11.9 |
-| MiniLM + spelling | 15/15 | 12/15 | 9/10 | 36/40 | 1 | 13.8 |
-| MiniLM + spelling + margin (app) | 15/15 | 12/15 | 9/10 | 36/40 | 2 | 14.1 |
+| Setting | Exact | Nicknames | Typos | Moons | All | Asked "did you mean" | Median time (ms) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MiniLM only | 15/15 | 12/15 | 3/10 | 6/7 | 36/47 | 4 | 6.4 |
+| MiniLM + spelling | 15/15 | 12/15 | 9/10 | 6/7 | 42/47 | 1 | 7.9 |
+| MiniLM + spelling + margin (app) | 15/15 | 12/15 | 9/10 | 5/7 | 41/47 | 3 | 8.0 |
 
-The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated word pieces). The margin makes a bare "nebula" ask instead of guessing; it changes no answer in this set. The phrases the app still gets wrong: "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (fly_to neptune, expected jupiter); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula).
+The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated word pieces). The margin makes a bare "nebula" ask instead of guessing; with the moons added it also turns "Jupiter's biggest moon" (Ganymede and Titania almost tied) into a question, which this test counts as wrong. The phrases the app still gets wrong: "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (fly_to neptune, expected jupiter); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula); "Jupiter's biggest moon" (clarify, expected ganymede); "neptune's moon" (fly_to neptune, expected triton).
 
 **Phase 4 browser check.** Source: `ml/results/phase4_chat_check.json`, written by `node scripts/check-phase4.mjs` (run from `frontend/`), with the real server and language model in Microsoft Edge. Screenshots are in `ml/results/phase4_screens/`.
 
@@ -430,13 +430,13 @@ The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated wor
 | 3 | Unknown message with the closest 3 guesses; the camera stays put | Done |
 | 3 | Error messages on the page: server unreachable, too large, not an image, server error | Done |
 | 3 | API tests (`tests/test_api.py`) and browser check (`frontend/scripts/check-phase3.mjs`) | Done |
-| 4 | Chat texts: 76 documents from Wikipedia, Simple English Wikipedia and NASA, with titles, links and licences (`collect_texts.py`) | Done |
-| 4 | Search index: 1,385 chunks embedded with MiniLM (`build_index.py`) | Done |
+| 4 | Chat texts: 124 documents (moons added Nov 17) from Wikipedia, Simple English Wikipedia and NASA, with titles, links and licences (`collect_texts.py`) | Done |
+| 4 | Search index: 1,961 chunks embedded with MiniLM (`build_index.py`) | Done |
 | 4 | `POST /chat`: top-5 search preferring the current object, answers only from the sources with [n] citations, "I don't know from my sources." otherwise | Done |
 | 4 | `POST /navigate`: names, nicknames and typos; fly, "did you mean" with two buttons, or hand over to the chat | Done |
 | 4 | Chat panel: 3 suggested questions, numbered source links, typing indicator, one conversation per object, follow-ups keep the object | Done |
 | 4 | Command bar replaces the temporary dropdown (object names offered while typing); a typed question flies to its object and answers there | Done |
-| 4 | Evaluation: 30 questions + 10 unanswerable, 40 command phrases (`eval_rag.py`); manual-check sheet for 10 answers | Done (manual check: author) |
+| 4 | Evaluation: 38 questions + 12 unanswerable, 47 command phrases (`eval_rag.py`); manual-check sheet for 10 answers | Done (manual check: author) |
 | 4 | Tests (`tests/test_chat_navigate.py`, language model faked) and browser check (`frontend/scripts/check-phase4.mjs`) | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
@@ -514,7 +514,7 @@ The times are on the author's laptop, with the server on the same machine; the d
 - The frame rates were measured on one laptop with a fast GPU (RTX 4060). Slower machines, and phones in particular, have not been measured yet (Phase 5).
 - Grad-CAM is coarse: the network's last feature maps are 7 x 7 cells, so the heatmap shows roughly where the model looked, not exact outlines. It covers the centre crop the model saw, so the edges of a wide photo are not part of it.
 - The 'server waking up' message was tested by holding a request back for 6.5 s, not with a real sleeping server (that comes with deployment in Phase 5).
-- The chat knows only its 76 documents. Questions about anything else get "I don't know from my sources.", even when the language model itself would know the answer. That is intended.
+- The chat knows only its 124 documents. Questions about anything else get "I don't know from my sources.", even when the language model itself would know the answer. That is intended.
 - The answers depend on an outside service (Groq's free tier). If it is slow or down, the chat shows an error, and many fast questions in a row are slowed down by its limits.
 - The automatic fact check in Table C only looks for a key phrase. Whether each sentence is supported by its cited source needs the manual check (`ml/results/rag_manual_check.csv`).
 - The command matcher does not understand descriptions it was not given, such as "the hottest planet" (clarify, expected venus); "Earth's natural satellite" (clarify, expected moon); "the planet with the giant storm" (fly_to neptune, expected jupiter); "can you show me the ring nebula please" (chat ring_nebula, expected ring_nebula). More nicknames in `objects.json` would fix these one by one.
@@ -546,7 +546,7 @@ The times are on the author's laptop, with the server on the same machine; the d
 
 ## 13. Appendix
 
-**A. The 30 test questions** (`ml/data/eval/rag_questions.json`; object on screen, the document tagged as holding the answer)
+**A. The 38 test questions** (`ml/data/eval/rag_questions.json`; object on screen, the document tagged as holding the answer)
 
 1. How old is the Sun? (Sun; `nasa-facts`)
 2. How hot is the Sun's core? (Sun; `nasa-facts`)
@@ -578,8 +578,16 @@ The times are on the author's laptop, with the server on the same machine; the d
 28. What makes the Horsehead Nebula look dark? (Horsehead Nebula; `wikipedia`)
 29. How old are the stars in the Pleiades? (Pleiades; `wikipedia`)
 30. What message was sent toward M13, and when? (Hercules Cluster (M13); `wikipedia-arecibo-message`)
+31. How many volcanoes does Io have? (Io; `nasa`)
+32. Is Ganymede bigger than Mercury? (Ganymede; `nasa`)
+33. What are Titan's lakes made of? (Titan; `nasa`)
+34. What sprays out of Enceladus's geysers? (Enceladus; `nasa`)
+35. Which way does Triton orbit Neptune? (Triton; `nasa`)
+36. Who discovered Phobos? (Phobos; `wikipedia`)
+37. What is the giant crater on Mimas called? (Mimas; `wikipedia`)
+38. How far is Callisto from Jupiter? (Callisto; `wikipedia`)
 
-**B. The 10 questions the texts cannot answer**
+**B. The 12 questions the texts cannot answer**
 
 1. Who won the 2022 football World Cup?
 2. What is the best telescope to buy for under 500 dollars?
@@ -591,8 +599,10 @@ The times are on the author's laptop, with the server on the same machine; the d
 8. How many students in my class have seen the Orion Nebula?
 9. What is the recipe for a chocolate cake?
 10. Which streaming service has the most space documentaries?
+11. What is the name of the hotel on Titan?
+12. How much does a holiday trip to Europa cost?
 
-**C. The 40 command phrases** (`ml/data/eval/commands.json`; expected object; ✓ = flew there in the app's setting)
+**C. The 47 command phrases** (`ml/data/eval/commands.json`; expected object; ✓ = flew there in the app's setting)
 
 | # | Phrase | Type | Expected | Result |
 | --- | --- | --- | --- | --- |
@@ -636,6 +646,13 @@ The times are on the author's laptop, with the server on the same machine; the d
 | 38 | please take me to the horse head nebula | typo | Horsehead Nebula | ✓ |
 | 39 | can you show me the ring nebula please | typo | Ring Nebula | chat Ring Nebula |
 | 40 | i want to visit uranus now | typo | Uranus | ✓ |
+| 41 | take me to Titan | moon | Titan | ✓ |
+| 42 | Europa | moon | Europa | ✓ |
+| 43 | the volcanic moon | moon | Io | ✓ |
+| 44 | fly to the death star moon | moon | Mimas | ✓ |
+| 45 | Jupiter's biggest moon | moon (not in nicknames) | Ganymede | clarify |
+| 46 | neptune's moon | moon (not in nicknames) | Triton | fly_to Neptune |
+| 47 | ganymeed | moon | Ganymede | ✓ |
 
 ---
 
@@ -789,3 +806,11 @@ The times are on the author's laptop, with the server on the same machine; the d
   - **Browser check:** passed (`ml/results/phase4_chat_check.json`).
   - **Still to do:** the manual check of 10 answers is left for the author.
   - **Tests:** pytest, 52 passed. Phase 4 complete.
+- **Nov 17, 2026 (after Phase 5: moons):**
+  - 16 significant moons added to `objects.json` and the 3D scene (Phobos with its real map; 15 with plain-colour placeholders until their maps download).
+  - Chat texts collected for them: 124 documents and 1,961 chunks in total.
+  - Evaluation re-run with 8 moon questions, 2 unanswerable moon questions and 7 moon phrases (`ml/results/rag_eval_summary.json`):
+    - answer found in the top 5 for 38 of 38;
+    - 12 of 12 unanswerable questions refused;
+    - commands 41 of 47 right (moons 5 of 7).
+  - Tests: pytest, 56 passed.

@@ -1,0 +1,32 @@
+---
+title: "Io"
+url: "https://science.nasa.gov/jupiter/jupiter-moons/io/"
+object_id: "io"
+source: "NASA Science"
+licence: "Public domain (NASA; not copyrighted in the United States)"
+retrieved_on: "2026-11-17"
+---
+
+Volcanic activity on this Jovian moon is so abundant, it resurfaces the face of Io with new deposits faster than comets and asteroids can mark it with large craters.
+
+## Facts About Io
+
+Jupiter's moon Io is the most volcanically active world in the solar system, with hundreds of volcanoes, some erupting lava fountains dozens of miles (or kilometers) high.
+
+Io is caught in a tug-of-war between Jupiter's massive gravity and the smaller but precisely timed pulls from two neighboring moons that orbit farther from Jupiter—Europa and Ganymede. Io’s volcanoes are at times so powerful that they are seen with large telescopes on Earth, and Io even has lakes of molten silicate lava on its surface. Only slightly larger than Earth’s Moon, Io is about one-quarter the diameter of Earth itself.
+
+## Exploring Io
+
+Most of what we know about Io comes from the Galileo spacecraft, which made a detailed study of the Jupiter system.
+
+It was Voyager 1 that spotted the first signs of the little moon’s powerful volcanism in 1979. Since 2003, three spacecraft – Ulysses, Cassini, New Horizons, and Juno – have made additional close observations of Io. Juno is currently orbiting Jupiter, but its prime mission is focused on the giant planet, not the moons.
+
+## Io Multimedia
+
+## Jupiter Moon News
+
+Webb Unravels Small Cosmic Details With Interferometry Observing Mode
+
+NASA Samples Antarctic Water to Inform Search for Life on Icy Worlds
+
+Ammonia-Bearing Compounds Discovered at Surface of Jupiter’s Moon Europa

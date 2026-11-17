@@ -1,8 +1,9 @@
 {
   "script": "ml/scripts/collect_texts.py",
-  "retrieved_on": "2026-11-16",
-  "documents": 76,
-  "words": 195241,
+  "retrieved_on": "2026-11-17",
+  "documents": 124,
+  "objects": 36,
+  "words": 275307,
   "failures": [
     "ring_nebula: Ring Nebula: no simple Wikipedia article 'Ring Nebula'",
     "eagle_nebula: Eagle Nebula: no simple Wikipedia article 'Eagle Nebula'",
@@ -580,6 +581,374 @@
         "url": "https://en.wikipedia.org/wiki/Globular_cluster",
         "source": "Wikipedia",
         "words": 5703
+      }
+    ],
+    "phobos": [
+      {
+        "file": "wikipedia.md",
+        "title": "Phobos (moon)",
+        "url": "https://en.wikipedia.org/wiki/Phobos_(moon)",
+        "source": "Wikipedia",
+        "words": 3854
+      },
+      {
+        "file": "nasa.md",
+        "title": "Phobos",
+        "url": "https://science.nasa.gov/mars/moons/phobos/",
+        "source": "NASA Science",
+        "words": 494
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Phobos (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Phobos_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 189
+      }
+    ],
+    "deimos": [
+      {
+        "file": "wikipedia.md",
+        "title": "Deimos (moon)",
+        "url": "https://en.wikipedia.org/wiki/Deimos_(moon)",
+        "source": "Wikipedia",
+        "words": 1508
+      },
+      {
+        "file": "nasa.md",
+        "title": "Deimos",
+        "url": "https://science.nasa.gov/mars/moons/deimos/",
+        "source": "NASA Science",
+        "words": 308
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Deimos (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Deimos_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 294
+      }
+    ],
+    "io": [
+      {
+        "file": "wikipedia.md",
+        "title": "Io (moon)",
+        "url": "https://en.wikipedia.org/wiki/Io_(moon)",
+        "source": "Wikipedia",
+        "words": 7891
+      },
+      {
+        "file": "nasa.md",
+        "title": "Io",
+        "url": "https://science.nasa.gov/jupiter/jupiter-moons/io/",
+        "source": "NASA Science",
+        "words": 246
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Io (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Io_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 185
+      }
+    ],
+    "europa": [
+      {
+        "file": "wikipedia.md",
+        "title": "Europa (moon)",
+        "url": "https://en.wikipedia.org/wiki/Europa_(moon)",
+        "source": "Wikipedia",
+        "words": 7209
+      },
+      {
+        "file": "nasa.md",
+        "title": "Europa",
+        "url": "https://science.nasa.gov/jupiter/jupiter-moons/europa/",
+        "source": "NASA Science",
+        "words": 265
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Europa (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Europa_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 167
+      }
+    ],
+    "ganymede": [
+      {
+        "file": "wikipedia.md",
+        "title": "Ganymede (moon)",
+        "url": "https://en.wikipedia.org/wiki/Ganymede_(moon)",
+        "source": "Wikipedia",
+        "words": 6296
+      },
+      {
+        "file": "nasa.md",
+        "title": "Ganymede",
+        "url": "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/",
+        "source": "NASA Science",
+        "words": 300
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Ganymede (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Ganymede_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 267
+      }
+    ],
+    "callisto": [
+      {
+        "file": "wikipedia.md",
+        "title": "Callisto (moon)",
+        "url": "https://en.wikipedia.org/wiki/Callisto_(moon)",
+        "source": "Wikipedia",
+        "words": 4707
+      },
+      {
+        "file": "nasa.md",
+        "title": "Callisto",
+        "url": "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+        "source": "NASA Science",
+        "words": 169
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Callisto (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Callisto_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 428
+      }
+    ],
+    "titan": [
+      {
+        "file": "wikipedia.md",
+        "title": "Titan (moon)",
+        "url": "https://en.wikipedia.org/wiki/Titan_(moon)",
+        "source": "Wikipedia",
+        "words": 6396
+      },
+      {
+        "file": "nasa.md",
+        "title": "Titan",
+        "url": "https://science.nasa.gov/saturn/moons/titan/",
+        "source": "NASA Science",
+        "words": 224
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Titan (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Titan_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 887
+      }
+    ],
+    "enceladus": [
+      {
+        "file": "wikipedia.md",
+        "title": "Enceladus",
+        "url": "https://en.wikipedia.org/wiki/Enceladus",
+        "source": "Wikipedia",
+        "words": 7471
+      },
+      {
+        "file": "nasa.md",
+        "title": "Enceladus",
+        "url": "https://science.nasa.gov/saturn/moons/enceladus/",
+        "source": "NASA Science",
+        "words": 899
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Enceladus",
+        "url": "https://simple.wikipedia.org/wiki/Enceladus",
+        "source": "Simple English Wikipedia",
+        "words": 9
+      }
+    ],
+    "mimas": [
+      {
+        "file": "wikipedia.md",
+        "title": "Mimas",
+        "url": "https://en.wikipedia.org/wiki/Mimas",
+        "source": "Wikipedia",
+        "words": 1500
+      },
+      {
+        "file": "nasa.md",
+        "title": "Mimas",
+        "url": "https://science.nasa.gov/saturn/moons/mimas/",
+        "source": "NASA Science",
+        "words": 615
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Mimas (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Mimas_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 232
+      }
+    ],
+    "rhea": [
+      {
+        "file": "wikipedia.md",
+        "title": "Rhea (moon)",
+        "url": "https://en.wikipedia.org/wiki/Rhea_(moon)",
+        "source": "Wikipedia",
+        "words": 2065
+      },
+      {
+        "file": "nasa.md",
+        "title": "Rhea",
+        "url": "https://science.nasa.gov/saturn/moons/rhea/",
+        "source": "NASA Science",
+        "words": 916
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Rhea (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Rhea_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 59
+      }
+    ],
+    "iapetus": [
+      {
+        "file": "wikipedia.md",
+        "title": "Iapetus (moon)",
+        "url": "https://en.wikipedia.org/wiki/Iapetus_(moon)",
+        "source": "Wikipedia",
+        "words": 2886
+      },
+      {
+        "file": "nasa.md",
+        "title": "Iapetus",
+        "url": "https://science.nasa.gov/saturn/moons/iapetus/",
+        "source": "NASA Science",
+        "words": 874
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Iapetus (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Iapetus_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 142
+      }
+    ],
+    "miranda": [
+      {
+        "file": "wikipedia.md",
+        "title": "Miranda (moon)",
+        "url": "https://en.wikipedia.org/wiki/Miranda_(moon)",
+        "source": "Wikipedia",
+        "words": 4195
+      },
+      {
+        "file": "nasa.md",
+        "title": "Miranda",
+        "url": "https://science.nasa.gov/uranus/moons/miranda/",
+        "source": "NASA Science",
+        "words": 432
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Miranda (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Miranda_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 129
+      }
+    ],
+    "ariel": [
+      {
+        "file": "wikipedia.md",
+        "title": "Ariel (moon)",
+        "url": "https://en.wikipedia.org/wiki/Ariel_(moon)",
+        "source": "Wikipedia",
+        "words": 3353
+      },
+      {
+        "file": "nasa.md",
+        "title": "Ariel",
+        "url": "https://science.nasa.gov/uranus/moons/ariel/",
+        "source": "NASA Science",
+        "words": 466
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Ariel (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Ariel_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 54
+      }
+    ],
+    "titania": [
+      {
+        "file": "wikipedia.md",
+        "title": "Titania (moon)",
+        "url": "https://en.wikipedia.org/wiki/Titania_(moon)",
+        "source": "Wikipedia",
+        "words": 3058
+      },
+      {
+        "file": "nasa.md",
+        "title": "Titania",
+        "url": "https://science.nasa.gov/uranus/moons/titania/",
+        "source": "NASA Science",
+        "words": 144
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Titania (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Titania_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 393
+      }
+    ],
+    "oberon": [
+      {
+        "file": "wikipedia.md",
+        "title": "Oberon (moon)",
+        "url": "https://en.wikipedia.org/wiki/Oberon_(moon)",
+        "source": "Wikipedia",
+        "words": 2250
+      },
+      {
+        "file": "nasa.md",
+        "title": "Oberon",
+        "url": "https://science.nasa.gov/uranus/moons/oberon/",
+        "source": "NASA Science",
+        "words": 110
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Oberon (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Oberon_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 154
+      }
+    ],
+    "triton": [
+      {
+        "file": "wikipedia.md",
+        "title": "Triton (moon)",
+        "url": "https://en.wikipedia.org/wiki/Triton_(moon)",
+        "source": "Wikipedia",
+        "words": 4458
+      },
+      {
+        "file": "nasa.md",
+        "title": "Triton",
+        "url": "https://science.nasa.gov/neptune/moons/triton/",
+        "source": "NASA Science",
+        "words": 409
+      },
+      {
+        "file": "simple-wikipedia.md",
+        "title": "Triton (moon)",
+        "url": "https://simple.wikipedia.org/wiki/Triton_(moon)",
+        "source": "Simple English Wikipedia",
+        "words": 509
       }
     ]
   }

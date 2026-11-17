@@ -1,27 +1,27 @@
 setting,text,type,expect,in_aliases,intent,object_id,score,candidates,correct
 MiniLM only,Sun,exact,sun,,fly_to,sun,1.0,sun venus moon,True
-MiniLM only,Mercury,exact,mercury,,fly_to,mercury,1.0,mercury neptune saturn,True
+MiniLM only,Mercury,exact,mercury,,fly_to,mercury,1.0,mercury neptune triton,True
 MiniLM only,Venus,exact,venus,,fly_to,venus,1.0,venus jupiter uranus,True
 MiniLM only,go to Earth,exact,earth,,fly_to,earth,1.0,earth moon mars,True
-MiniLM only,Moon,exact,moon,,fly_to,moon,1.0,moon earth mars,True
-MiniLM only,fly to Mars,exact,mars,,fly_to,mars,1.0,mars earth saturn,True
-MiniLM only,Jupiter,exact,jupiter,,fly_to,jupiter,1.0,jupiter saturn uranus,True
-MiniLM only,take me to Saturn,exact,saturn,,fly_to,saturn,1.0,saturn neptune jupiter,True
-MiniLM only,Neptune,exact,neptune,,fly_to,neptune,1.0,neptune saturn uranus,True
+MiniLM only,Moon,exact,moon,,fly_to,moon,1.0,moon triton mimas,True
+MiniLM only,fly to Mars,exact,mars,,fly_to,mars,1.0,mars phobos deimos,True
+MiniLM only,Jupiter,exact,jupiter,,fly_to,jupiter,1.0,jupiter io europa,True
+MiniLM only,take me to Saturn,exact,saturn,,fly_to,saturn,1.0,saturn mimas enceladus,True
+MiniLM only,Neptune,exact,neptune,,fly_to,neptune,1.0,neptune triton saturn,True
 MiniLM only,Orion Nebula,exact,orion_nebula,,fly_to,orion_nebula,1.0,orion_nebula eagle_nebula ring_nebula,True
 MiniLM only,show me the Crab Nebula,exact,crab_nebula,,fly_to,crab_nebula,0.986,crab_nebula eagle_nebula ring_nebula,True
 MiniLM only,Eagle Nebula,exact,eagle_nebula,,fly_to,eagle_nebula,1.0,eagle_nebula orion_nebula ring_nebula,True
 MiniLM only,Pleiades,exact,pleiades,,fly_to,pleiades,1.0,pleiades orion_nebula carina_nebula,True
 MiniLM only,Beehive Cluster,exact,beehive_cluster,,fly_to,beehive_cluster,1.0,beehive_cluster hercules_cluster earth,True
-MiniLM only,Omega Centauri,exact,omega_centauri,,fly_to,omega_centauri,1.0,omega_centauri horsehead_nebula mercury,True
+MiniLM only,Omega Centauri,exact,omega_centauri,,fly_to,omega_centauri,1.0,omega_centauri triton horsehead_nebula,True
 MiniLM only,take me to the red planet,nickname,mars,True,fly_to,mars,1.0,mars jupiter earth,True
 MiniLM only,the ringed planet,nickname,saturn,True,fly_to,saturn,0.973,saturn earth ring_nebula,True
 MiniLM only,seven sisters,nickname,pleiades,True,fly_to,pleiades,1.0,pleiades venus ring_nebula,True
 MiniLM only,show me the Pillars of Creation,nickname,eagle_nebula,True,fly_to,eagle_nebula,0.97,eagle_nebula saturn pleiades,True
-MiniLM only,the morning star,nickname,venus,True,fly_to,venus,0.962,venus sun eagle_nebula,True
+MiniLM only,the morning star,nickname,venus,True,fly_to,venus,0.962,venus sun mimas,True
 MiniLM only,M42,nickname,orion_nebula,True,fly_to,orion_nebula,1.0,orion_nebula beehive_cluster pleiades,True
 MiniLM only,go to M13,nickname,hercules_cluster,True,fly_to,hercules_cluster,1.0,hercules_cluster crab_nebula eagle_nebula,True
-MiniLM only,Praesepe,nickname,beehive_cluster,True,fly_to,beehive_cluster,1.0,beehive_cluster crab_nebula earth,True
+MiniLM only,Praesepe,nickname,beehive_cluster,True,fly_to,beehive_cluster,1.0,beehive_cluster phobos crab_nebula,True
 MiniLM only,the blue planet,nickname,earth,True,fly_to,earth,1.0,earth mars mercury,True
 MiniLM only,fly to the sideways planet,nickname,uranus,True,fly_to,uranus,0.97,uranus neptune earth,True
 MiniLM only,the hottest planet,nickname,venus,False,fly_to,neptune,0.633,neptune earth jupiter,False
@@ -30,34 +30,41 @@ MiniLM only,Earth's natural satellite,nickname,moon,False,clarify,,0.576,moon ve
 MiniLM only,the planet with the giant storm,nickname,jupiter,False,fly_to,neptune,0.693,neptune jupiter earth,False
 MiniLM only,the most distant planet,nickname,neptune,False,fly_to,neptune,0.851,neptune mercury jupiter,True
 MiniLM only,jupitr,typo,jupiter,,clarify,,0.454,crab_nebula hercules_cluster,False
-MiniLM only,satrun,typo,saturn,,chat,,0.34,sun earth mars,False
-MiniLM only,neptun,typo,neptune,,chat,,0.332,neptune beehive_cluster mercury,False
+MiniLM only,satrun,typo,saturn,,chat,,0.34,sun oberon earth,False
+MiniLM only,neptun,typo,neptune,,chat,,0.362,iapetus rhea neptune,False
 MiniLM only,mercurry,typo,mercury,,chat,,0.437,beehive_cluster hercules_cluster pleiades,False
 MiniLM only,plaeides,typo,pleiades,,clarify,,0.516,beehive_cluster pleiades,False
 MiniLM only,orion nebulla,typo,orion_nebula,,fly_to,orion_nebula,0.648,orion_nebula eagle_nebula venus,True
 MiniLM only,carina nebual,typo,carina_nebula,,clarify,,0.498,carina_nebula pleiades,False
 MiniLM only,please take me to the horse head nebula,typo,horsehead_nebula,,fly_to,horsehead_nebula,0.963,horsehead_nebula ring_nebula eagle_nebula,True
 MiniLM only,can you show me the ring nebula please,typo,ring_nebula,,chat,ring_nebula,0.936,ring_nebula eagle_nebula orion_nebula,False
-MiniLM only,i want to visit uranus now,typo,uranus,,fly_to,uranus,0.902,uranus mars neptune,True
+MiniLM only,i want to visit uranus now,typo,uranus,,fly_to,uranus,0.902,uranus ariel miranda,True
+MiniLM only,take me to Titan,moon,titan,,fly_to,titan,1.0,titan titania saturn,True
+MiniLM only,Europa,moon,europa,,fly_to,europa,1.0,europa jupiter io,True
+MiniLM only,the volcanic moon,moon,io,True,fly_to,io,0.975,io moon callisto,True
+MiniLM only,fly to the death star moon,moon,mimas,True,fly_to,mimas,0.974,mimas moon triton,True
+MiniLM only,Jupiter's biggest moon,moon,ganymede,False,fly_to,ganymede,0.761,ganymede titania europa,True
+MiniLM only,neptune's moon,moon,triton,False,fly_to,neptune,0.808,neptune triton moon,False
+MiniLM only,ganymeed,moon,ganymede,,fly_to,ganymede,0.916,ganymede ring_nebula miranda,True
 MiniLM + spelling,Sun,exact,sun,,fly_to,sun,1.0,sun saturn moon,True
-MiniLM + spelling,Mercury,exact,mercury,,fly_to,mercury,1.0,mercury neptune saturn,True
+MiniLM + spelling,Mercury,exact,mercury,,fly_to,mercury,1.0,mercury neptune triton,True
 MiniLM + spelling,Venus,exact,venus,,fly_to,venus,1.0,venus jupiter uranus,True
 MiniLM + spelling,go to Earth,exact,earth,,fly_to,earth,1.0,earth moon venus,True
-MiniLM + spelling,Moon,exact,moon,,fly_to,moon,1.0,moon earth mars,True
-MiniLM + spelling,fly to Mars,exact,mars,,fly_to,mars,1.0,mars earth saturn,True
-MiniLM + spelling,Jupiter,exact,jupiter,,fly_to,jupiter,1.0,jupiter saturn uranus,True
-MiniLM + spelling,take me to Saturn,exact,saturn,,fly_to,saturn,1.0,saturn neptune sun,True
-MiniLM + spelling,Neptune,exact,neptune,,fly_to,neptune,1.0,neptune saturn uranus,True
+MiniLM + spelling,Moon,exact,moon,,fly_to,moon,1.0,moon triton mimas,True
+MiniLM + spelling,fly to Mars,exact,mars,,fly_to,mars,1.0,mars phobos deimos,True
+MiniLM + spelling,Jupiter,exact,jupiter,,fly_to,jupiter,1.0,jupiter io europa,True
+MiniLM + spelling,take me to Saturn,exact,saturn,,fly_to,saturn,1.0,saturn mimas enceladus,True
+MiniLM + spelling,Neptune,exact,neptune,,fly_to,neptune,1.0,neptune triton saturn,True
 MiniLM + spelling,Orion Nebula,exact,orion_nebula,,fly_to,orion_nebula,1.0,orion_nebula ring_nebula eagle_nebula,True
 MiniLM + spelling,show me the Crab Nebula,exact,crab_nebula,,fly_to,crab_nebula,1.0,crab_nebula carina_nebula eagle_nebula,True
 MiniLM + spelling,Eagle Nebula,exact,eagle_nebula,,fly_to,eagle_nebula,1.0,eagle_nebula orion_nebula ring_nebula,True
-MiniLM + spelling,Pleiades,exact,pleiades,,fly_to,pleiades,1.0,pleiades orion_nebula carina_nebula,True
+MiniLM + spelling,Pleiades,exact,pleiades,,fly_to,pleiades,1.0,pleiades orion_nebula iapetus,True
 MiniLM + spelling,Beehive Cluster,exact,beehive_cluster,,fly_to,beehive_cluster,1.0,beehive_cluster pleiades hercules_cluster,True
 MiniLM + spelling,Omega Centauri,exact,omega_centauri,,fly_to,omega_centauri,1.0,omega_centauri earth mercury,True
 MiniLM + spelling,take me to the red planet,nickname,mars,True,fly_to,mars,1.0,mars saturn jupiter,True
 MiniLM + spelling,the ringed planet,nickname,saturn,True,fly_to,saturn,1.0,saturn mars neptune,True
 MiniLM + spelling,seven sisters,nickname,pleiades,True,fly_to,pleiades,1.0,pleiades venus beehive_cluster,True
-MiniLM + spelling,show me the Pillars of Creation,nickname,eagle_nebula,True,fly_to,eagle_nebula,1.0,eagle_nebula venus moon,True
+MiniLM + spelling,show me the Pillars of Creation,nickname,eagle_nebula,True,fly_to,eagle_nebula,1.0,eagle_nebula titania venus,True
 MiniLM + spelling,the morning star,nickname,venus,True,fly_to,venus,1.0,venus sun ring_nebula,True
 MiniLM + spelling,M42,nickname,orion_nebula,True,fly_to,orion_nebula,1.0,orion_nebula beehive_cluster pleiades,True
 MiniLM + spelling,go to M13,nickname,hercules_cluster,True,fly_to,hercules_cluster,1.0,hercules_cluster crab_nebula eagle_nebula,True
@@ -69,35 +76,42 @@ MiniLM + spelling,our nearest star,nickname,sun,False,fly_to,sun,0.756,sun venus
 MiniLM + spelling,Earth's natural satellite,nickname,moon,False,clarify,,0.576,moon venus,False
 MiniLM + spelling,the planet with the giant storm,nickname,jupiter,False,fly_to,neptune,0.693,neptune saturn jupiter,False
 MiniLM + spelling,the most distant planet,nickname,neptune,False,fly_to,neptune,0.851,neptune mercury jupiter,True
-MiniLM + spelling,jupitr,typo,jupiter,,fly_to,jupiter,0.923,jupiter crab_nebula hercules_cluster,True
-MiniLM + spelling,satrun,typo,saturn,,fly_to,saturn,0.833,saturn sun pleiades,True
-MiniLM + spelling,neptun,typo,neptune,,fly_to,neptune,0.923,neptune saturn sun,True
+MiniLM + spelling,jupitr,typo,jupiter,,fly_to,jupiter,0.923,jupiter io europa,True
+MiniLM + spelling,satrun,typo,saturn,,fly_to,saturn,0.833,saturn mimas rhea,True
+MiniLM + spelling,neptun,typo,neptune,,fly_to,neptune,0.923,neptune triton saturn,True
 MiniLM + spelling,mercurry,typo,mercury,,fly_to,mercury,0.933,mercury earth omega_centauri,True
-MiniLM + spelling,plaeides,typo,pleiades,,fly_to,pleiades,0.875,pleiades beehive_cluster saturn,True
+MiniLM + spelling,plaeides,typo,pleiades,,fly_to,pleiades,0.875,pleiades beehive_cluster ganymede,True
 MiniLM + spelling,orion nebulla,typo,orion_nebula,,fly_to,orion_nebula,0.96,orion_nebula ring_nebula carina_nebula,True
 MiniLM + spelling,carina nebual,typo,carina_nebula,,fly_to,carina_nebula,0.923,carina_nebula ring_nebula orion_nebula,True
 MiniLM + spelling,please take me to the horse head nebula,typo,horsehead_nebula,,fly_to,horsehead_nebula,0.97,horsehead_nebula ring_nebula eagle_nebula,True
 MiniLM + spelling,can you show me the ring nebula please,typo,ring_nebula,,chat,ring_nebula,0.936,ring_nebula eagle_nebula orion_nebula,False
-MiniLM + spelling,i want to visit uranus now,typo,uranus,,fly_to,uranus,0.902,uranus mars neptune,True
+MiniLM + spelling,i want to visit uranus now,typo,uranus,,fly_to,uranus,0.902,uranus ariel miranda,True
+MiniLM + spelling,take me to Titan,moon,titan,,fly_to,titan,1.0,titan titania triton,True
+MiniLM + spelling,Europa,moon,europa,,fly_to,europa,1.0,europa jupiter io,True
+MiniLM + spelling,the volcanic moon,moon,io,True,fly_to,io,1.0,io moon callisto,True
+MiniLM + spelling,fly to the death star moon,moon,mimas,True,fly_to,mimas,1.0,mimas moon triton,True
+MiniLM + spelling,Jupiter's biggest moon,moon,ganymede,False,fly_to,ganymede,0.761,ganymede titania europa,True
+MiniLM + spelling,neptune's moon,moon,triton,False,fly_to,neptune,0.808,neptune triton moon,False
+MiniLM + spelling,ganymeed,moon,ganymede,,fly_to,ganymede,0.916,ganymede miranda neptune,True
 MiniLM + spelling + margin (app),Sun,exact,sun,,fly_to,sun,1.0,sun saturn moon,True
-MiniLM + spelling + margin (app),Mercury,exact,mercury,,fly_to,mercury,1.0,mercury neptune saturn,True
+MiniLM + spelling + margin (app),Mercury,exact,mercury,,fly_to,mercury,1.0,mercury neptune triton,True
 MiniLM + spelling + margin (app),Venus,exact,venus,,fly_to,venus,1.0,venus jupiter uranus,True
 MiniLM + spelling + margin (app),go to Earth,exact,earth,,fly_to,earth,1.0,earth moon venus,True
-MiniLM + spelling + margin (app),Moon,exact,moon,,fly_to,moon,1.0,moon earth mars,True
-MiniLM + spelling + margin (app),fly to Mars,exact,mars,,fly_to,mars,1.0,mars earth saturn,True
-MiniLM + spelling + margin (app),Jupiter,exact,jupiter,,fly_to,jupiter,1.0,jupiter saturn uranus,True
-MiniLM + spelling + margin (app),take me to Saturn,exact,saturn,,fly_to,saturn,1.0,saturn neptune sun,True
-MiniLM + spelling + margin (app),Neptune,exact,neptune,,fly_to,neptune,1.0,neptune saturn uranus,True
+MiniLM + spelling + margin (app),Moon,exact,moon,,fly_to,moon,1.0,moon triton mimas,True
+MiniLM + spelling + margin (app),fly to Mars,exact,mars,,fly_to,mars,1.0,mars phobos deimos,True
+MiniLM + spelling + margin (app),Jupiter,exact,jupiter,,fly_to,jupiter,1.0,jupiter io europa,True
+MiniLM + spelling + margin (app),take me to Saturn,exact,saturn,,fly_to,saturn,1.0,saturn mimas enceladus,True
+MiniLM + spelling + margin (app),Neptune,exact,neptune,,fly_to,neptune,1.0,neptune triton saturn,True
 MiniLM + spelling + margin (app),Orion Nebula,exact,orion_nebula,,fly_to,orion_nebula,1.0,orion_nebula ring_nebula eagle_nebula,True
 MiniLM + spelling + margin (app),show me the Crab Nebula,exact,crab_nebula,,fly_to,crab_nebula,1.0,crab_nebula carina_nebula eagle_nebula,True
 MiniLM + spelling + margin (app),Eagle Nebula,exact,eagle_nebula,,fly_to,eagle_nebula,1.0,eagle_nebula orion_nebula ring_nebula,True
-MiniLM + spelling + margin (app),Pleiades,exact,pleiades,,fly_to,pleiades,1.0,pleiades orion_nebula carina_nebula,True
+MiniLM + spelling + margin (app),Pleiades,exact,pleiades,,fly_to,pleiades,1.0,pleiades orion_nebula iapetus,True
 MiniLM + spelling + margin (app),Beehive Cluster,exact,beehive_cluster,,fly_to,beehive_cluster,1.0,beehive_cluster pleiades hercules_cluster,True
 MiniLM + spelling + margin (app),Omega Centauri,exact,omega_centauri,,fly_to,omega_centauri,1.0,omega_centauri earth mercury,True
 MiniLM + spelling + margin (app),take me to the red planet,nickname,mars,True,fly_to,mars,1.0,mars saturn jupiter,True
 MiniLM + spelling + margin (app),the ringed planet,nickname,saturn,True,fly_to,saturn,1.0,saturn mars neptune,True
 MiniLM + spelling + margin (app),seven sisters,nickname,pleiades,True,fly_to,pleiades,1.0,pleiades venus beehive_cluster,True
-MiniLM + spelling + margin (app),show me the Pillars of Creation,nickname,eagle_nebula,True,fly_to,eagle_nebula,1.0,eagle_nebula venus moon,True
+MiniLM + spelling + margin (app),show me the Pillars of Creation,nickname,eagle_nebula,True,fly_to,eagle_nebula,1.0,eagle_nebula titania venus,True
 MiniLM + spelling + margin (app),the morning star,nickname,venus,True,fly_to,venus,1.0,venus sun ring_nebula,True
 MiniLM + spelling + margin (app),M42,nickname,orion_nebula,True,fly_to,orion_nebula,1.0,orion_nebula beehive_cluster pleiades,True
 MiniLM + spelling + margin (app),go to M13,nickname,hercules_cluster,True,fly_to,hercules_cluster,1.0,hercules_cluster crab_nebula eagle_nebula,True
@@ -109,13 +123,20 @@ MiniLM + spelling + margin (app),our nearest star,nickname,sun,False,fly_to,sun,
 MiniLM + spelling + margin (app),Earth's natural satellite,nickname,moon,False,clarify,,0.576,moon venus,False
 MiniLM + spelling + margin (app),the planet with the giant storm,nickname,jupiter,False,fly_to,neptune,0.693,neptune saturn jupiter,False
 MiniLM + spelling + margin (app),the most distant planet,nickname,neptune,False,fly_to,neptune,0.851,neptune mercury jupiter,True
-MiniLM + spelling + margin (app),jupitr,typo,jupiter,,fly_to,jupiter,0.923,jupiter crab_nebula hercules_cluster,True
-MiniLM + spelling + margin (app),satrun,typo,saturn,,fly_to,saturn,0.833,saturn sun pleiades,True
-MiniLM + spelling + margin (app),neptun,typo,neptune,,fly_to,neptune,0.923,neptune saturn sun,True
+MiniLM + spelling + margin (app),jupitr,typo,jupiter,,fly_to,jupiter,0.923,jupiter io europa,True
+MiniLM + spelling + margin (app),satrun,typo,saturn,,fly_to,saturn,0.833,saturn mimas rhea,True
+MiniLM + spelling + margin (app),neptun,typo,neptune,,fly_to,neptune,0.923,neptune triton saturn,True
 MiniLM + spelling + margin (app),mercurry,typo,mercury,,fly_to,mercury,0.933,mercury earth omega_centauri,True
-MiniLM + spelling + margin (app),plaeides,typo,pleiades,,fly_to,pleiades,0.875,pleiades beehive_cluster saturn,True
+MiniLM + spelling + margin (app),plaeides,typo,pleiades,,fly_to,pleiades,0.875,pleiades beehive_cluster ganymede,True
 MiniLM + spelling + margin (app),orion nebulla,typo,orion_nebula,,fly_to,orion_nebula,0.96,orion_nebula ring_nebula carina_nebula,True
 MiniLM + spelling + margin (app),carina nebual,typo,carina_nebula,,fly_to,carina_nebula,0.923,carina_nebula ring_nebula orion_nebula,True
 MiniLM + spelling + margin (app),please take me to the horse head nebula,typo,horsehead_nebula,,fly_to,horsehead_nebula,0.97,horsehead_nebula ring_nebula eagle_nebula,True
 MiniLM + spelling + margin (app),can you show me the ring nebula please,typo,ring_nebula,,chat,ring_nebula,0.936,ring_nebula eagle_nebula orion_nebula,False
-MiniLM + spelling + margin (app),i want to visit uranus now,typo,uranus,,fly_to,uranus,0.902,uranus mars neptune,True
+MiniLM + spelling + margin (app),i want to visit uranus now,typo,uranus,,fly_to,uranus,0.902,uranus ariel miranda,True
+MiniLM + spelling + margin (app),take me to Titan,moon,titan,,fly_to,titan,1.0,titan titania triton,True
+MiniLM + spelling + margin (app),Europa,moon,europa,,fly_to,europa,1.0,europa jupiter io,True
+MiniLM + spelling + margin (app),the volcanic moon,moon,io,True,fly_to,io,1.0,io moon callisto,True
+MiniLM + spelling + margin (app),fly to the death star moon,moon,mimas,True,fly_to,mimas,1.0,mimas moon triton,True
+MiniLM + spelling + margin (app),Jupiter's biggest moon,moon,ganymede,False,clarify,,0.761,ganymede titania,False
+MiniLM + spelling + margin (app),neptune's moon,moon,triton,False,fly_to,neptune,0.808,neptune triton moon,False
+MiniLM + spelling + margin (app),ganymeed,moon,ganymede,,fly_to,ganymede,0.916,ganymede miranda neptune,True
