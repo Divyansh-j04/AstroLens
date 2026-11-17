@@ -22,7 +22,8 @@ export const useStore = create((set, get) => ({
   browserOpen: false, // the right-side object list (drawer)
   uploadPanelOpen: false, // the translucent upload panel next to the pill
   entered: SKIP_LANDING, // false while the landing page is shown
-  trueScale: false, // deep space drawn at true (linear) distances instead of the square-root scale
+  trueScale: false, // "True distances": everything at its real distance (scene/universe.js)
+  zoomRequest: { n: 0, factor: 1 }, // +/- buttons: each press bumps n
   arrived: null, // id of the nebula or cluster just flown to (shows the "it's 3D" hint), else null
 
   selectObject: (id) =>
@@ -50,6 +51,7 @@ export const useStore = create((set, get) => ({
   setBrowserOpen: (browserOpen) => set({ browserOpen }),
   setArrived: (arrived) => set({ arrived }),
   setTrueScale: (trueScale) => set({ trueScale }),
+  zoomBy: (factor) => set((s) => ({ zoomRequest: { n: s.zoomRequest.n + 1, factor } })),
   setUploadPanelOpen: (uploadPanelOpen) => set({ uploadPanelOpen }),
   // Leave the landing page for one of its three doors: 'photo', 'chat' or 'explore'.
   enterApp: (door) =>

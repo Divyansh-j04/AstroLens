@@ -90,17 +90,25 @@ const SUN_ORBITERS = OBJECTS.filter((o) => o.scene_mode === 'solar_system' && o.
   (a, b) => a.orbit_au - b.orbit_au,
 )
 
+/** Angle (radians) of a planet round the Sun, or of a moon round its planet; shared with universe.js. */
+export function orbitAngle(obj) {
+  if (obj.parent) {
+    // a planet's moons are spread round it by the golden angle, nearest first (one moon: MOON_ANGLE)
+    const siblings = OBJECTS.filter((o) => o.parent === obj.parent).sort((a, b) => a.orbit_km - b.orbit_km)
+    return MOON_ANGLE + siblings.indexOf(obj) * GOLDEN_ANGLE
+  }
+  return (SUN_ORBITERS.indexOf(obj) + 1) * GOLDEN_ANGLE
+}
+
 function solarPosition(obj) {
   if (obj.parent) {
     const [px, py, pz] = solarPosition(OBJECTS_BY_ID[obj.parent])
     const d = orbitRadius(obj)
-    // a planet's moons are spread round it by the golden angle, nearest first (one moon: MOON_ANGLE)
-    const siblings = OBJECTS.filter((o) => o.parent === obj.parent).sort((a, b) => a.orbit_km - b.orbit_km)
-    const angle = MOON_ANGLE + siblings.indexOf(obj) * GOLDEN_ANGLE
+    const angle = orbitAngle(obj)
     return [px + d * Math.cos(angle), py, pz - d * Math.sin(angle)]
   }
   if (!obj.orbit_au) return [0, 0, 0] // the Sun sits at the centre
-  const angle = (SUN_ORBITERS.indexOf(obj) + 1) * GOLDEN_ANGLE
+  const angle = orbitAngle(obj)
   const r = orbitRadius(obj)
   return [r * Math.cos(angle), 0, -r * Math.sin(angle)]
 }

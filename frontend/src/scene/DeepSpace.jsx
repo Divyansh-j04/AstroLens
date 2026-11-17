@@ -4,10 +4,15 @@ import { Html, useCursor, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { OBJECTS } from '../objects'
 import { useStore } from '../store'
-import { POSITIONS, currentPosition, spriteSize } from './scale'
+import { POSITIONS, SPRITE_SIZE, currentPosition, spriteSize } from './scale'
 import { fade } from './fade'
 import { glowTexture } from './glow'
 import ObjectLabel from './ObjectLabel'
+import { TRUE_AU, deepScale, toRender, view } from './universe'
+
+const FAR_DRAWN = 9000 // beyond this many drawn units an object is not drawn (camera far plane), so no label
+const SUN = [0, 0, 0]
+const sunAt = new THREE.Vector3()
 import StarCluster from './StarCluster'
 import NebulaCloud from './NebulaCloud'
 import { headOn, isCluster, isNebula, nearness, stepFocus } from './lod'
@@ -32,21 +37,26 @@ function Marker({ obj, texture }) {
   const cluster = isCluster(obj)
   const nebula = isNebula(obj)
   const focus = useRef(0)
-  useFrame(({ camera }, dt) => {
-    // follow the current distance layout (square-root or true distances)
-    const p = currentPosition(obj.id)
-    sprite.current.position.set(...p)
-    tag.current.position.set(...p)
+  useFrame(({ camera, size }, dt) => {
+    // square-root layout, or (with "True distances" on) the real position relative to the focus
+    if (view.active) toRender(TRUE_AU[obj.id], sprite.current.position)
+    else sprite.current.position.set(...currentPosition(obj.id))
+    tag.current.position.copy(sprite.current.position)
+    view.hidden[obj.id] = view.active && camera.position.distanceTo(sprite.current.position) > FAR_DRAWN
+    if (view.active) toRender(SUN, sunAt)
+    else sunAt.set(0, 0, 0)
     focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
     const distance = camera.position.distanceTo(sprite.current.position)
-    const s = spriteSize(distance)
+    // true view: real size (at least a few dozen pixels); the photo/3D switch is measured in object sizes
+    const k = view.active ? deepScale(obj, camera, size, distance) : 1
+    const s = view.active ? SPRITE_SIZE * k : spriteSize(distance)
     sprite.current.scale.set(s * aspect, s, 1)
     sprite.current.visible = fade.deep > 0.01
     // How much of the photo stays up close: a faint halo for a cluster (more for the Pleiades, whose
     // blue reflection nebula is part of its look); for a nebula the full photo
     // when seen head-on (sharpest view), fading to a soft glow as the camera orbits away.
-    const keep = cluster ? (obj.id === 'pleiades' ? 0.35 : 0.1) : nebula ? 0.25 + 0.75 * headOn(sprite.current.position, camera.position) : 1
-    material.current.opacity = fade.deep * (1 - (1 - keep) * nearness(distance) * focus.current)
+    const keep = cluster ? (obj.id === 'pleiades' ? 0.35 : 0.1) : nebula ? 0.25 + 0.75 * headOn(sprite.current.position, camera.position, sunAt) : 1
+    material.current.opacity = fade.deep * (1 - (1 - keep) * nearness(distance / k) * focus.current)
   })
 
   const active = () => fade.deep > 0.5
@@ -84,8 +94,14 @@ function Marker({ obj, texture }) {
 /** "You are here" tag at the Sun's position, shown only in deep-space mode. */
 function HomeTag() {
   const mode = useStore((s) => s.mode)
+  const group = useRef()
+  useFrame(() => {
+    if (view.active) toRender(SUN, group.current.position)
+    else group.current.position.set(0, 0, 0)
+  })
   return (
-    <Html position={[0, 0, 0]} center zIndexRange={[10, 0]} className="pointer-events-none">
+    <group ref={group}>
+    <Html center zIndexRange={[10, 0]} className="pointer-events-none">
       <p
         className={`pointer-events-none whitespace-nowrap text-[11px] text-amber-200/90 transition-opacity duration-700 ${
           mode === 'deep_space' ? 'opacity-100' : 'opacity-0'
@@ -94,6 +110,7 @@ function HomeTag() {
         ● Solar System (you are here)
       </p>
     </Html>
+    </group>
   )
 }
 

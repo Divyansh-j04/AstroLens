@@ -3,6 +3,7 @@ import { useFrame, useLoader, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { POSITIONS, currentPosition, equatorialToScene } from './scale'
 import { ciToColor } from './starColor'
+import { TRUE_AU, deepScale, toRender, view } from './universe'
 import { fade } from './fade'
 import { useStore } from '../store'
 import { nearness as clusterNearness, stepFocus } from './lod'
@@ -176,10 +177,14 @@ export default function StarCluster({ obj }) {
   const geometry = useMemo(() => buildCluster(obj, catalogueMembers(obj, hygText)), [obj, hygText])
   const uniforms = useMemo(() => ({ pixelRatio: { value: pixelRatio }, opacity: { value: 0 } }), [pixelRatio])
 
-  useFrame(({ camera }, dt) => {
-    ref.current.position.set(...currentPosition(obj.id)) // follow the distance layout
+  useFrame(({ camera, size }, dt) => {
+    if (view.active) toRender(TRUE_AU[obj.id], ref.current.position) // real position, relative to the focus
+    else ref.current.position.set(...currentPosition(obj.id))
     focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
-    const near = clusterNearness(camera.position.distanceTo(ref.current.position)) * focus.current
+    const distance = camera.position.distanceTo(ref.current.position)
+    const k = view.active ? deepScale(obj, camera, size, distance) : 1 // real size in the true view
+    ref.current.scale.setScalar(k)
+    const near = clusterNearness(distance / k) * focus.current
     const opacity = fade.deep * near
     uniforms.opacity.value = opacity
     ref.current.visible = opacity > 0.01

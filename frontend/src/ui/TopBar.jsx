@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { useStore } from '../store'
+import { view } from '../scene/universe'
 import CommandBar from './CommandBar'
 
 /** Title, the command bar (go to an object or ask a question) and the Home button. */
@@ -27,6 +29,21 @@ export default function TopBar() {
 }
 
 /** Bottom-left note: which mode we are in, and that the scene is not to scale. */
+/** Live camera distance from the Sun in the true view (read a few times a second from universe.js). */
+function DistanceReadout() {
+  const [text, setText] = useState(view.readout)
+  useEffect(() => {
+    const timer = setInterval(() => setText(view.readout), 200)
+    return () => clearInterval(timer)
+  }, [])
+  return (
+    <p data-testid="distance-readout" className="text-xs font-medium text-sky-200">
+      Camera: {text}
+    </p>
+  )
+}
+
+/** Bottom-left note: which view we are in, how it is scaled, and the "True distances" switch. */
 export function ScaleNote() {
   const mode = useStore((s) => s.mode)
   const trueScale = useStore((s) => s.trueScale)
@@ -35,30 +52,29 @@ export function ScaleNote() {
   const solar = mode === 'solar_system'
   return (
     <div data-testid="scale-note" className="pointer-events-none absolute bottom-4 left-4 z-20 flex max-w-xs flex-col gap-2">
-      {!solar && (
-        <button
-          type="button"
-          role="switch"
-          aria-checked={trueScale}
-          data-testid="true-scale-toggle"
-          disabled={isFlying}
-          onClick={() => setTrueScale(!trueScale)}
-          className="pointer-events-auto flex items-center gap-2 self-start rounded-full border border-white/15 bg-slate-950/50 py-1 pl-1 pr-3 text-xs text-slate-200 backdrop-blur hover:bg-slate-900/70 disabled:opacity-50"
-        >
-          <span className={`relative block h-5 w-9 shrink-0 rounded-full transition-colors ${trueScale ? 'bg-sky-500/80' : 'bg-white/15'}`}>
-            <span
-              className={`absolute left-0 top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${trueScale ? 'translate-x-4' : 'translate-x-0.5'}`}
-            />
-          </span>
-          True distances
-        </button>
-      )}
+      <button
+        type="button"
+        role="switch"
+        aria-checked={trueScale}
+        data-testid="true-scale-toggle"
+        disabled={isFlying}
+        onClick={() => setTrueScale(!trueScale)}
+        className="pointer-events-auto flex items-center gap-2 self-start rounded-full border border-white/15 bg-slate-950/50 py-1 pl-1 pr-3 text-xs text-slate-200 backdrop-blur hover:bg-slate-900/70 disabled:opacity-50"
+      >
+        <span className={`relative block h-5 w-9 shrink-0 rounded-full transition-colors ${trueScale ? 'bg-sky-500/80' : 'bg-white/15'}`}>
+          <span
+            className={`absolute left-0 top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${trueScale ? 'translate-x-4' : 'translate-x-0.5'}`}
+          />
+        </span>
+        True distances
+      </button>
+      {trueScale && <DistanceReadout />}
       <p className="text-[11px] leading-snug text-slate-400">
         <span className="font-semibold text-slate-200">{solar ? 'Solar system view' : 'Deep space view'}</span>
-        {solar
-          ? ' · Not to scale. Planet sizes and distances are compressed so everything fits on screen.'
-          : trueScale
-            ? ' · Directions and distances are real: 100 units = 1,000 light-years. Pictures are enlarged so far objects stay visible.'
+        {trueScale
+          ? ' · Every distance is real, from moons to the farthest cluster. Zoom out (wheel or −) to travel from the planets to the nebulae. Planets, moons and pictures are drawn larger so they stay visible.'
+          : solar
+            ? ' · Not to scale. Planet sizes and distances are compressed so everything fits on screen.'
             : ' · Not to scale. Directions are real sky positions; distances use a square-root display scale.'}
       </p>
     </div>

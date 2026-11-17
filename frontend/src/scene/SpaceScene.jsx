@@ -6,6 +6,19 @@ import SolarSystem from './SolarSystem'
 import DeepSpace from './DeepSpace'
 import CameraRig from './CameraRig'
 import { useStore } from '../store'
+import { useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { toRender, view } from './universe'
+
+/** The Sun's light. In the true view the scene is drawn round the focus, so the light follows the Sun. */
+function SunLight() {
+  const light = useRef()
+  useFrame(() => {
+    if (view.active) toRender([0, 0, 0], light.current.position)
+    else light.current.position.set(0, 0, 0)
+  })
+  return <pointLight ref={light} position={[0, 0, 0]} intensity={2.6} decay={0} />
+}
 import { CAMERA_FAR, HOME_VIEWS } from './scale'
 
 const home = HOME_VIEWS.solar_system
@@ -18,7 +31,7 @@ export default function SpaceScene() {
       <Canvas camera={{ position: home.position, fov: 50, near: 0.1, far: CAMERA_FAR }} dpr={[1, 2]}>
         <color attach="background" args={['#000004']} />
         <ambientLight intensity={0.12} />
-        <pointLight position={[0, 0, 0]} intensity={2.6} decay={0} />
+        <SunLight />
         <Suspense fallback={null}>
           <StarField />
           <SolarSystem />

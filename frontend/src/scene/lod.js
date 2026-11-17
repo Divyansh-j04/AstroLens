@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 
+const ORIGIN = new THREE.Vector3()
+
 // Nebulae and star clusters switch between their photo (far away) and a 3D version (close up).
 const NEAR = 60 // camera distance where the 3D version is fully shown
 const FAR = 150 // ...and where only the photo is shown
@@ -24,9 +26,9 @@ export function stepFocus(current, selected, dt) {
  * falling to 0 at about 30 degrees off that line. Head-on the sharp photo is shown; as the camera
  * orbits away, the 3D particle cloud takes over.
  */
-export function headOn(objectPosition, cameraPosition) {
+export function headOn(objectPosition, cameraPosition, sunPosition = ORIGIN) {
   const toCamera = new THREE.Vector3().subVectors(cameraPosition, objectPosition).normalize()
-  const toEarth = new THREE.Vector3().copy(objectPosition).negate().normalize()
+  const toEarth = new THREE.Vector3().subVectors(sunPosition, objectPosition).normalize()
   return THREE.MathUtils.smoothstep(toCamera.dot(toEarth), 0.86, 0.985)
 }
 

@@ -6,6 +6,7 @@ import UploadZone from './upload/UploadZone'
 import ObjectBrowser from './panel/ObjectBrowser'
 import Landing from './ui/Landing'
 import RevealHint from './ui/RevealHint'
+import ZoomControls from './ui/ZoomControls'
 import { useStore } from './store'
 import './debug'
 
@@ -22,6 +23,7 @@ export default function App() {
           <GlassPanel />
           <ObjectBrowser />
           <RevealHint />
+          <ZoomControls />
         </>
       )}
       <Landing />

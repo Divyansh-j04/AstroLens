@@ -4,30 +4,40 @@ import { useFrame } from '@react-three/fiber'
 import { OBJECTS } from '../objects'
 import { useStore } from '../store'
 import { POSITIONS } from './scale'
+import { view } from './universe'
 
 // In crowded moon systems (Mars, Jupiter, Saturn, Uranus) moon names show only near the planet.
 const MOON_COUNT = OBJECTS.reduce((n, o) => (o.parent ? { ...n, [o.parent]: (n[o.parent] ?? 0) + 1 } : n), {})
 const NEAR_PLANET = 30 // scene units
 
-/** Clickable name tag floating next to an object; hidden when its scene mode is not active. */
+/**
+ * Clickable name tag floating next to an object; hidden when its scene mode is not active.
+ * With "True distances" on, every object can be labelled; a tag hides when its object is too small
+ * to draw or too far away (view.hidden, set by the scene each frame).
+ */
 export default function ObjectLabel({ obj, offsetY = 0 }) {
   const mode = useStore((s) => s.mode)
   const currentObjectId = useStore((s) => s.currentObjectId)
   const selectObject = useStore((s) => s.selectObject)
   const entered = useStore((s) => s.entered) // no name tags over the landing page
   const crowded = obj.parent && MOON_COUNT[obj.parent] > 1
-  const [near, setNear] = useState(!crowded)
-  const nearRef = useRef(near)
+  // 'mode': follow the scene mode (normal view); 'on' / 'off': decided per frame
+  const [rule, setRule] = useState('mode')
+  const ruleRef = useRef(rule)
   useFrame(({ camera }) => {
-    if (!crowded) return
-    const p = POSITIONS[obj.parent]
-    const isNear = camera.position.distanceTo({ x: p[0], y: p[1], z: p[2] }) < NEAR_PLANET
-    if (isNear !== nearRef.current) {
-      nearRef.current = isNear
-      setNear(isNear)
+    let next
+    if (view.active) next = view.hidden[obj.id] ? 'off' : 'on'
+    else if (crowded) {
+      const p = POSITIONS[obj.parent]
+      next = camera.position.distanceTo({ x: p[0], y: p[1], z: p[2] }) < NEAR_PLANET ? 'mode' : 'off'
+    } else next = 'mode'
+    if (next !== ruleRef.current) {
+      ruleRef.current = next
+      setRule(next)
     }
   })
-  const shown = entered && near && mode === obj.scene_mode && currentObjectId !== obj.id
+  const visible = rule === 'on' || (rule === 'mode' && mode === obj.scene_mode)
+  const shown = entered && visible && currentObjectId !== obj.id
 
   return (
     // The Html wrapper ignores the mouse; only the visible button takes clicks, so hidden tags never block the scene.

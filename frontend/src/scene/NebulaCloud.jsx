@@ -5,6 +5,9 @@ import { DEEP_VIEW_DISTANCE, POSITIONS, SPRITE_SIZE, currentPosition } from './s
 import { fade } from './fade'
 import { useStore } from '../store'
 import { headOn, nearness, stepFocus } from './lod'
+import { TRUE_AU, deepScale, toRender, view } from './universe'
+
+const sunAt = new THREE.Vector3()
 
 /**
  * A nebula as a 3D cloud of glowing particles, built from its own photo and shown when the camera
@@ -95,6 +98,7 @@ const vertexShader = /* glsl */ `
   attribute float size;
   attribute vec3 gasColor;
   uniform float projScale;
+  uniform float sizeScale;
   varying vec3 vColor;
   void main() {
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
@@ -105,7 +109,7 @@ const vertexShader = /* glsl */ `
     vColor = gasColor * mix(0.45, 1.0, facing);
     gl_Position = projectionMatrix * mv;
     // sharp particles head-on (the photo's detail), bigger soft ones edge-on (gas, not dust)
-    gl_PointSize = max(1.0, size * mix(2.4, 1.0, facing) * projScale / -mv.z);
+    gl_PointSize = max(1.0, size * sizeScale * mix(2.4, 1.0, facing) * projScale / -mv.z);
   }
 `
 
@@ -125,7 +129,7 @@ export default function NebulaCloud({ obj, texture }) {
   const camera = useThree((s) => s.camera)
   const pixelRatio = useThree((s) => s.gl.getPixelRatio())
   const geometry = useMemo(() => buildCloud(obj, texture.image), [obj, texture])
-  const uniforms = useMemo(() => ({ projScale: { value: 1 }, opacity: { value: 0 } }), [])
+  const uniforms = useMemo(() => ({ projScale: { value: 1 }, sizeScale: { value: 1 }, opacity: { value: 0 } }), [])
   const position = POSITIONS[obj.id]
   // Face Earth (the Sun, at the origin) so the fly-to view matches the photo.
   const quaternion = useMemo(() => {
@@ -136,11 +140,18 @@ export default function NebulaCloud({ obj, texture }) {
   }, [position])
 
   useFrame((_, dt) => {
-    ref.current.position.set(...currentPosition(obj.id)) // follow the distance layout (same direction)
+    if (view.active) toRender(TRUE_AU[obj.id], ref.current.position) // real position, relative to the focus
+    else ref.current.position.set(...currentPosition(obj.id))
+    if (view.active) toRender([0, 0, 0], sunAt)
+    else sunAt.set(0, 0, 0)
     focus.current = stepFocus(focus.current, useStore.getState().currentObjectId === obj.id, dt)
-    const near = nearness(camera.position.distanceTo(ref.current.position)) * focus.current
+    const distance = camera.position.distanceTo(ref.current.position)
+    const k = view.active ? deepScale(obj, camera, size, distance) : 1 // real size in the true view
+    ref.current.scale.setScalar(k)
+    uniforms.sizeScale.value = k
+    const near = nearness(distance / k) * focus.current
     // head-on the sharp photo is shown instead (DeepSpace Marker); the cloud takes over off-axis
-    const opacity = fade.deep * near * (1 - headOn(ref.current.position, camera.position))
+    const opacity = fade.deep * near * (1 - headOn(ref.current.position, camera.position, sunAt))
     uniforms.opacity.value = opacity
     // screen pixels per scene unit at distance 1 (point sizes are in device pixels)
     uniforms.projScale.value = (pixelRatio * size.height) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2))

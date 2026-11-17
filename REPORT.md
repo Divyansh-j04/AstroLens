@@ -59,7 +59,13 @@ The page is static files on Vercel. The server, with the trained model, the text
 ### 3D scene (Phase 1)
 
 - **Placing deep-space objects from sky coordinates.** With right ascension α, declination δ (in radians) and distance d: x = d·cos δ·cos α, y = d·cos δ·sin α, z = d·sin δ (x points to α = 0h, z to the north celestial pole). Three.js uses y as "up", so the page uses (x, z, −y). Code: `frontend/src/scene/scale.js` (`skyToScene`).
-- **Display distance.** Real distances run from 444 ly (Pleiades) to 24,100 ly (M13), so the page uses d = 4 × √(light-years): Pleiades 84 units, M13 621 units. Directions are exact; only distances are compressed. A **True distances** switch (deep-space view) glides every nebula and cluster to its real, linear distance (1,000 light-years = 100 units: Pleiades 44 units, M13 2,410) in the same direction; the camera travels with the object being viewed, and the overview reframes to fit them all. Pictures keep growing with camera distance, so far objects stay visible.
+- **Display distance.** Real distances run from 444 ly (Pleiades) to 24,100 ly (M13), so the page uses d = 4 × √(light-years): Pleiades 84 units, M13 621 units. Directions are exact; only distances are compressed. The **True distances** switch (below) shows the real ones.
+- **True distances (added after Phase 5).** With the switch on, every object sits at its real distance: moons round their planets (Phobos 9,375 km from Mars), planets round the Sun (Neptune 30 AU), nebulae and clusters out to M13 at 24,100 light-years. That is about 14 powers of ten, too much for one fixed set of 3D coordinates (the graphics card uses 32-bit numbers). So real positions are kept in AU in JavaScript's 64-bit numbers, and every frame the scene is drawn relative to the object being looked at (the focus) and scaled by the zoom: the camera always sits 50 drawn units from the focus, and the zoom says how many AU that is. Zooming out 10 times shrinks the drawn world 10 times. Code: `frontend/src/scene/universe.js`.
+  - **Zoom without a limit.** The mouse wheel and new **+ / −** buttons (factor 3 per press) change the zoom from about 150 km to about 40,000 light-years. The readout shows the camera's distance from the Sun in km, AU or light-years.
+  - **One space.** Planets and deep-space objects share one space, so zooming out from Jupiter passes the planets' orbits, then the Sun shrinks to a dot labelled "Solar System (you are here)", and the Pleiades and Beehive come into view; past 3,000 AU the page switches to deep-space mode.
+  - **Fly-to in the true view** is a "powers of ten" flight: zoom out until start and target are both in view, travel, zoom back in.
+  - **What is real and what is enlarged.** Distances are real. Sizes are real when they are big enough to see; otherwise planets, moons and the Sun are drawn at least 3, 2 and 6 pixels wide, and a nebula or cluster picture is 2.2 times its real radius (`radius_ly` in `objects.json`) but at least 36 pixels tall. A planet or moon that would sit within 8 pixels of what it orbits is hidden, with its label.
+  - **Positions round the orbits** are the display layout's angles; only the distances are real (no real date is used).
 - **Stars.** The 8,834 HYG stars keep their real direction but are drawn on a far sphere that moves with the camera, so they behave like a sky at infinity. Size comes from magnitude, colour from colour index (blue for hot stars, orange-red for cool ones).
 - **Solar System.** Sizes and orbits are compressed with a square root: radius = 0.0075 × √(radius in km), orbit = 6 + 10 × √(AU). The Sun is fixed at radius 3 so it does not swallow Mercury. The page is labelled "not to scale".
 - **Two scene modes.** Planets are light-minutes away and nebulae thousands of light-years away, so one camera view cannot show both. A fly-to into the other mode first pulls the camera back to that mode's overview over 2.5 s while the planets and nebula pictures cross-fade, then flies to the object.
@@ -438,6 +444,10 @@ The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated wor
 | 4 | Command bar replaces the temporary dropdown (object names offered while typing); a typed question flies to its object and answers there | Done |
 | 4 | Evaluation: 38 questions + 12 unanswerable, 47 command phrases (`eval_rag.py`); manual-check sheet for 10 answers | Done (manual check: author) |
 | 4 | Tests (`tests/test_chat_navigate.py`, language model faked) and browser check (`frontend/scripts/check-phase4.mjs`) | Done |
+| After 5 | Landing page with three doors (photo, chat, explore); draggable upload pill; Objects drawer by category | Done |
+| After 5 | 3D star clusters (real HYG members plus generated stars) and 3D nebula clouds made from their photos, with a short camera swing on arrival | Done |
+| After 5 | 16 significant moons: 3D spheres round their planets, cards, command matcher and chat texts | Done (15 surface maps still placeholders) |
+| After 5 | True distances for everything (moons, planets, nebulae, clusters) in one space, with unlimited zoom, + / − buttons, a distance readout and "powers of ten" fly-to | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -484,6 +494,24 @@ The last two sky rows show that the nebula pictures and the HYG stars share one 
 
 The times are on the author's laptop, with the server on the same machine; the deployed times go in Table E (Phase 5).
 
+**True-distance check (after Phase 5).** Source: `ml/results/true_distance_check.json`, written by a Playwright script driving Microsoft Edge (headless, real GPU, 1280 × 800) against the local page. It turned the switch on at Jupiter, pressed − in six groups, flew to the Orion Nebula and then to Titan, and turned the switch off. Screenshots are in `ml/results/true_distance_screens/`.
+
+| Step | Readout on the page | Scene mode |
+| --- | --- | --- |
+| Switch on at Jupiter | Camera: 5.20 AU from the Sun | solar_system |
+| − pressed 5 times | Camera: 4.75 AU from the Sun | solar_system |
+| 4 more | Camera: 23 AU from the Sun | solar_system |
+| 4 more | Camera: 0.02 light-years from the Sun | solar_system |
+| 4 more | Camera: 1.22 light-years from the Sun | deep_space |
+| 4 more | Camera: 64 light-years from the Sun | deep_space |
+| 3 more | Camera: 1,271 light-years from the Sun | deep_space |
+| Flight to the Orion Nebula: halfway / landed | 953 / 1,215 light-years from the Sun | deep_space |
+| Flight to Titan: landed | Camera: 9.59 AU from the Sun | solar_system |
+| Switch off at Titan | normal view, readout hidden, camera 3.39 units from Titan | solar_system |
+| Browser console errors | 0 | |
+
+The first − presses read slightly less than 5.20 AU because zooming out from Jupiter moves the camera back along its line of sight, which here points a little towards the Sun. Landing at the Orion Nebula (1,267 ly away, radius 13 ly in `objects.json`) leaves the camera 4 radii (52 ly) in front of it, on Earth's side: 1,267 − 52 = 1,215.
+
 **Table E: time taken per step (deployed, median of 10 runs)**
 
 | Step | ms |
@@ -505,7 +533,9 @@ The times are on the author's laptop, with the server on the same machine; the d
 - The threshold also rejects 6 of the 189 correct test answers (they fall below 0.46).
 - Holdout split only (no k-fold), so there are no confidence intervals on the scores.
 - Nebulae are shown as flat images at their real sky position, not true 3D shapes.
-- Planet sizes and distances are compressed and labelled "not to scale".
+- Planet sizes and distances are compressed and labelled "not to scale" in the normal view. The True distances view makes every distance real, but small bodies and far pictures are still drawn larger than real so they stay visible (minimum pixel sizes, Section 4).
+- In the true view, Phobos's orbit and M13 differ by about 14 powers of ten. Drawing relative to the focus keeps this precise, but objects more than 9,000 drawn units from the camera are hidden, so at a planet's zoom the deep-space pictures are not drawn (they would be single pixels anyway).
+- The nebula and cluster sizes (`radius_ly`) are rounded literature values, and for nebulae with no sharp edge (Carina, Orion) they are only an indication.
 - Object distances are rounded central values; published uncertainties are large for some (Crab Nebula ± 1,600 ly).
 - Planets do not move along their orbits; each sits at a fixed spot, and only spins slowly. Their positions round the Sun are spread out for display, not taken from a real date.
 - The planets' orbit plane is drawn level with the celestial equator. The real ecliptic is tilted 23.4° from it.
@@ -771,6 +801,8 @@ The times are on the author's laptop, with the server on the same machine; the d
 | Nov 16, 2026 | Evaluation calls spaced 15 s apart; answer key widened once for equivalent values, with the answers re-checked, not re-generated | Back-to-back calls measure the free tier's limit; the widening is listed in Section 9 so the change is visible |
 | Nov 17, 2026 | 16 significant moons added to `objects.json` (numbers from Wikipedia infoboxes, summaries from NASA pages); in the scene, a planet's moons are spread round it by the golden angle, Saturn's moons count their distance from the outer edge of its drawn rings, and moon labels in crowded systems (Mars, Jupiter, Saturn, Uranus) show only within 30 units of the planet | objects.json stays the only source of facts; the golden angle stops moons stacking at one spot; the ring rule keeps Mimas outside the rings, as it really is; the label rule stops a pile of overlapping names in the overview |
 | Nov 17, 2026 | A "True distances" switch instead of replacing the square-root layout | The square-root layout keeps every object comfortably on screen for normal use; the switch shows the real proportions on demand (the four nearest objects huddle round the Sun, M13 is 54 times farther than the Pleiades), so both can be shown in the viva. The mouse zoom-out limit was raised from 2,500 to 6,000 units so the true overview fits |
+| Nov 18, 2026 | The True distances view now covers everything in one space (moons, planets, Sun, nebulae, clusters), drawn relative to the object in view with a zoom number, instead of the first version that only glided the deep-space pictures to their real distances | The author asked for real distances in the Solar System too and a zoom that travels from the planets out to the nebulae. Drawing relative to the focus is the simple, standard fix for the 32-bit precision limit; a logarithmic scale was the alternative, but it would make the distances look real without being real |
+| Nov 18, 2026 | Nebula and cluster pictures sized from a real radius (`radius_ly`, added to `objects.json`) in the true view, with a 36-pixel minimum; bodies get a minimum pixel size and are hidden when they would overlap what they orbit | Real sizes where they can be seen, and still visible where they cannot; hiding overlapping bodies stops a pile of labels on the Sun when zoomed far out |
 | Nov 17, 2026 | Arriving at a nebula or cluster: after 1 s the camera swings 30 degrees to one side and back (about 4.5 s), and a hint says "Drag to look around: it's 3D"; grabbing the view stops the swing | Head-on the sharp photo is shown, so without the swing most visitors would never discover the 3D version; the 1 s delay leaves the fly-to's end position unchanged for the browser checks |
 | Nov 17, 2026 | A cluster's real bright members come from the HYG catalogue: stars within 1 degree of its direction and at 0.8 to 1.15 times its distance, drawn in their true sky pattern, bigger and with soft glows; the Pleiades keeps 35% of its photo as blue haze | The generated stars alone did not look like the Pleiades; the distance window excludes a red star far behind (541 ly) and one in front (247 ly) that only look close |
 | Nov 17, 2026 | Nebulae drawn as particle clouds made from their photo: every pixel brighter than 7% becomes a particle of its colour (about 170 pixels across), with an illustrative depth (sampled at 420 px across, about 100,000 to 140,000 particles per nebula); head-on (within about 10 to 30 degrees of the line from Earth) the original 960 px photo is shown, and the cloud takes over as the camera orbits away; particles grow and dim when seen edge-on; only the selected object turns 3D | Gives volume when orbiting while keeping the familiar photo head-on; a first version sampled at 170 px looked low-resolution head-on, and no particle layout matches a photo's sharpness, so the photo is kept for the head-on view; edge-on growing and dimming fixed a dusty, washed-out side view; showing one object in 3D at a time stops the Orion and Horsehead clouds (3 degrees apart) piling up and keeps 60 fps |
@@ -813,4 +845,9 @@ The times are on the author's laptop, with the server on the same machine; the d
     - answer found in the top 5 for 38 of 38;
     - 12 of 12 unanswerable questions refused;
     - commands 41 of 47 right (moons 5 of 7).
+  - Tests: pytest, 56 passed.
+- **Nov 18, 2026 (after Phase 5: true distances):**
+  - The True distances view now holds everything at its real distance, from the moons to M13, with unlimited zoom, + / − buttons, a distance readout and "powers of ten" flights.
+  - `radius_ly` added for the 10 nebulae and clusters (`objects.json`, required by the schema; sources in `ml/data/SOURCES.md`).
+  - Browser check passed with 0 console errors (`ml/results/true_distance_check.json`).
   - Tests: pytest, 56 passed.

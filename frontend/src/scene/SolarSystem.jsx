@@ -8,6 +8,17 @@ import { POSITIONS, RING_INNER, RING_OUTER, displayRadius, orbitRadius } from '.
 import { fade } from './fade'
 import { glowTexture } from './glow'
 import ObjectLabel from './ObjectLabel'
+import { RADIUS_AU, TRUE_AU, orbitSeparation, toRender, trueOrbitAU, unitsPerAU, view } from './universe'
+
+// "True distances" view: bodies keep at least this many pixels of radius so they stay visible,
+// and a planet or moon closer than HIDE_PX to what it orbits is hidden (it would sit on top of it).
+const MIN_PX = { sun: 6, planet: 3, moon: 2 }
+const HIDE_PX = 8
+const ORIGIN = [0, 0, 0]
+const tmp = new THREE.Vector3()
+
+/** Drawn units per screen pixel at a given distance from the camera. */
+const unitsPerPixel = (camera, size, distance) => (2 * Math.tan((camera.fov * Math.PI) / 360) * distance) / size.height
 
 const BODIES = OBJECTS.filter((o) => o.scene_mode === 'solar_system')
 // Display extras keyed by id. These are pictures, not facts, so they live with the scene code.
@@ -50,9 +61,26 @@ function Body({ obj, texture, ringTexture }) {
     if (m) materials.current[name] = m
   }
 
-  useFrame((_, dt) => {
+  useFrame(({ camera, size }, dt) => {
     spin.current.rotation.y += dt * SPIN_SPEED
-    group.current.visible = fade.solar > 0.01
+    if (view.active) {
+      // real distance from the Sun; real size, but never smaller than a few pixels
+      toRender(TRUE_AU[obj.id], group.current.position)
+      const d = camera.position.distanceTo(group.current.position)
+      const perPx = unitsPerPixel(camera, size, d)
+      const kind = isSun ? 'sun' : obj.parent ? 'moon' : 'planet'
+      const radius = Math.max(RADIUS_AU[obj.id] * unitsPerAU(), MIN_PX[kind] * perPx)
+      group.current.scale.setScalar(radius / r)
+      const hidden = !isSun && orbitSeparation(obj) < HIDE_PX * perPx
+      // far out, the Sun's own label gives way to "Solar System (you are here)"
+      view.hidden[obj.id] = hidden || (isSun && useStore.getState().mode === 'deep_space')
+      group.current.visible = !hidden
+    } else {
+      group.current.position.set(...POSITIONS[obj.id])
+      group.current.scale.setScalar(1)
+      view.hidden[obj.id] = false
+      group.current.visible = fade.solar > 0.01
+    }
     for (const m of Object.values(materials.current)) m.opacity = fade.solar
   })
 
@@ -96,6 +124,7 @@ function Body({ obj, texture, ringTexture }) {
 
 function OrbitRing({ obj }) {
   const material = useRef()
+  const line = useRef()
   const radius = orbitRadius(obj)
   const center = obj.parent ? POSITIONS[obj.parent] : [0, 0, 0]
   const geometry = useMemo(() => {
@@ -105,11 +134,22 @@ function OrbitRing({ obj }) {
     })
     return new THREE.BufferGeometry().setFromPoints(points)
   }, [radius])
-  useFrame(() => {
+  useFrame(({ camera, size }) => {
     material.current.opacity = 0.28 * fade.solar
+    if (view.active) {
+      // the real orbit, drawn round the real position of the Sun or the planet
+      toRender(obj.parent ? TRUE_AU[obj.parent] : ORIGIN, line.current.position)
+      line.current.scale.setScalar((trueOrbitAU(obj) * unitsPerAU()) / radius)
+      const perPx = unitsPerPixel(camera, size, camera.position.distanceTo(tmp.copy(line.current.position)))
+      line.current.visible = orbitSeparation(obj) >= HIDE_PX * perPx && !(obj.parent && view.hidden[obj.parent])
+    } else {
+      line.current.position.set(...center)
+      line.current.scale.setScalar(1)
+      line.current.visible = true
+    }
   })
   return (
-    <lineLoop geometry={geometry} position={center}>
+    <lineLoop ref={line} geometry={geometry} position={center}>
       <lineBasicMaterial ref={material} color="#8fa3c7" transparent depthWrite={false} />
     </lineLoop>
   )

@@ -22,7 +22,7 @@ flowchart LR
 - **Recognising photos (Computer Vision):** EfficientNet-B0, fine-tuned by transfer learning. Below a confidence threshold it says "not one of my known objects" instead of guessing. Grad-CAM shows which part of the photo decided the answer.
 - **Answering questions (NLP, retrieval-augmented generation):** the question is turned into a MiniLM embedding, the 5 closest paragraphs are found, and the language model may answer only from them, citing [1], [2]. If they don't hold the answer, it says "I don't know from my sources."
 - **Typed commands (NLP):** text is compared with every object's name and nicknames by meaning (MiniLM) and by spelling, then the page flies there, asks "did you mean", or treats the text as a question.
-- **3D scene:** 8,834 real stars, the Solar System, and nebulae and clusters at their real sky positions (not to scale).
+- **3D scene:** 8,834 real stars, the Solar System with 16 moons, and nebulae and clusters at their real sky positions. The normal view is compressed; the **True distances** switch puts everything at its real distance, and the zoom (wheel or + / −) travels from the moons out past the farthest cluster.
 
 ## Results
 
@@ -100,6 +100,6 @@ All training images, chat texts and scene pictures are free-licence (public doma
 - The classifier knows 14 objects. Other galaxies and nebulae often get a confident wrong guess instead of "not one of my objects".
 - Most training photos are processed archive images (Hubble, Webb, spacecraft); phone photos through a small telescope may score lower, and sideways photos are harder.
 - The chat knows only its 124 documents, and answers depend on Groq's free service.
-- The 3D scene compresses sizes and distances, and the planets do not move along their orbits.
+- The normal 3D view compresses sizes and distances; in the true view, small bodies and far pictures are drawn larger than real so they stay visible. The planets do not move along their orbits.
 
 More in [REPORT.md, section 11](REPORT.md#11-limitations-and-future-work).

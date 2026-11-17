@@ -27,6 +27,7 @@ class SpaceObject(BaseModel):
     ra_deg: float | None = Field(default=None, ge=0, lt=360)
     dec_deg: float | None = Field(default=None, ge=-90, le=90)
     distance_ly: float | None = Field(default=None, gt=0)
+    radius_ly: float | None = Field(default=None, gt=0)  # physical radius, from Wikipedia (used by the true-distance view)
 
     # Solar-system bodies: size and orbit (the Moon orbits Earth, so it uses parent + orbit_km)
     radius_km: float | None = Field(default=None, gt=0)
@@ -42,7 +43,7 @@ class SpaceObject(BaseModel):
     @model_validator(mode="after")
     def check_position_fields(self) -> "SpaceObject":
         if self.scene_mode == "deep_space":
-            missing = [f for f in ("ra_deg", "dec_deg", "distance_ly") if getattr(self, f) is None]
+            missing = [f for f in ("ra_deg", "dec_deg", "distance_ly", "radius_ly") if getattr(self, f) is None]
             if missing:
                 raise ValueError(f"{self.id}: deep-space object is missing {missing}")
         else:

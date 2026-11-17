@@ -521,6 +521,7 @@
     "ra_deg": 83.8201,
     "dec_deg": -5.3876,
     "distance_ly": 1267,
+    "radius_ly": 13,
     "facts": {
       "Distance": "1,267 light-years",
       "Brightness": "Magnitude 4.0, visible to the naked eye",
@@ -542,6 +543,7 @@
     "ra_deg": 83.6324,
     "dec_deg": 22.0174,
     "distance_ly": 6500,
+    "radius_ly": 6.5,
     "facts": {
       "Distance": "6,500 light-years",
       "Supernova seen": "AD 1054",
@@ -563,6 +565,7 @@
     "ra_deg": 283.3962,
     "dec_deg": 33.0291,
     "distance_ly": 2570,
+    "radius_ly": 0.33,
     "facts": {
       "Distance": "2,570 light-years",
       "Brightness": "Magnitude 8.8",
@@ -584,6 +587,7 @@
     "ra_deg": 274.688,
     "dec_deg": -13.792,
     "distance_ly": 5700,
+    "radius_ly": 35,
     "facts": {
       "Distance": "5,700 light-years",
       "Brightness": "Magnitude 6.4",
@@ -605,6 +609,7 @@
     "ra_deg": 161.2593,
     "dec_deg": -59.6999,
     "distance_ly": 8500,
+    "radius_ly": 230,
     "facts": {
       "Distance": "About 8,500 light-years",
       "Brightness": "Magnitude 1.0",
@@ -626,6 +631,7 @@
     "ra_deg": 85.2458,
     "dec_deg": -2.4583,
     "distance_ly": 1375,
+    "radius_ly": 3.5,
     "facts": {
       "Distance": "1,375 light-years",
       "Radius": "About 3.5 light-years",
@@ -647,6 +653,7 @@
     "ra_deg": 56.6583,
     "dec_deg": 24.1781,
     "distance_ly": 444,
+    "radius_ly": 20.34,
     "facts": {
       "Distance": "444 light-years (average)",
       "Age": "About 125 million years",
@@ -668,6 +675,7 @@
     "ra_deg": 129.9933,
     "dec_deg": 19.6092,
     "distance_ly": 610,
+    "radius_ly": 11.42,
     "facts": {
       "Distance": "610 light-years",
       "Age": "600 to 700 million years",
@@ -689,6 +697,7 @@
     "ra_deg": 250.4235,
     "dec_deg": 36.4613,
     "distance_ly": 24100,
+    "radius_ly": 84,
     "facts": {
       "Distance": "24,100 light-years",
       "Age": "11.65 billion years",
@@ -710,6 +719,7 @@
     "ra_deg": 201.697,
     "dec_deg": -47.4795,
     "distance_ly": 15800,
+    "radius_ly": 75,
     "facts": {
       "Distance": "15,800 light-years",
       "Age": "11.52 billion years",

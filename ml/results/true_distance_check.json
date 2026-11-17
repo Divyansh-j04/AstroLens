@@ -1,0 +1,46 @@
+{
+  "steps": [
+    {
+      "zoom_out_presses": 5,
+      "readout": "Camera: 4.75 AU from the Sun",
+      "mode": "solar_system"
+    },
+    {
+      "zoom_out_presses": 4,
+      "readout": "Camera: 23 AU from the Sun",
+      "mode": "solar_system"
+    },
+    {
+      "zoom_out_presses": 4,
+      "readout": "Camera: 0.02 light-years from the Sun",
+      "mode": "solar_system"
+    },
+    {
+      "zoom_out_presses": 4,
+      "readout": "Camera: 1.22 light-years from the Sun",
+      "mode": "deep_space"
+    },
+    {
+      "zoom_out_presses": 4,
+      "readout": "Camera: 64 light-years from the Sun",
+      "mode": "deep_space"
+    },
+    {
+      "zoom_out_presses": 3,
+      "readout": "Camera: 1,271 light-years from the Sun",
+      "mode": "deep_space"
+    }
+  ],
+  "switch_on_at_jupiter": "Camera: 5.20 AU from the Sun",
+  "mid_flight_to_orion": "Camera: 953 light-years from the Sun",
+  "landed_at_orion": "Camera: 1,215 light-years from the Sun",
+  "wheel_out_at_orion": "Camera: 1,189 light-years from the Sun",
+  "landed_at_titan": "Camera: 9.59 AU from the Sun",
+  "switch_off_at_titan": {
+    "mode": "solar_system",
+    "camToTitan": 3.39,
+    "readout_shown": 0
+  },
+  "console_errors": [],
+  "date": "2026-11-17"
+}
