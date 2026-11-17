@@ -399,7 +399,7 @@ The spelling similarity fixes most typos (MiniLM reads "jupitr" as unrelated wor
 
 | Phase | Feature | Status |
 | --- | --- | --- |
-| 0 | Project folders, CLAUDE.md, PLAN.md, REPORT.md, git repository | Done |
+| 0 | Project folders, planning notes (kept locally), REPORT.md, git repository | Done |
 | 0 | `objects.json` with 20 objects, validated by a Pydantic schema and tests | Done |
 | 0 | `hyg_stars.json`: 8,834 naked-eye stars from the HYG catalogue | Done |
 | 0 | Server with `/health` and `/objects`, CORS, request timing log | Done |
