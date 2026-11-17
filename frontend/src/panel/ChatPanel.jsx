@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import { OBJECTS_BY_ID } from '../objects'
 import { GENERAL_CHAT, useStore } from '../store'
+
+// Starter questions when the chat is opened without an object (each object's first suggested question).
+const STARTER_OBJECTS = ['mars', 'saturn', 'eagle_nebula', 'crab_nebula']
 
 /** "[2]" in an answer becomes a small link to source 2; plain text is kept as it is. */
 function AnswerText({ text, citations }) {
@@ -103,9 +107,9 @@ export default function ChatPanel({ obj }) {
         <p className="text-[11px] text-slate-400">Answers come only from collected Wikipedia and NASA pages, with numbered sources.</p>
       </header>
 
-      {messages.length === 0 && obj && (
+      {messages.length === 0 && (
         <div className="flex flex-col gap-2" data-testid="question-chips">
-          {obj.suggested_questions.map((q) => (
+          {(obj ? obj.suggested_questions : STARTER_OBJECTS.map((id) => OBJECTS_BY_ID[id].suggested_questions[0])).map((q) => (
             <button
               key={q}
               type="button"

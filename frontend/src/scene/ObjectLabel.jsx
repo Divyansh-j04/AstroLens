@@ -6,7 +6,8 @@ export default function ObjectLabel({ obj, offsetY = 0 }) {
   const mode = useStore((s) => s.mode)
   const currentObjectId = useStore((s) => s.currentObjectId)
   const selectObject = useStore((s) => s.selectObject)
-  const shown = mode === obj.scene_mode && currentObjectId !== obj.id
+  const entered = useStore((s) => s.entered) // no name tags over the landing page
+  const shown = entered && mode === obj.scene_mode && currentObjectId !== obj.id
 
   return (
     // The Html wrapper ignores the mouse; only the visible button takes clicks, so hidden tags never block the scene.

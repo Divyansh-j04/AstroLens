@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { classifyImage, SLOW_AFTER_MS, UploadError } from '../api'
+import { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
 
 const PILL_W = 168 // px, used to keep the pill on screen
@@ -41,19 +40,17 @@ function savePosition(p) {
 export default function UploadZone() {
   const upload = useStore((s) => s.upload)
   const prediction = useStore((s) => s.prediction)
-  const setUpload = useStore((s) => s.setUpload)
   const clearUpload = useStore((s) => s.clearUpload)
-  const applyPrediction = useStore((s) => s.applyPrediction)
+  const uploadPhoto = useStore((s) => s.uploadPhoto)
+  const open = useStore((s) => s.uploadPanelOpen)
+  const setPanel = useStore((s) => s.setUploadPanelOpen)
+  const setOpen = (v) => setPanel(typeof v === 'function' ? v(useStore.getState().uploadPanelOpen) : v)
   const [pos, setPos] = useState(loadPosition)
-  const [open, setOpen] = useState(false)
   const [dragging, setDragging] = useState(false) // a file is being dragged over
   const [showHeatmap, setShowHeatmap] = useState(false)
   const inputRef = useRef(null)
   const rootRef = useRef(null)
-  const requestId = useRef(0) // only the latest upload may update the page
   const drag = useRef(null) // pointer drag of the pill itself
-
-  useEffect(() => () => upload.previewUrl && URL.revokeObjectURL(upload.previewUrl), [upload.previewUrl])
 
   // Keep the pill on screen when the window is resized.
   useEffect(() => {
@@ -65,42 +62,22 @@ export default function UploadZone() {
   // Escape or a click outside closes the panel.
   useEffect(() => {
     if (!open) return undefined
-    const onKey = (e) => e.key === 'Escape' && setOpen(false)
-    const onDown = (e) => rootRef.current && !rootRef.current.contains(e.target) && setOpen(false)
+    const onKey = (e) => e.key === 'Escape' && setPanel(false)
+    const onDown = (e) => rootRef.current && !rootRef.current.contains(e.target) && setPanel(false)
     window.addEventListener('keydown', onKey)
     window.addEventListener('pointerdown', onDown)
     return () => {
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('pointerdown', onDown)
     }
-  }, [open])
+  }, [open, setPanel])
 
-  const handleFile = useCallback(
-    async (file) => {
-      if (!file) return
-      const id = ++requestId.current
-      setOpen(true)
-      setShowHeatmap(false)
-      setUpload({ status: 'loading', error: null, slow: false, previewUrl: URL.createObjectURL(file) })
-      const slowTimer = setTimeout(() => id === requestId.current && setUpload({ slow: true }), SLOW_AFTER_MS)
-      try {
-        const result = await classifyImage(file)
-        if (id !== requestId.current) return
-        applyPrediction(result)
-        setUpload({ status: 'done', slow: false })
-      } catch (err) {
-        if (id !== requestId.current) return
-        const message = err instanceof UploadError ? err.message : 'Something went wrong while classifying that photo.'
-        setUpload({ status: 'error', error: message, slow: false })
-      } finally {
-        clearTimeout(slowTimer)
-      }
-    },
-    [applyPrediction, setUpload],
-  )
+  const handleFile = (file) => {
+    setShowHeatmap(false)
+    uploadPhoto(file)
+  }
 
   const removePhoto = () => {
-    requestId.current++ // ignore an answer still on its way
     setShowHeatmap(false)
     clearUpload()
   }

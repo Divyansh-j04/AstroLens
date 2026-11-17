@@ -5,12 +5,14 @@ import StarField from './StarField'
 import SolarSystem from './SolarSystem'
 import DeepSpace from './DeepSpace'
 import CameraRig from './CameraRig'
+import { useStore } from '../store'
 import { CAMERA_FAR, HOME_VIEWS } from './scale'
 
 const home = HOME_VIEWS.solar_system
 
 /** The full-screen 3D canvas: stars, Solar System, deep-space objects, controls and the camera rig. */
 export default function SpaceScene() {
+  const entered = useStore((s) => s.entered)
   return (
     <div className="absolute inset-0">
       <Canvas camera={{ position: home.position, fov: 50, near: 0.1, far: CAMERA_FAR }} dpr={[1, 2]}>
@@ -30,6 +32,8 @@ export default function SpaceScene() {
           enablePan={false}
           minDistance={0.8}
           maxDistance={2500}
+          autoRotate={!entered} // the sky turns slowly behind the landing page
+          autoRotateSpeed={0.35}
         />
         <CameraRig />
       </Canvas>

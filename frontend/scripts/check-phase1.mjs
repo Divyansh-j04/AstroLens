@@ -53,7 +53,7 @@ async function main() {
 
     // ---- Load ----
     const t0 = Date.now()
-    await page.goto(`http://localhost:${PORT}/`)
+    await page.goto(`http://localhost:${PORT}/?app`)
     await page.waitForSelector('[data-testid=loading-screen][data-done=true]', { state: 'attached', timeout: 60000 })
     const loadMs = Date.now() - t0
     await page.waitForTimeout(1000)

@@ -4,10 +4,15 @@ import CommandBar from './CommandBar'
 /** Title, the command bar (go to an object or ask a question) and the Home button. */
 export default function TopBar() {
   const goHome = useStore((s) => s.goHome)
+  const showLanding = useStore((s) => s.showLanding)
 
   return (
     <header className="pointer-events-none absolute left-0 top-0 z-20 flex flex-wrap items-center gap-3 p-4">
-      <h1 className="pointer-events-auto mr-2 text-base font-semibold tracking-[0.3em] text-slate-100">ASTROLENS</h1>
+      <h1 className="pointer-events-auto mr-2 text-base font-semibold tracking-[0.3em] text-slate-100">
+        <button type="button" data-testid="to-landing" onClick={showLanding} title="Back to the start page" className="hover:text-sky-200">
+          ASTROLENS
+        </button>
+      </h1>
       <CommandBar />
       <button
         type="button"

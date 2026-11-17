@@ -1,8 +1,11 @@
 import { create } from 'zustand'
-import { askChat, UploadError } from './api'
+import { askChat, classifyImage, SLOW_AFTER_MS, UploadError } from './api'
 
 export const GENERAL_CHAT = '_general' // conversation key when no object is selected
 const HISTORY_SENT = 4 // earlier messages sent with a question, so follow-ups make sense
+let uploadId = 0 // only the latest upload may update the page
+// "?app" in the address skips the landing page (used by the browser check scripts).
+const SKIP_LANDING = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('app')
 
 // The single shared store for the page (Zustand). Every component reads from here.
 export const useStore = create((set, get) => ({
@@ -17,6 +20,8 @@ export const useStore = create((set, get) => ({
   chats: {}, // one conversation per object id (or '_general'): [{ role, content, citations?, refused?, error? }]
   chatPending: false, // true while waiting for an answer
   browserOpen: false, // the right-side object list (drawer)
+  uploadPanelOpen: false, // the translucent upload panel next to the pill
+  entered: SKIP_LANDING, // false while the landing page is shown
 
   selectObject: (id) =>
     set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1 })),
@@ -28,15 +33,51 @@ export const useStore = create((set, get) => ({
   setPanelView: (panelView) => set({ panelView }),
   setUpload: (patch) => set((s) => ({ upload: { ...s.upload, ...patch } })),
   // Remove the uploaded photo and everything that came from it (guesses, badge, heatmap).
-  clearUpload: () =>
+  clearUpload: () => {
+    uploadId++ // ignore an answer still on its way
+    const old = get().upload.previewUrl
+    if (old) URL.revokeObjectURL(old)
     set((s) => ({
       upload: { status: 'idle', error: null, previewUrl: null, slow: false },
       prediction: null,
       panelView: ['unknown', 'guesses'].includes(s.panelView) ? 'card' : s.panelView,
       panelOpen: ['unknown', 'guesses'].includes(s.panelView) ? Boolean(s.currentObjectId) && s.panelOpen : s.panelOpen,
-    })),
+    }))
+  },
   openChat: () => set({ panelOpen: true, panelView: 'chat' }),
   setBrowserOpen: (browserOpen) => set({ browserOpen }),
+  setUploadPanelOpen: (uploadPanelOpen) => set({ uploadPanelOpen }),
+  // Leave the landing page for one of its three doors: 'photo', 'chat' or 'explore'.
+  enterApp: (door) =>
+    set(() => ({
+      entered: true,
+      ...(door === 'chat' ? { panelOpen: true, panelView: 'chat' } : {}),
+      ...(door === 'explore' ? { browserOpen: true } : {}),
+      ...(door === 'photo' ? { uploadPanelOpen: true } : {}),
+    })),
+  showLanding: () => set({ entered: false, browserOpen: false, uploadPanelOpen: false }),
+
+  // Classify a photo: used by the upload pill and by the landing page's photo card.
+  uploadPhoto: async (file) => {
+    if (!file) return
+    const id = ++uploadId
+    const old = get().upload.previewUrl
+    if (old) URL.revokeObjectURL(old)
+    set({ upload: { status: 'loading', error: null, slow: false, previewUrl: URL.createObjectURL(file) }, uploadPanelOpen: true })
+    const slowTimer = setTimeout(() => id === uploadId && get().setUpload({ slow: true }), SLOW_AFTER_MS)
+    try {
+      const result = await classifyImage(file)
+      if (id !== uploadId) return
+      get().applyPrediction(result)
+      get().setUpload({ status: 'done', slow: false })
+    } catch (err) {
+      if (id !== uploadId) return
+      const message = err instanceof UploadError ? err.message : 'Something went wrong while classifying that photo.'
+      get().setUpload({ status: 'error', error: message, slow: false })
+    } finally {
+      clearTimeout(slowTimer)
+    }
+  },
 
   // Ask the chat about the current object (or in general), keeping one conversation per object.
   sendChat: async (text) => {

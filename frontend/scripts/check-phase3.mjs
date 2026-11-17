@@ -88,7 +88,7 @@ async function main() {
     const consoleErrors = []
     page.on('pageerror', (e) => consoleErrors.push(String(e)))
     page.on('console', (m) => m.type() === 'error' && consoleErrors.push(m.text()))
-    await page.goto(`http://localhost:${PAGE_PORT}/`)
+    await page.goto(`http://localhost:${PAGE_PORT}/?app`)
     await page.waitForSelector('[data-testid=loading-screen][data-done=true]', { state: 'attached', timeout: 60000 })
     await page.waitForTimeout(800)
 
