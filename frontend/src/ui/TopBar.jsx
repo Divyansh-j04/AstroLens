@@ -8,13 +8,12 @@ import DistanceScale from './DistanceScale'
 export default function TopBar() {
   const goHome = useStore((s) => s.goHome)
   const showLanding = useStore((s) => s.showLanding)
-  const tourTo = useStore((s) => s.tourTo)
-  const tourActive = useStore((s) => s.tour.active)
+  const journeyTo = useStore((s) => s.journeyTo)
 
   return (
     <header className="pointer-events-none absolute left-0 top-0 z-20 flex flex-wrap items-center gap-3 p-4">
       {/* the title is hidden on phones so the bar fits in two rows */}
-      <h1 className="pointer-events-auto mr-2 hidden text-base font-semibold tracking-[0.3em] text-slate-100 sm:block">
+      <h1 className="pointer-events-auto mr-2 hidden font-display text-base font-medium tracking-[0.3em] text-slate-100 sm:block">
         <button type="button" data-testid="to-landing" onClick={showLanding} title="Back to the start page" className="hover:text-sky-200">
           ASTROLENS
         </button>
@@ -31,14 +30,13 @@ export default function TopBar() {
       </button>
       <button
         type="button"
-        data-testid="tour-button"
+        data-testid="journey-button"
         data-magnetic
-        disabled={tourActive}
-        onClick={() => tourTo(0)}
-        title="Fly through the Solar System and out to the nebulae, with a caption at each stop"
+        onClick={() => journeyTo(0)}
+        title="Scroll through the Solar System and out to the nebulae, one chapter at a time"
         className="pointer-events-auto rounded-md border border-sky-300/30 bg-sky-500/15 px-3 py-1.5 text-sm text-sky-100 backdrop-blur hover:bg-sky-500/25 focus:outline-none focus:ring-2 focus:ring-sky-400/60 disabled:opacity-50"
       >
-        Grand Tour
+        Journey
       </button>
     </header>
   )
@@ -65,14 +63,9 @@ export function ScaleNote() {
   const trueScale = useStore((s) => s.trueScale)
   const setTrueScale = useStore((s) => s.setTrueScale)
   const isFlying = useStore((s) => s.isFlying)
-  const touring = useStore((s) => s.tour.active)
   const solar = mode === 'solar_system'
   return (
-    // On phones the Grand Tour caption needs this corner, so the note steps aside during the tour.
-    <div
-      data-testid="scale-note"
-      className={`pointer-events-none absolute bottom-4 left-4 z-20 flex max-w-xs flex-col gap-2 ${touring ? 'max-sm:hidden' : ''}`}
-    >
+    <div data-testid="scale-note" className="pointer-events-none absolute bottom-4 left-4 z-20 flex max-w-xs flex-col gap-2">
       <button
         type="button"
         role="switch"

@@ -67,10 +67,10 @@ export default function BriefCard({ obj }) {
   return (
     <article ref={ref} data-testid="brief-card" className="flex flex-col gap-5">
       <header data-reveal>
-        <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400">
+        <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-slate-400">
           {obj.constellation ? `In ${obj.constellation}` : 'Solar System'}
         </p>
-        <h2 data-testid="card-name" className="mt-1 text-3xl font-semibold text-white">
+        <h2 data-testid="card-name" className="mt-1 font-display text-3xl font-medium text-white">
           {obj.name}
         </h2>
         <div className="mt-3 flex flex-wrap gap-2">

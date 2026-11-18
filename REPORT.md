@@ -62,7 +62,8 @@ The page is static files on Vercel. The server, with the trained model, the text
 - **Display distance.** Real distances run from 444 ly (Pleiades) to 24,100 ly (M13), so the page uses d = 4 × √(light-years): Pleiades 84 units, M13 621 units. Directions are exact; only distances are compressed. The **True distances** switch (below) shows the real ones.
 - **True distances (added after Phase 5).** With the switch on, every object sits at its real distance: moons round their planets (Phobos 9,375 km from Mars), planets round the Sun (Neptune 30 AU), nebulae and clusters out to M13 at 24,100 light-years. That is about 14 powers of ten, too much for one fixed set of 3D coordinates (the graphics card uses 32-bit numbers). So real positions are kept in AU in JavaScript's 64-bit numbers, and every frame the scene is drawn relative to the object being looked at (the focus) and scaled by the zoom: the camera always sits 50 drawn units from the focus, and the zoom says how many AU that is. Zooming out 10 times shrinks the drawn world 10 times. Code: `frontend/src/scene/universe.js`.
 - **Interface motion (added after Phase 5).** Long flights (a switch between the solar-system and deep-space views, or a true-distance flight across at least four powers of ten) go to warp: stars stretch into streaks, the view widens by 8 degrees and the screen edges darken, then everything snaps back on arrival. The glass panel stays closed during a flight; on landing, the object's name appears letter by letter with a line built from `objects.json` ("Gas giant · 5.2 AU from the Sun"), and the card slides in as the name fades. The card's numbers count up and its lines slide in one after another. In the True distances view a thin power-of-ten bar in the bottom-left corner, under the camera readout, shows the zoom (how far the camera is from what it looks at, about 150 km to 40,000 light-years), with dots and chips for the Moon, Neptune, the Pleiades and M13 that fly there when clicked. With the browser's or phone's "reduce motion" setting on, the warp, the letter animation, the counting and the sliding are skipped. Code: `frontend/src/scene/warp.js`, `StarField.jsx`, `CameraRig.jsx`, `frontend/src/ui/ArrivalTitle.jsx`, `DistanceScale.jsx`, `WarpVignette.jsx`, `frontend/src/panel/CountUp.jsx`.
-- **More interface motion (added after Phase 5).** With a mouse, a ring cursor trails the pointer, grows over buttons and says "Fly to Jupiter" over a planet, moon, nebula or cluster; a few main buttons pull gently towards the pointer. A "Grand Tour" button flies Sun → Earth → Moon → Jupiter → Saturn → Orion Nebula → Pleiades with the panel closed, showing the first sentence of each summary from `objects.json` for 7 seconds at each stop. While a photo is classified a scan line sweeps over it, then the heatmap fades in and out once and the top 3 guesses slide up. The loading screen counts to 100% while the title appears letter by letter; behind the landing page the camera waits 2.6 times farther out and dives in when a door is chosen. Chat answers appear word by word, citation numbers pop in, and the sources follow. The custom cursor is off on touch screens; with "reduce motion" on, the cursor, camera pull-back and dive, typing and scan sweep are all skipped. Code: `frontend/src/ui/CustomCursor.jsx`, `TourCaption.jsx`, `LoadingScreen.jsx`, `frontend/src/tour.js`, `frontend/src/upload/UploadZone.jsx`, `frontend/src/panel/ChatPanel.jsx`, `frontend/src/scene/CameraRig.jsx`.
+- **Look of the opening and landing (after Phase 5).** Titles use Space Grotesk and small labels JetBrains Mono. On the landing page ASTROLENS comes into focus letter by letter, the line above it decodes, and a corner-bracketed "BEGIN THE JOURNEY" button starts the Journey; the three doors are numbered 01 to 03.
+- **More interface motion (added after Phase 5).** With a mouse, a ring cursor trails the pointer, grows over buttons and says "Fly to Jupiter" over a planet, moon, nebula or cluster; a few main buttons pull gently towards the pointer. The Journey (which replaced an automatic "Grand Tour") is a story you scroll through: Earth → Moon → Mars → Jupiter → Saturn → (warp out of the Solar System) → Orion Nebula → Pleiades. Each scroll, swipe or arrow key flies to the next chapter and scrolling up goes back; on arrival a monospace line decodes (chapter · type · distance), the name sharpens out of a blur letter by letter, the first sentence of the summary appears, and thin constellation lines with + markers and corner brackets are drawn round the object, which is shifted aside to leave room for the text. The app's controls hide while it runs. While a photo is classified a scan line sweeps over it, then the heatmap fades in and out once and the top 3 guesses slide up. The loading screen counts to 100% while the title appears letter by letter; behind the landing page the camera waits 2.6 times farther out and dives in when a door is chosen. Chat answers appear word by word, citation numbers pop in, and the sources follow. The custom cursor is off on touch screens; with "reduce motion" on, the cursor, camera pull-back and dive, typing and scan sweep are all skipped. Code: `frontend/src/ui/CustomCursor.jsx`, `Journey.jsx`, `textfx.js`, `Decor.jsx`, `LoadingScreen.jsx`, `Landing.jsx`, `frontend/src/journey.js`, `frontend/src/upload/UploadZone.jsx`, `frontend/src/panel/ChatPanel.jsx`, `frontend/src/scene/CameraRig.jsx`.
   - **Zoom without a limit.** The mouse wheel and new **+ / −** buttons (factor 3 per press) change the zoom from about 150 km to about 40,000 light-years. The readout shows the camera's distance from the Sun in km, AU or light-years.
   - **One space.** Planets and deep-space objects share one space, so zooming out from Jupiter passes the planets' orbits, then the Sun shrinks to a dot labelled "Solar System (you are here)", and the Pleiades and Beehive come into view; past 3,000 AU the page switches to deep-space mode.
   - **Fly-to in the true view** is a "powers of ten" flight: zoom out until start and target are both in view, travel, zoom back in.
@@ -497,7 +498,9 @@ recall@k = share of questions with a gold chunk in the first k results; MRR@10 =
 | After 5 | + / − zoom buttons move left of the glass panel while it is open (it used to cover them) | Done (bug fix) |
 | After 5 | Distance scale moved into the bottom-left corner as a thin bar under the camera readout, with jump chips (as a line, and then as a card on the right, it covered the middle of the scene: half of Earth was hidden) | Done |
 | After 5 | Custom cursor: trailing ring, grows over buttons, "Fly to …" over objects, magnetic main buttons; off on touch screens | Done |
-| After 5 | Grand Tour: 7 stops with captions from `objects.json`, 7 s each, Next / Stop / Escape | Done |
+| After 5 | Grand Tour: 7 stops with captions from `objects.json`, 7 s each, Next / Stop / Escape | Replaced by the Journey |
+| After 5 | Journey: a scroll-driven story in 7 chapters (scroll, swipe, arrow keys; up goes back), decoding kicker, blur-in title, caption from `objects.json`, constellation lines; Exit / Escape; scrolling past the last chapter opens its card | Done |
+| After 5 | Landing and loading restyled: Space Grotesk and JetBrains Mono, letter-by-letter title, decoding kicker, "BEGIN THE JOURNEY" button, numbered doors | Done |
 | After 5 | Photo scanning effect: scan line while classifying, heatmap fades in and out once, guesses slide up | Done |
 | After 5 | Opening sequence: counter to 100%, title letter by letter, camera dive from the landing page | Done |
 | After 5 | Typed chat answers: word by word, citation numbers pop in, sources after; screen readers get the whole answer at once | Done |
@@ -581,7 +584,7 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Short flight (Mars → Jupiter, 1.2 s) | warp 0, view not widened |
 | Arrival title at the Orion Nebula | "Orion Nebula", "Diffuse emission nebula · 1,267 light-years away"; gone again after the hold |
 | Arrival line for all 36 objects, compared with the same rule written separately in the check script | 36 of 36 match |
-| Saturn card 0.25 s after it opens / once settled | "32,022 km", "5.270 AU", "5.80 hours", "161 …" (still counting) / exactly as in `objects.json` |
+| Saturn card 0.25 s after it opens / once settled | "32,578 km", "5.361 AU", "5.90 hours", "164 …" (still counting) / exactly as in `objects.json` |
 | Distance scale in the normal view | hidden |
 | Distance bar knob vs the zoom, at Saturn / after 4 presses of − | 22.68% vs 22.68% (465,856 km) / 35.08% vs 35.08% (0.25 AU) |
 | Where the distance bar sits, panel open / closed | bottom-left corner both times: 16–304 px from the left, 717–816 px down the 900 px screen |
@@ -591,20 +594,23 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Reduce motion on: flight to the Orion Nebula / Jupiter card after 0.1 s / arrival title | warp 0 / final values at once / still shown |
 | Browser console errors | 0 |
 
-**Interface motion check 2 (after Phase 5).** Source: `ml/results/ux_check_2.json`, written by `frontend/scripts/check-ux2.mjs` (Playwright driving Microsoft Edge, headless, real GPU, 1440 × 900) against the local page; 25 of 25 checks passed. The server's /classify and /chat answers were faked inside the browser, because this check is about the animations (the real classifier and chat have their own checks). Screenshots are in `ml/results/ux2_screens/`.
+**Interface motion check 2 (after Phase 5).** Source: `ml/results/ux_check_2.json`, written by `frontend/scripts/check-ux2.mjs` (Playwright driving Microsoft Edge, headless, real GPU, 1440 × 900) against the local page; 30 of 30 checks passed. The server's /classify and /chat answers were faked inside the browser, because this check is about the animations (the real classifier and chat have their own checks). Screenshots are in `ml/results/ux2_screens/`.
 
 | Check | Measured |
 | --- | --- |
-| Loading counter / title | 0 → 100% in 13 steps, never going down; visible letters counted 0, 1, 2, 3, 4, 5, 6, 8, 9 as it was sampled; loading screen gone after 1.1 s |
+| Loading counter / title | 0 → 100% in 14 steps, never going down; visible letters counted 0, 1, 2, 3, 4, 5, 8, 9 as it was sampled; loading screen gone after 1.1 s |
 | Camera behind the landing page / after "Explore the sky" | 308.19 units from its target (2.6 × the home 118.53) / back to 118.53, with warp 1 on the way |
 | Cursor | system pointer hidden; ring "idle" → "link" over Home; Home pulled 6.4 px right and 2.5 px down, back to 0 after leaving; "Fly to Jupiter" over Jupiter |
-| Grand Tour | Sun, Earth, Moon, Jupiter, Saturn, Orion Nebula, Pleiades in order; all 7 captions match the first sentence of the summary; panel closed throughout; the first stop moved on by itself after 6.9 s; Finish opened the Pleiades card; Escape and a user flight both ended it |
-| Scanning | the line's top moved 100 → 214 px in 0.6 s; heatmap reached 0.9 opacity at 0.38 s and returned to 0 (the toggle's heatmap stayed at 0); guesses "Saturn 78%", "Jupiter 12%", "Uranus 5%": the first fully shown at 0.44 s, the third at 0.63 s |
-| Typed chat answer (133 characters) | 8 characters at 0.05 s, 49 at 0.63 s, all 133 at 1.88 s; first citation number appeared while typing; sources shown only after typing |
+| Landing | ASTROLENS split into 9 letters; kicker decoded to "COMPUTER VISION · NATURAL LANGUAGE"; Space Grotesk and JetBrains Mono loaded; "BEGIN THE JOURNEY" started the Journey at Earth |
+| Journey: chapters | Earth, Moon, Mars, Jupiter, Saturn, Orion Nebula, Pleiades in order; every kicker (e.g. "03 / 07 · ROCKY PLANET · 1.52 AU FROM THE SUN"), title and caption matches `objects.json`; 13 constellation lines and brackets drawn at each |
+| Journey: input | two quick scrolls moved one chapter every time; scrolling up from Mars went back to the Moon; the down-arrow key went on; wheel zoom and drag rotate off during the Journey and back on after |
+| Journey: around it | top bar, upload pill and zoom buttons hidden and the panel closed in every chapter; scrolling past the Pleiades ended it and opened the Pleiades card; Exit and Escape both ended it |
+| Scanning | the line's top moved 100 → 199 px in 0.6 s; heatmap reached 0.9 opacity at 0.44 s and returned to 0 (the toggle's heatmap stayed at 0); guesses "Saturn 78%", "Jupiter 12%", "Uranus 5%": the first fully shown at 0.50 s, the third at 0.63 s |
+| Typed chat answer (133 characters) | 8 characters at 0.04 s, 49 at 0.63 s, all 133 at 1.88 s; first citation number appeared while typing; sources shown only after typing |
 | Reduce motion on | no custom cursor (system pointer), camera not pulled back, warp 0, answer complete at once, scan line still |
 | Browser console errors | 0 |
 
-**Layout check (after Phase 5).** Source: `ml/results/layout_check.json`, written by `frontend/scripts/check-layout.mjs` (Playwright, Microsoft Edge, 1440 × 900, then a 390 × 844 touch phone); 19 of 19 checks passed, screenshots in `ml/results/layout_screens/`. Before the fix, the Objects drawer opened on top of the chat while typing and stayed on top of the card after an object was picked.
+**Layout check (after Phase 5).** Source: `ml/results/layout_check.json`, written by `frontend/scripts/check-layout.mjs` (Playwright, Microsoft Edge, 1440 × 900, then a 390 × 844 touch phone); 20 of 20 checks passed, screenshots in `ml/results/layout_screens/`. Before the fix, the Objects drawer opened on top of the chat while typing and stayed on top of the card after an object was picked.
 
 | Step | Drawer | Panel | Overlap |
 | --- | --- | --- | --- |
@@ -624,9 +630,10 @@ Fixes from the hands-on review (same file; the /classify answer is faked in the 
 | Saturn's facts 0.2 s after the photo result | already final ("58,232 km", "9.583 AU", "10.54 hours", "293 …"): no counting while the scan animates |
 | + / − buttons with the Objects drawer open | no overlap; − still clickable |
 | True distances, Earth, zoomed out 10× seven times (zoom −2.47 to 3.53) | no two names overlapping at any step |
-| Phone: top bar, upload pill, Objects tab, corner note, zoom buttons | no overlaps; Grand Tour tapped and its caption clear of everything |
+| Phone: top bar, upload pill, Objects tab, corner note, zoom buttons | no overlaps |
+| Phone: Journey | started from its button; its header, chapter ticks, kicker, title, caption and hint do not overlap; Earth's centre at 287 px, above the text (from 610 px); a swipe up moved on to the Moon |
 | Phone: card sheet / Saturn (after the card opened) | sheet open from 354 px (58% of the 844 px screen); Saturn's centre at 177 px, above it |
-| Flying from the overview to Mars (sampled every 50 ms) | landed at 1.21 s and the title appeared at once; the panel stayed closed throughout the flight and opened at 3.96 s as the title began to fade (title still fully visible); title gone at 4.77 s |
+| Flying from the overview to Mars (sampled every 50 ms) | landed at 1.32 s and the title appeared at once; the panel stayed closed throughout the flight and opened at 4.05 s as the title began to fade (title still fully visible); title gone at 4.87 s |
 | The title's horizontal centre over those 65 samples, while the card slid in | 720 px every time (it no longer re-centres when the panel opens) |
 
 **Table E: time taken per step (deployed, median of 10 runs)**
@@ -832,6 +839,8 @@ Fixes from the hands-on review (same file; the /classify answer is faked in the 
 | Shader (GLSL) | A very short program that runs on the graphics card; ours draws each star as a soft dot of its own size and colour | Phase 1 |
 | GSAP stagger | Starts the same animation on a list of elements one after another, a fixed delay apart; used for the arrival title's letters and the card's lines | After Phase 5 |
 | "Reduce motion" (`prefers-reduced-motion`) | A setting in the operating system or phone that asks web pages to cut down animation; the page reads it before each decorative animation and skips it when it is on | After Phase 5 |
+| Web fonts (Google Fonts: Space Grotesk, JetBrains Mono) | Font files the page downloads when it opens, so titles and labels look the same on every device; both are free under the SIL Open Font License | After Phase 5 |
+| Text "decode" (scramble) effect | Each character of a line flickers through symbols such as _ / [ ] until it settles on the real letter, from left to right; a few lines of JavaScript driven by GSAP | After Phase 5 |
 | CSS keyframes | A short list of in-between states the browser plays as an animation by itself (the scan line, the citation pop); declared once in `frontend/src/index.css` | After Phase 5 |
 | Faked server answers (Playwright `page.route`) | The test browser answers the page's requests itself with a fixed reply, so a page check runs without the real server | After Phase 5 |
 | Sprite | A flat picture in a 3D scene that always turns to face the camera; used for nebulae and clusters | Phase 1 |
@@ -948,7 +957,7 @@ Fixes from the hands-on review (same file; the /classify answer is faked in the 
 | Nov 19, 2026 | The distance scale became a glass card with a filled gauge and only three unit ticks | The first version, a bare line with grey labels, read as a stray line over the nebula photos, and two labels overlapped |
 | Nov 19, 2026 | After a scan the heatmap fades in and out on its own layer instead of switching the "Show heatmap" toggle on | The photo stays the default view, and the toggle (and the Phase 3 check of it) behaves as before |
 | Nov 19, 2026 | The custom cursor is off on touch screens and with "reduce motion"; the text cursor stays in typing fields | A trailing ring is meaningless on touch and is extra motion; hiding the text cursor makes typing harder |
-| Nov 19, 2026 | Grand Tour captions are the first sentence of each `objects.json` summary | No new text to write or check; objects.json stays the only source of facts |
+| Nov 19, 2026 | Grand Tour captions are the first sentence of each `objects.json` summary (kept for the Journey) | No new text to write or check; objects.json stays the only source of facts |
 | Nov 19, 2026 | The loading screen waits for its counter and title to finish (about 1 second) | Otherwise, with the files cached, it vanishes before the opening can be seen |
 | Nov 19, 2026 | The second interface check fakes /classify and /chat in the browser | It tests the animations, needs no server or Groq quota, and gives the same answer every run |
 | Nov 19, 2026 | The Objects drawer and the glass panel show one at a time instead of side by side | Both live on the right edge; side by side they would take half the screen at 1440 px and all of it on a laptop. Closing the drawer brings back the panel that was open |
@@ -957,6 +966,9 @@ Fixes from the hands-on review (same file; the /classify answer is faked in the 
 | Nov 19, 2026 | The match badge shows only for the photo's object (its top guess, or a guess the user picks) | A badge on every object among the guesses suggested the photo matched them |
 | Nov 19, 2026 | On phones the card is a bottom sheet over 58% of the screen, and the picture slides up 29% (the camera's view offset) | A full-screen card hid the object it describes; moving the picture, not the camera, leaves flights and zoom untouched |
 | Nov 19, 2026 | The card opens as the arrival title starts to fade, not when the object is chosen | Asked for by the author: the panel took a quarter of the screen during the flight and competed with the title. Opening as the title fades makes the two hand over instead of overlapping |
+| Nov 19, 2026 | The Journey replaced the Grand Tour (asked for by the author, after the scroll-driven story on edolus.com) | One guided mode, and the visitor sets the pace; the look is borrowed as a style, with AstroLens's own objects, text and scene |
+| Nov 19, 2026 | The Journey turns one gesture into one chapter, with a 0.7 s lock, instead of tying the camera to the scroll position | Simpler, and it reuses the existing flights (warp included); a scroll-scrubbed camera would need a second camera system |
+| Nov 19, 2026 | Space Grotesk instead of General Sans (the reference site's font) | General Sans is not on Google Fonts; Space Grotesk is close in feel and free (OFL) |
 
 ## Progress log
 
@@ -1030,3 +1042,6 @@ Fixes from the hands-on review (same file; the /classify answer is faked in the 
 - **Nov 19, 2026 (after Phase 5: title stays put):**
   - The arrival title no longer jumps sideways when the card slides in (reported by the author); it keeps the place it had when it appeared.
   - Layout check 19 of 19 (`ml/results/layout_check.json`); interface checks re-run and still 20 of 20 and 25 of 25 (their saved results kept, as only the title's position changed); pytest 62 passed.
+- **Nov 19, 2026 (after Phase 5: the Journey and a new landing):**
+  - The Grand Tour became the Journey, a scroll-driven story in 7 chapters, and the landing and loading screens were restyled (fonts, letter-by-letter title, decoding kicker, "BEGIN THE JOURNEY").
+  - Checks: interface 30 of 30 (`ml/results/ux_check_2.json`, Journey and landing included), 20 of 20 (`ml/results/ux_check.json`), layout 20 of 20 with the phone Journey (`ml/results/layout_check.json`); pytest 62 passed.

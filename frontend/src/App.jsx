@@ -9,18 +9,19 @@ import RevealHint from './ui/RevealHint'
 import ZoomControls from './ui/ZoomControls'
 import WarpVignette from './ui/WarpVignette'
 import ArrivalTitle from './ui/ArrivalTitle'
-import TourCaption from './ui/TourCaption'
+import Journey from './ui/Journey'
 import CustomCursor from './ui/CustomCursor'
 import { useStore } from './store'
 import './debug'
 
 export default function App() {
   const entered = useStore((s) => s.entered)
+  const journeying = useStore((s) => s.journey.active) // the Journey hides the app's controls
   return (
     <main className="relative h-full w-full overflow-hidden bg-black text-slate-100">
       <SpaceScene />
       <WarpVignette />
-      {entered && (
+      {entered && !journeying && (
         <>
           <ArrivalTitle />
           <TopBar />
@@ -30,9 +31,9 @@ export default function App() {
           <ObjectBrowser />
           <RevealHint />
           <ZoomControls />
-          <TourCaption />
         </>
       )}
+      {journeying && <Journey />}
       <Landing />
       <LoadingScreen />
       <CustomCursor />

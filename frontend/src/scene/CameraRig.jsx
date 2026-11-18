@@ -61,6 +61,7 @@ export default function CameraRig() {
   const trueScale = useStore((s) => s.trueScale)
   const zoomRequest = useStore((s) => s.zoomRequest)
   const entered = useStore((s) => s.entered)
+  const journeying = useStore((s) => s.journey.active)
   const revealRef = useRef(null)
   const zoomTween = useRef(null)
   const baseFov = useRef(null)
@@ -94,6 +95,14 @@ export default function CameraRig() {
     debug.camera = camera
     debug.controls = controls
   }, [camera, controls])
+
+  // During the Journey the mouse wheel and swipes move the story on (ui/Journey.jsx), so they must
+  // not zoom or turn the camera.
+  useEffect(() => {
+    if (!controls) return
+    controls.enableZoom = !journeying
+    controls.enableRotate = !journeying
+  }, [controls, journeying])
 
   // Landing page: pull the camera back (once). Leaving it: dive back in.
   useEffect(() => {

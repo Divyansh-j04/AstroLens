@@ -3,13 +3,13 @@
   "date": "2026-11-18",
   "note": "/classify and /chat answers are faked in the browser",
   "opening": {
-    "samples": 15,
+    "samples": 16,
     "percent_first_last": [
       0,
       100
     ],
     "percent_never_goes_down": true,
-    "distinct_percent_values": 13,
+    "distinct_percent_values": 14,
     "letters_visible_over_time": [
       0,
       1,
@@ -17,11 +17,10 @@
       3,
       4,
       5,
-      6,
       8,
       9
     ],
-    "loading_ms": 1109,
+    "loading_ms": 1112,
     "camera": {
       "home_distance": 118.53,
       "on_landing": 308.19,
@@ -29,6 +28,14 @@
       "peak_warp": 1,
       "flying_after": false
     }
+  },
+  "landing": {
+    "title_letters": 9,
+    "kicker": "COMPUTER VISION · NATURAL LANGUAGE",
+    "display_font_loaded": true,
+    "mono_font_loaded": true,
+    "title_font": "\"Space Grotesk\", ui-sans-serif, system-ui, sans-serif",
+    "button_starts_journey_at": "earth"
   },
   "cursor": {
     "system_pointer": "none",
@@ -42,81 +49,128 @@
     "over_jupiter": "object",
     "label": "Fly to Jupiter"
   },
-  "tour": {
-    "stops": [
+  "journey": {
+    "chapters": [
       {
-        "step": 1,
-        "at": "sun",
-        "name": "Sun",
-        "text_matches_summary": true,
-        "panel_open": false,
-        "advanced_by_itself_after_s": 6.9,
-        "seconds_from_start": 8.3
-      },
-      {
-        "step": 2,
         "at": "earth",
-        "name": "Earth",
-        "text_matches_summary": true,
-        "panel_open": false
+        "panel_open": false,
+        "kicker": "01 / 07 · ROCKY PLANET · 1 AU FROM THE SUN",
+        "title": "Earth",
+        "caption": "Earth is our home and the only planet known to support life.",
+        "hud_lines": 13,
+        "app_controls_hidden": true,
+        "wheel_zoom_off": true,
+        "kicker_ok": true,
+        "title_ok": true,
+        "caption_ok": true,
+        "after_double_scroll": 1
       },
       {
-        "step": 3,
         "at": "moon",
-        "name": "Moon",
-        "text_matches_summary": true,
-        "panel_open": false
+        "panel_open": false,
+        "kicker": "02 / 07 · NATURAL SATELLITE OF EARTH · 384,399 KM FROM EARTH",
+        "title": "Moon",
+        "caption": "The Moon is Earth's only natural satellite and the brightest object in our night sky after the Sun.",
+        "hud_lines": 13,
+        "app_controls_hidden": true,
+        "wheel_zoom_off": true,
+        "kicker_ok": true,
+        "title_ok": true,
+        "caption_ok": true,
+        "after_double_scroll": 2
       },
       {
-        "step": 4,
+        "at": "mars",
+        "panel_open": false,
+        "kicker": "03 / 07 · ROCKY PLANET · 1.52 AU FROM THE SUN",
+        "title": "Mars",
+        "caption": "Mars is a cold, dusty desert world whose iron-rich soil gives it a red colour.",
+        "hud_lines": 13,
+        "app_controls_hidden": true,
+        "wheel_zoom_off": true,
+        "kicker_ok": true,
+        "title_ok": true,
+        "caption_ok": true,
+        "back_to": "moon",
+        "after_double_scroll": 3
+      },
+      {
         "at": "jupiter",
-        "name": "Jupiter",
-        "text_matches_summary": true,
-        "panel_open": false
+        "panel_open": false,
+        "kicker": "04 / 07 · GAS GIANT · 5.2 AU FROM THE SUN",
+        "title": "Jupiter",
+        "caption": "Jupiter is the largest planet, with a mass nearly 2.5 times that of all the other planets combined.",
+        "hud_lines": 13,
+        "app_controls_hidden": true,
+        "wheel_zoom_off": true,
+        "kicker_ok": true,
+        "title_ok": true,
+        "caption_ok": true,
+        "after_double_scroll": 4
       },
       {
-        "step": 5,
         "at": "saturn",
-        "name": "Saturn",
-        "text_matches_summary": true,
-        "panel_open": false
+        "panel_open": false,
+        "kicker": "05 / 07 · GAS GIANT · 9.58 AU FROM THE SUN",
+        "title": "Saturn",
+        "caption": "Saturn is a gas giant famous for its bright rings, made of countless pieces of ice and rock.",
+        "hud_lines": 13,
+        "app_controls_hidden": true,
+        "wheel_zoom_off": true,
+        "kicker_ok": true,
+        "title_ok": true,
+        "caption_ok": true,
+        "after_double_scroll": 5
       },
       {
-        "step": 6,
         "at": "orion_nebula",
-        "name": "Orion Nebula",
-        "text_matches_summary": true,
-        "panel_open": false
+        "panel_open": false,
+        "kicker": "06 / 07 · DIFFUSE EMISSION NEBULA · 1,267 LIGHT-YEARS AWAY",
+        "title": "Orion Nebula",
+        "caption": "The Orion Nebula is a vast cloud of gas and dust where new stars are being born, and it is the closest large star-forming region to Earth.",
+        "hud_lines": 13,
+        "app_controls_hidden": true,
+        "wheel_zoom_off": true,
+        "kicker_ok": true,
+        "title_ok": true,
+        "caption_ok": true,
+        "after_double_scroll": 6
       },
       {
-        "step": 7,
         "at": "pleiades",
-        "name": "Pleiades",
-        "text_matches_summary": true,
-        "panel_open": false
+        "panel_open": false,
+        "kicker": "07 / 07 · OPEN STAR CLUSTER · 444 LIGHT-YEARS AWAY",
+        "title": "Pleiades",
+        "caption": "The Pleiades, or Seven Sisters, is a cluster of young, hot blue stars that is one of the nearest star clusters to Earth.",
+        "hud_lines": 13,
+        "app_controls_hidden": true,
+        "wheel_zoom_off": true,
+        "kicker_ok": true,
+        "title_ok": true,
+        "caption_ok": true
       }
     ],
-    "after_finish": {
-      "tour_active": false,
-      "caption_gone": true,
+    "after_last_scroll": {
+      "journey_active": false,
       "panel_open": true,
       "card": "Pleiades"
     },
+    "exit_ends": true,
     "escape_ends": true,
-    "user_flight_ends": true
+    "zoom_back_on_after": true
   },
   "scanning": {
     "scan_line_tops_px": [
       100,
-      105,
-      119,
-      142,
-      172,
-      214
+      104,
+      116,
+      136,
+      164,
+      199
     ],
     "scan_animation": "scan",
     "heatmap_reveal_peak_opacity": 0.9,
-    "heatmap_reveal_peak_at_ms": 381,
+    "heatmap_reveal_peak_at_ms": 440,
     "heatmap_reveal_final_opacity": 0,
     "show_heatmap_toggle_opacity": 0,
     "guesses": [
@@ -124,8 +178,8 @@
       "Jupiter 12%",
       "Uranus 5%"
     ],
-    "first_guess_visible_at_ms": 442,
-    "third_guess_visible_at_ms": 628
+    "first_guess_visible_at_ms": 502,
+    "third_guess_visible_at_ms": 627
   },
   "typed_chat": {
     "samples": 46,
@@ -144,21 +198,21 @@
       132
     ],
     "early": {
-      "t": 45,
+      "t": 43,
       "typing": "true",
       "chars": 8,
       "citations": 0,
       "sources_shown": false
     },
     "middle": {
-      "t": 629,
+      "t": 626,
       "typing": "true",
       "chars": 49,
       "citations": 0,
       "sources_shown": false
     },
     "end": {
-      "t": 1878,
+      "t": 1876,
       "typing": "false",
       "chars": 133,
       "citations": 2,
@@ -186,16 +240,21 @@
     "opening_title_letter_by_letter": true,
     "opening_camera_pulled_back_on_landing": true,
     "opening_dive_returns_with_warp": true,
+    "landing_title_kicker_fonts": true,
+    "landing_button_starts_journey": true,
     "cursor_hides_system_pointer": true,
     "cursor_grows_over_buttons": true,
     "cursor_magnetic_pull_and_release": true,
     "cursor_fly_to_label": true,
-    "tour_visits_all_stops_in_order": true,
-    "tour_captions_from_objects_json": true,
-    "tour_panel_closed_during_tour": true,
-    "tour_advances_by_itself": true,
-    "tour_finish_opens_last_card": true,
-    "tour_escape_or_user_flight_ends_it": true,
+    "journey_visits_chapters_in_order": true,
+    "journey_text_from_objects_json": true,
+    "journey_one_scroll_one_chapter": true,
+    "journey_scroll_up_goes_back": true,
+    "journey_hides_app_controls_and_panel": true,
+    "journey_wheel_does_not_zoom": true,
+    "journey_draws_constellation": true,
+    "journey_finish_opens_last_card": true,
+    "journey_exit_and_escape_end_it": true,
     "scan_line_sweeps": true,
     "scan_heatmap_fades_in_and_out": true,
     "scan_guesses_slide_up_in_turn": true,

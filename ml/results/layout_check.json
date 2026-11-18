@@ -109,10 +109,10 @@
     }
   ],
   "card_timing": {
-    "landed_ms": 1214,
-    "title_shown_ms": 1214,
-    "panel_opened_ms": 3958,
-    "title_gone_ms": 4771,
+    "landed_ms": 1318,
+    "title_shown_ms": 1318,
+    "panel_opened_ms": 4047,
+    "title_gone_ms": 4873,
     "panel_open_while_flying": false,
     "title_opacity_when_panel_opened": 1,
     "title_centre_x_px": {
@@ -123,7 +123,12 @@
   },
   "phone": {
     "start_overlaps": [],
-    "tour_overlaps": [],
+    "journey_overlaps": [],
+    "earth_above_text": {
+      "earth_centre_y_px": 287,
+      "text_top_px": 610
+    },
+    "swipe_up_went_to": "moon",
     "sheet": {
       "sheet_open": true,
       "sheet_top_px": 354,
@@ -153,7 +158,8 @@
     "title_does_not_move_when_card_opens": true,
     "card_opens_as_title_fades": true,
     "phone_top_area_clear": true,
-    "phone_tour_tappable_and_clear": true,
+    "phone_journey_text_clear_and_object_above": true,
+    "phone_swipe_moves_journey_on": true,
     "phone_card_is_bottom_sheet_with_object_above": true,
     "phone_sheet_covers_no_controls": true,
     "no_console_errors": true

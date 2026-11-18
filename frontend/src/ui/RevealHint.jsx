@@ -7,7 +7,7 @@ const SHOW_SECONDS = 6
 /** "Drag to look around: it's 3D" note shown on arriving at a nebula or cluster. */
 export default function RevealHint() {
   const arrived = useStore((s) => s.arrived)
-  const touring = useStore((s) => s.tour.active) // the tour caption sits in the same spot
+  const touring = useStore((s) => s.journey.active) // the Journey has its own text there
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {

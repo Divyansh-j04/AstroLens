@@ -55,22 +55,22 @@ export default function LoadingScreen() {
         done ? 'pointer-events-none opacity-0' : 'opacity-100'
       }`}
     >
-      <p ref={titleRef} data-testid="loading-title" aria-label={TITLE} className="text-sm tracking-[0.5em] text-slate-200">
+      <p ref={titleRef} data-testid="loading-title" aria-label={TITLE} className="font-mono text-xs tracking-[0.5em] text-slate-200">
         {[...TITLE].map((ch, i) => (
           <span key={i} aria-hidden="true" className="inline-block">
             {ch}
           </span>
         ))}
       </p>
-      <p data-testid="loading-percent" className="text-6xl font-extralight tabular-nums text-white">
+      <p data-testid="loading-percent" className="font-display text-6xl font-light tabular-nums text-white">
         {pct}
-        <span className="text-2xl text-slate-500">%</span>
+        <span className="font-mono text-2xl text-slate-500">%</span>
       </p>
       <div className="h-px w-64 overflow-hidden bg-white/10">
         {/* width is a dynamic value, the one place an inline style is allowed */}
         <div className="h-full bg-sky-400" style={{ width: `${pct}%` }} />
       </div>
-      <p className="text-xs text-slate-500">Loading stars and textures…</p>
+      <p className="font-mono text-[10px] tracking-[0.25em] text-slate-500">LOADING STARS AND TEXTURES</p>
     </div>
   )
 }

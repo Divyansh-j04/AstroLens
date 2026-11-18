@@ -19,8 +19,9 @@
  *   9. True distances, zoomed far out: no two planet or moon names overlap.
  *  11. Flying to an object: the panel stays closed during the flight and the arrival title, and
  *      the card slides in as the title fades; the title does not move sideways when it does.
- *  10. Phone (390 x 844, touch): the top bar, upload pill and Objects tab do not overlap; the Grand
- *      Tour button can be tapped; the card is a bottom sheet and the object stays visible above it.
+ *  10. Phone (390 x 844, touch): the top bar, upload pill and Objects tab do not overlap; the Journey
+ *      starts from its button, its text pieces do not overlap and Earth sits above them, a swipe up
+ *      moves to the next chapter; the card is a bottom sheet and the object stays visible above it.
  *
  * Writes ml/results/layout_check.json and screenshots in ml/results/layout_screens/.
  * Usage (from frontend/):  node scripts/check-layout.mjs
@@ -276,11 +277,34 @@ async function main() {
     const chrome = { topbar: 'main > header', upload: '[data-testid=upload-pill]', objectsTab: '[data-testid=browser-tab]', scaleNote: '[data-testid=scale-note]', zoom: '[data-testid=zoom-controls]' }
     const startOverlaps = await overlapping(ph, chrome)
     await ph.screenshot({ path: path.join(SHOTS, '5_phone_start.png') })
-    await ph.tap('[data-testid=tour-button]', { timeout: 5000 })
-    await ph.waitForSelector('[data-testid=tour-caption][data-arrived=true]', { timeout: 20000 })
-    const tourOverlaps = await overlapping(ph, { ...chrome, tour: '[data-testid=tour-caption]' })
-    await ph.screenshot({ path: path.join(SHOTS, '6_phone_tour.png') })
-    await ph.tap('[data-testid=tour-stop]')
+    await ph.tap('[data-testid=journey-button]', { timeout: 5000 })
+    await ph.waitForSelector('[data-testid=journey][data-step="0"][data-arrived=true]', { timeout: 20000 })
+    await ph.waitForTimeout(1300)
+    const journeyPieces = {
+      jHeader: '[data-testid=journey] header',
+      jTicks: '[data-testid=journey] nav',
+      jKicker: '[data-testid=journey-kicker]',
+      jTitle: '[data-testid=journey-title]',
+      jCaption: '[data-testid=journey-caption]',
+      jHint: '[data-testid=journey-hint]',
+    }
+    const tourOverlaps = await overlapping(ph, journeyPieces)
+    const earthAboveText = await ph.evaluate(() => {
+      const a = window.astrolens
+      const p = a.camera.position.clone().set(...a.currentPosition('earth')).project(a.camera)
+      return { earth_centre_y_px: Math.round(((1 - p.y) / 2) * innerHeight), text_top_px: Math.round(document.querySelector('[data-testid=journey-kicker]').getBoundingClientRect().top) }
+    })
+    await ph.screenshot({ path: path.join(SHOTS, '6_phone_journey.png') })
+    // A swipe up (touch events) moves to the next chapter.
+    await ph.evaluate(() => {
+      const t = (y) => new Touch({ identifier: 1, target: document.body, clientX: 200, clientY: y })
+      window.dispatchEvent(new TouchEvent('touchstart', { touches: [t(620)], changedTouches: [t(620)] }))
+      window.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(380)] }))
+    })
+    await ph.waitForSelector('[data-testid=journey][data-step="1"]', { timeout: 5000 })
+    const swipedTo = await ph.evaluate(() => window.astrolens.store.getState().currentObjectId)
+    await ph.tap('[data-testid=journey-exit]')
+    await ph.waitForTimeout(400)
     await ph.evaluate(() => window.astrolens.store.getState().selectObject('saturn'))
     await landed(ph)
     await ph.waitForFunction(() => window.astrolens.store.getState().panelOpen, null, { timeout: 12000 }) // the card opens as the title fades
@@ -293,9 +317,10 @@ async function main() {
     })
     const sheetOverlaps = await overlapping(ph, { ...chrome, panel: '[data-testid=glass-panel][data-open=true]' })
     await ph.screenshot({ path: path.join(SHOTS, '7_phone_card_sheet.png') })
-    result.phone = { start_overlaps: startOverlaps, tour_overlaps: tourOverlaps, sheet, sheet_overlaps: sheetOverlaps }
+    result.phone = { start_overlaps: startOverlaps, journey_overlaps: tourOverlaps, earth_above_text: earthAboveText, swipe_up_went_to: swipedTo, sheet, sheet_overlaps: sheetOverlaps }
     checks.phone_top_area_clear = startOverlaps.length === 0
-    checks.phone_tour_tappable_and_clear = tourOverlaps.length === 0
+    checks.phone_journey_text_clear_and_object_above = tourOverlaps.length === 0 && earthAboveText.earth_centre_y_px < earthAboveText.text_top_px - 40
+    checks.phone_swipe_moves_journey_on = swipedTo === 'moon'
     checks.phone_card_is_bottom_sheet_with_object_above = sheet.sheet_open && sheet.sheet_top_px > sheet.screen_height * 0.35 && sheet.sheet_top_px < sheet.screen_height * 0.5 && sheet.saturn_centre_y_px < sheet.sheet_top_px - 40
     checks.phone_sheet_covers_no_controls = sheetOverlaps.every((x) => !x.includes('objectsTab') && !x.includes('upload') && !x.includes('topbar'))
     await phone.close()

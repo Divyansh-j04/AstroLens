@@ -1,5 +1,5 @@
 /**
- * Browser check for the second batch of interface features: custom cursor, Grand Tour, photo
+ * Browser check for the second batch of interface features: custom cursor, Journey, photo
  * scanning effect, opening sequence and typed chat answers, each with "reduce motion" on as well.
  *
  * Starts a Vite dev server and drives the installed Microsoft Edge through playwright-core. The
@@ -11,8 +11,10 @@
  *      the landing page the camera waits 2.6x farther out; "Explore the sky" dives back in with warp.
  *   2. Cursor: the system pointer is hidden; the ring grows over buttons, says "Fly to Jupiter" over
  *      Jupiter, and the Home button pulls towards the pointer and springs back.
- *   3. Grand Tour: 7 stops in order with the first sentence of each summary; the panel stays closed;
- *      a stop advances by itself after its 7 s; Finish opens the last card; Escape and a user flight end it.
+ *   3. Journey (scroll-driven, replaced the Grand Tour): 7 chapters in order; kicker, title and caption
+ *      from objects.json; one scroll = one chapter (even two quick ones); scrolling up goes back, the
+ *      arrow key goes on; app controls hidden, panel closed, wheel does not zoom; constellation drawn;
+ *      scrolling past the last chapter opens its card; Exit and Escape end it.
  *   4. Scanning: a scan line sweeps the photo while classifying; then the heatmap fades in and out
  *      once (the "Show heatmap" toggle stays off) and the top 3 guesses slide up.
  *   5. Typed chat: the answer appears word by word, citation numbers pop in, sources show at the end.
@@ -35,7 +37,15 @@ const PAGE_PORT = 5201
 const PHOTO = path.join(RESULTS, 'gradcam', 'gradcam_examples.png')
 const OBJECTS = JSON.parse(await fs.readFile(path.join(ROOT, 'backend', 'app', 'data', 'objects.json'), 'utf8'))
 const BY_ID = Object.fromEntries(OBJECTS.map((o) => [o.id, o]))
-const TOUR = ['sun', 'earth', 'moon', 'jupiter', 'saturn', 'orion_nebula', 'pleiades'] // as in src/tour.js
+const JOURNEY = ['earth', 'moon', 'mars', 'jupiter', 'saturn', 'orion_nebula', 'pleiades'] // as in src/journey.js
+// The line under a title, written out again here from objects.json (independent of the page's code).
+const num = (x) => x.toLocaleString('en', { maximumFractionDigits: 2 })
+function expectedSubtitle(o) {
+  if (o.scene_mode === 'deep_space') return `${o.type} · ${num(o.distance_ly)} light-years away`
+  if (o.parent) return `${o.type} · ${num(o.orbit_km)} km from ${BY_ID[o.parent].name}`
+  if (o.orbit_au) return `${o.type} · ${num(o.orbit_au)} AU from the Sun`
+  return o.type
+}
 const firstSentence = (text) => text.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? text
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -112,7 +122,7 @@ async function openPage(browser, { url = '/?app', reducedMotion = 'no-preference
 const state = (page) =>
   page.evaluate(() => {
     const s = window.astrolens.store.getState()
-    return { currentObjectId: s.currentObjectId, isFlying: s.isFlying, panelOpen: s.panelOpen, tour: s.tour, entered: s.entered }
+    return { currentObjectId: s.currentObjectId, isFlying: s.isFlying, panelOpen: s.panelOpen, journey: s.journey, entered: s.entered }
   })
 const cameraDistance = (page) =>
   page.evaluate(() => {
@@ -174,6 +184,29 @@ async function main() {
       checks.opening_dive_returns_with_warp = Math.abs(afterDive - home) < 0.05 * home && dive.peak_warp > 0.9 && !dive.flying_after
       allErrors.push(...errors)
       await page.close()
+
+      // The landing's title, kicker, fonts and "Begin the journey" button.
+      const { page: lp, errors: lpErrors } = await openPage(browser, { url: '/' })
+      await lp.waitForTimeout(1600)
+      const landing = await lp.evaluate(async () => {
+        await document.fonts.ready
+        return {
+          title_letters: document.querySelectorAll('[data-testid=landing-title] [data-ch]').length,
+          kicker: document.querySelector('[data-testid=landing-kicker]').textContent,
+          display_font_loaded: document.fonts.check('300 40px "Space Grotesk"'), // the weight the landing title uses (weights load when first used)
+          mono_font_loaded: document.fonts.check('400 12px "JetBrains Mono"'),
+          title_font: getComputedStyle(document.querySelector('[data-testid=landing-title]')).fontFamily,
+        }
+      })
+      await lp.screenshot({ path: path.join(SHOTS, '1b_landing_journey_button.png') })
+      await lp.click('[data-testid=landing-journey]')
+      await lp.waitForSelector('[data-testid=journey][data-step="0"][data-arrived=true]', { timeout: 25000 })
+      landing.button_starts_journey_at = await lp.evaluate(() => window.astrolens.store.getState().currentObjectId)
+      result.landing = landing
+      checks.landing_title_kicker_fonts = landing.title_letters === 9 && landing.kicker === 'COMPUTER VISION · NATURAL LANGUAGE' && landing.display_font_loaded && landing.mono_font_loaded && landing.title_font.includes('Space Grotesk')
+      checks.landing_button_starts_journey = landing.button_starts_journey_at === JOURNEY[0]
+      allErrors.push(...lpErrors)
+      await lp.close()
     }
 
     // ---------- 2-5 on one page ----------
@@ -218,54 +251,89 @@ async function main() {
       await page.mouse.move(300, 700)
     }
 
-    // 3. Grand Tour
+    // 3. Journey (scroll-driven; replaced the Grand Tour)
     {
-      await page.click('[data-testid=tour-button]')
-      const stops = []
-      const startStep0 = Date.now()
-      for (let i = 0; i < TOUR.length; i++) {
-        await page.waitForSelector(`[data-testid=tour-caption][data-step="${i}"][data-arrived=true]`, { timeout: 25000 })
-        const s = await state(page)
-        const text = await page.textContent('[data-testid=tour-text]')
-        const name = await page.textContent('[data-testid=tour-caption] h2')
-        stops.push({ step: i + 1, at: s.currentObjectId, name, text_matches_summary: text === firstSentence(BY_ID[TOUR[i]].summary), panel_open: s.panelOpen })
-        if (i === 2) await page.screenshot({ path: path.join(SHOTS, '4_tour_moon.png') })
-        if (i === 0) {
-          // Let the first stop run out by itself: the tour moves on after 7 s.
-          const t0 = Date.now()
-          await page.waitForSelector('[data-testid=tour-caption][data-step="1"]', { timeout: 15000 })
-          stops[0].advanced_by_itself_after_s = +((Date.now() - t0) / 1000).toFixed(1)
-          stops[0].seconds_from_start = +((Date.now() - startStep0) / 1000).toFixed(1)
-          continue
-        }
-        await page.click('[data-testid=tour-next]')
+      await page.click('[data-testid=journey-button]')
+      const chapters = []
+      const arrive = (i) => page.waitForSelector(`[data-testid=journey][data-step="${i}"][data-arrived=true]`, { timeout: 25000 })
+      const wheel = async (dy) => {
+        await page.mouse.move(700, 450)
+        await page.mouse.wheel(0, dy)
       }
-      await page.waitForTimeout(800)
+      for (let i = 0; i < JOURNEY.length; i++) {
+        await arrive(i)
+        await page.waitForTimeout(1300) // the kicker has decoded, the title has come into focus
+        const read = await page.evaluate(() => {
+          const s = window.astrolens.store.getState()
+          return {
+            at: s.currentObjectId,
+            panel_open: s.panelOpen,
+            kicker: document.querySelector('[data-testid=journey-kicker]')?.textContent,
+            title: document.querySelector('[data-testid=journey-title]')?.getAttribute('aria-label'),
+            caption: document.querySelector('[data-testid=journey-caption]')?.textContent.replace(/^\+\s*/, ''),
+            hud_lines: document.querySelectorAll('[data-testid=journey-hud] [data-draw]').length,
+            app_controls_hidden: !document.querySelector('main > header') && !document.querySelector('[data-testid=upload-pill]') && !document.querySelector('[data-testid=zoom-controls]'),
+            wheel_zoom_off: window.astrolens.controls.enableZoom === false && window.astrolens.controls.enableRotate === false,
+          }
+        })
+        const obj = BY_ID[JOURNEY[i]]
+        read.kicker_ok = read.kicker === `${String(i + 1).padStart(2, '0')} / ${String(JOURNEY.length).padStart(2, '0')} · ${expectedSubtitle(obj)}`.toUpperCase()
+        read.title_ok = read.title === obj.name
+        read.caption_ok = read.caption === firstSentence(obj.summary)
+        chapters.push(read)
+        if ([0, 1, 5].includes(i)) await page.screenshot({ path: path.join(SHOTS, `4_journey_${i + 1}_${JOURNEY[i]}.png`) })
+        if (i === 2) {
+          // Scroll up goes back one chapter; then forward again with the arrow key.
+          await wheel(-120)
+          await arrive(1)
+          chapters[i].back_to = await page.evaluate(() => window.astrolens.store.getState().currentObjectId)
+          await page.waitForTimeout(800)
+          await page.keyboard.press('ArrowDown')
+          await arrive(2)
+          await page.waitForTimeout(800)
+        }
+        if (i < JOURNEY.length - 1) {
+          // Two quick scrolls: still only one chapter.
+          await wheel(120)
+          await page.waitForTimeout(80)
+          await wheel(120)
+          await page.waitForTimeout(400)
+          chapters[i].after_double_scroll = await page.evaluate(() => window.astrolens.store.getState().journey.step)
+        }
+      }
+      // Scrolling on from the last chapter ends the Journey and opens the card.
+      await wheel(120)
+      await page.waitForTimeout(900)
       const end = await state(page)
-      const captionGone = (await page.$('[data-testid=tour-caption]')) === null
       const cardName = await page.textContent('[data-testid=card-name]').catch(() => null)
-      result.tour = { stops, after_finish: { tour_active: end.tour.active, caption_gone: captionGone, panel_open: end.panelOpen, card: cardName } }
-      checks.tour_visits_all_stops_in_order = stops.map((x) => x.at).join() === TOUR.join()
-      checks.tour_captions_from_objects_json = stops.every((x) => x.text_matches_summary && x.name === BY_ID[x.at].name)
-      checks.tour_panel_closed_during_tour = stops.every((x) => !x.panel_open)
-      checks.tour_advances_by_itself = stops[0].advanced_by_itself_after_s >= 6.5 && stops[0].advanced_by_itself_after_s <= 8
-      checks.tour_finish_opens_last_card = !end.tour.active && captionGone && end.panelOpen && cardName === BY_ID.pleiades.name
+      result.journey = { chapters, after_last_scroll: { journey_active: end.journey.active, panel_open: end.panelOpen, card: cardName } }
+      checks.journey_visits_chapters_in_order = chapters.map((x) => x.at).join() === JOURNEY.join()
+      checks.journey_text_from_objects_json = chapters.every((x) => x.kicker_ok && x.title_ok && x.caption_ok)
+      checks.journey_one_scroll_one_chapter = chapters.slice(0, -1).every((x, i) => x.after_double_scroll === i + 1)
+      checks.journey_scroll_up_goes_back = chapters[2].back_to === JOURNEY[1]
+      checks.journey_hides_app_controls_and_panel = chapters.every((x) => x.app_controls_hidden && !x.panel_open)
+      checks.journey_wheel_does_not_zoom = chapters.every((x) => x.wheel_zoom_off)
+      checks.journey_draws_constellation = chapters.every((x) => x.hud_lines === 13)
+      checks.journey_finish_opens_last_card = !end.journey.active && end.panelOpen && cardName === BY_ID.pleiades.name
 
-      // Escape ends it; so does a flight the user asks for.
-      await page.click('[data-testid=tour-button]')
-      await page.waitForSelector('[data-testid=tour-caption]')
+      // Exit and Escape end it at once.
+      await page.click('[data-testid=journey-button]')
+      await arrive(0)
+      await page.click('[data-testid=journey-exit]')
+      await page.waitForTimeout(300)
+      const afterExit = (await state(page)).journey.active
+      await page.click('[data-testid=journey-button]')
+      await arrive(0)
       await page.keyboard.press('Escape')
       await page.waitForTimeout(300)
-      const afterEsc = (await state(page)).tour.active
-      await page.click('[data-testid=tour-button]')
-      await page.waitForSelector('[data-testid=tour-caption]')
+      const afterEsc = await state(page)
+      result.journey.exit_ends = !afterExit
+      result.journey.escape_ends = !afterEsc.journey.active
+      result.journey.zoom_back_on_after = await page.evaluate(() => window.astrolens.controls.enableZoom && window.astrolens.controls.enableRotate)
+      checks.journey_exit_and_escape_end_it = result.journey.exit_ends && result.journey.escape_ends && result.journey.zoom_back_on_after
       await page.evaluate(() => window.astrolens.store.getState().selectObject('mars'))
-      await page.waitForTimeout(300)
-      const afterUserFlight = await state(page)
-      result.tour.escape_ends = !afterEsc
-      result.tour.user_flight_ends = !afterUserFlight.tour.active && afterUserFlight.currentObjectId === 'mars'
-      checks.tour_escape_or_user_flight_ends_it = result.tour.escape_ends && result.tour.user_flight_ends
       await waitLanded(page)
+      await page.waitForFunction(() => window.astrolens.store.getState().panelOpen, null, { timeout: 12000 })
     }
 
     // 4. Photo scanning

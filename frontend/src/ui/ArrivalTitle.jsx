@@ -22,7 +22,7 @@ export default function ArrivalTitle() {
   const ref = useRef(null)
 
   useEffect(() => {
-    if (!landed.n) return
+    if (!landed.n || useStore.getState().journey.active) return // the Journey shows its own chapter title
     setBesidePanel(useStore.getState().panelOpen) // decided once; the card opening later does not move the title
     setShownId(landed.id)
   }, [landed])
@@ -59,14 +59,14 @@ export default function ArrivalTitle() {
       }`}
     >
       <div ref={ref} data-testid="arrival-title" aria-hidden="true" className="px-4 text-center">
-        <h2 className="text-5xl font-semibold tracking-[0.08em] text-white drop-shadow-[0_2px_18px_rgba(56,189,248,0.35)] sm:text-6xl">
+        <h2 className="font-display text-5xl font-medium tracking-[0.08em] text-white drop-shadow-[0_2px_18px_rgba(56,189,248,0.35)] sm:text-6xl">
           {[...obj.name].map((ch, i) => (
             <span key={i} data-letter className="inline-block whitespace-pre">
               {ch}
             </span>
           ))}
         </h2>
-        <p data-subtitle data-testid="arrival-subtitle" className="mt-3 text-sm tracking-[0.2em] text-sky-100/80 uppercase">
+        <p data-subtitle data-testid="arrival-subtitle" className="mt-3 font-mono text-xs tracking-[0.2em] text-sky-100/80 uppercase">
           {subtitleFor(obj)}
         </p>
       </div>

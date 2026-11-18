@@ -20,6 +20,7 @@ export default function ObjectLabel({ obj, offsetY = 0 }) {
   const currentObjectId = useStore((s) => s.currentObjectId)
   const selectObject = useStore((s) => s.selectObject)
   const entered = useStore((s) => s.entered) // no name tags over the landing page
+  const journeying = useStore((s) => s.journey.active) // nor during the Journey (it names each chapter)
   const crowded = obj.parent && MOON_COUNT[obj.parent] > 1
   // 'mode': follow the scene mode (normal view); 'on' / 'off': decided per frame
   const [rule, setRule] = useState('mode')
@@ -37,7 +38,7 @@ export default function ObjectLabel({ obj, offsetY = 0 }) {
     }
   })
   const visible = rule === 'on' || (rule === 'mode' && mode === obj.scene_mode)
-  const shown = entered && visible && currentObjectId !== obj.id
+  const shown = entered && !journeying && visible && currentObjectId !== obj.id
 
   return (
     // The Html wrapper ignores the mouse; only the visible button takes clicks, so hidden tags never block the scene.

@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import { askChat, classifyImage, SLOW_AFTER_MS, UploadError } from './api'
-import { TOUR_STOPS } from './tour'
+import { JOURNEY } from './journey'
 
 export const GENERAL_CHAT = '_general' // conversation key when no object is selected
 const HISTORY_SENT = 4 // earlier messages sent with a question, so follow-ups make sense
 let uploadId = 0 // only the latest upload may update the page
 // "?app" in the address skips the landing page (used by the browser check scripts).
-const NO_TOUR = { active: false, step: 0 } // any flight the user asks for ends the Grand Tour
+const NO_JOURNEY = { active: false, step: 0 } // any flight the user asks for ends the Journey
 const SKIP_LANDING = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('app')
 
 // The single shared store for the page (Zustand). Every component reads from here.
@@ -35,35 +35,38 @@ export const useStore = create((set, get) => ({
   photoObjectId: null, // the object the last photo result is about (top guess, or a guess the user picked): its card shows the match badge
   cardIntro: true, // false when the card was opened by a photo result (the scan already animates; the card just appears)
   hoverId: null, // the planet, moon, nebula or cluster under the mouse (the custom cursor shows "Fly to ...")
-  tour: NO_TOUR, // the Grand Tour: { active, step } (step = index in TOUR_STOPS)
+  journey: NO_JOURNEY, // the scroll-driven Journey: { active, step } (step = chapter index in JOURNEY)
 
   selectObject: (id) =>
-    set((s) => ({ currentObjectId: id, panelOpen: false, panelPending: true, panelBeforeBrowser: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false, cardIntro: true })),
+    set((s) => ({ currentObjectId: id, panelOpen: false, panelPending: true, panelBeforeBrowser: false, panelView: 'card', flyRequest: s.flyRequest + 1, journey: NO_JOURNEY, browserOpen: false, cardIntro: true })),
   // A guess from the photo's top 3 picked by the user: fly there, and the badge moves with it.
   selectGuess: (id) =>
-    set((s) => ({ currentObjectId: id, panelOpen: false, panelPending: true, panelBeforeBrowser: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false, cardIntro: true, photoObjectId: id })),
+    set((s) => ({ currentObjectId: id, panelOpen: false, panelPending: true, panelBeforeBrowser: false, panelView: 'card', flyRequest: s.flyRequest + 1, journey: NO_JOURNEY, browserOpen: false, cardIntro: true, photoObjectId: id })),
   goHome: () =>
-    set((s) => ({ currentObjectId: null, panelOpen: false, panelPending: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR })),
+    set((s) => ({ currentObjectId: null, panelOpen: false, panelPending: false, panelView: 'card', flyRequest: s.flyRequest + 1, journey: NO_JOURNEY })),
   // The arrival title is fading: open the card that was waiting (behind the Objects drawer if that is open).
   revealPanel: () =>
     set((s) =>
       !s.panelPending ? {} : s.browserOpen ? { panelPending: false, panelBeforeBrowser: true } : { panelPending: false, panelOpen: true },
     ),
   setHoverId: (hoverId) => set({ hoverId }),
-  // Grand Tour: fly to stop `step` with the panel closed (the caption tells the story instead).
-  tourTo: (step) =>
+  // Journey: fly to chapter `step` with the panels closed (the Journey overlay tells the story).
+  journeyTo: (step) =>
     set((s) => ({
-      tour: { active: true, step },
+      journey: { active: true, step },
+      entered: true,
       panelPending: false,
-      currentObjectId: TOUR_STOPS[step],
+      currentObjectId: JOURNEY[step],
       panelOpen: false,
       panelView: 'card',
       browserOpen: false,
+      uploadPanelOpen: false,
       cardIntro: true,
       flyRequest: s.flyRequest + 1,
     })),
-  // End the tour where it is; `showCard` opens the card of the last stop.
-  stopTour: (showCard = false) => set((s) => ({ tour: NO_TOUR, ...(showCard && s.currentObjectId ? { panelOpen: true, panelView: 'card' } : {}) })),
+  // End the Journey where it is; `showCard` opens the card of the last chapter's object.
+  stopJourney: (showCard = false) =>
+    set((s) => ({ journey: NO_JOURNEY, ...(showCard && s.currentObjectId ? { panelOpen: true, panelView: 'card' } : {}) })),
   setMode: (mode) => set({ mode }),
   setFlying: (isFlying) => set({ isFlying }),
   setPanelOpen: (panelOpen) => set(panelOpen ? { panelOpen, browserOpen: false, panelPending: false } : { panelOpen }),
@@ -161,7 +164,7 @@ export const useStore = create((set, get) => ({
             panelPending: true,
             panelView: 'card',
             flyRequest: s.flyRequest + 1,
-            tour: NO_TOUR,
+            journey: NO_JOURNEY,
             browserOpen: false,
             photoObjectId: prediction.top3[0].id,
             cardIntro: false,
