@@ -109,12 +109,17 @@
     }
   ],
   "card_timing": {
-    "landed_ms": 1322,
-    "title_shown_ms": 1322,
-    "panel_opened_ms": 4072,
-    "title_gone_ms": 4838,
+    "landed_ms": 1214,
+    "title_shown_ms": 1214,
+    "panel_opened_ms": 3958,
+    "title_gone_ms": 4771,
     "panel_open_while_flying": false,
-    "title_opacity_when_panel_opened": 1
+    "title_opacity_when_panel_opened": 1,
+    "title_centre_x_px": {
+      "min": 720,
+      "max": 720,
+      "samples": 65
+    }
   },
   "phone": {
     "start_overlaps": [],
@@ -145,6 +150,7 @@
     "zoom_buttons_beside_drawer": true,
     "names_never_pile_up": true,
     "card_closed_during_flight_and_title": true,
+    "title_does_not_move_when_card_opens": true,
     "card_opens_as_title_fades": true,
     "phone_top_area_clear": true,
     "phone_tour_tappable_and_clear": true,

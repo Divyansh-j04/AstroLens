@@ -10,18 +10,21 @@ const HOLD_SECONDS = 1.8 // how long the full title stays before fading out
  * On landing at an object: its name appears letter by letter in large type, then a line such as
  * "Gas giant · 5.2 AU from the Sun" (built from objects.json), then both fade away; as they fade, the
  * object's card slides in (the panel stays closed during the flight and the title).
- * Centred in the part of the screen the glass panel does not cover. With "reduce motion" on, the
+ * Centred in the part of the screen the glass panel did not cover when the title appeared; it keeps
+ * that place while the card slides in, so it never jumps sideways mid-fade. With "reduce motion" on, the
  * title simply appears and disappears.
  */
 export default function ArrivalTitle() {
   const landed = useStore((s) => s.landed)
   const flyRequest = useStore((s) => s.flyRequest)
-  const panelOpen = useStore((s) => s.panelOpen)
+  const [besidePanel, setBesidePanel] = useState(false) // was the panel open when the title appeared?
   const [shownId, setShownId] = useState(null)
   const ref = useRef(null)
 
   useEffect(() => {
-    if (landed.n) setShownId(landed.id)
+    if (!landed.n) return
+    setBesidePanel(useStore.getState().panelOpen) // decided once; the card opening later does not move the title
+    setShownId(landed.id)
   }, [landed])
   useEffect(() => setShownId(null), [flyRequest]) // a new flight clears the old title at once
 
@@ -52,7 +55,7 @@ export default function ArrivalTitle() {
   return (
     <div
       className={`pointer-events-none absolute inset-y-0 left-0 right-0 z-20 flex items-start justify-center pt-[24vh] sm:pt-[16vh] ${
-        panelOpen ? 'sm:right-[max(26%,340px)]' : ''
+        besidePanel ? 'sm:right-[max(26%,340px)]' : ''
       }`}
     >
       <div ref={ref} data-testid="arrival-title" aria-hidden="true" className="px-4 text-center">

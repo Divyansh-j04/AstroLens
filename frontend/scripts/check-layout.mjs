@@ -18,7 +18,7 @@
  *   8. The + / - buttons step left of the open Objects drawer.
  *   9. True distances, zoomed far out: no two planet or moon names overlap.
  *  11. Flying to an object: the panel stays closed during the flight and the arrival title, and
- *      the card slides in as the title fades.
+ *      the card slides in as the title fades; the title does not move sideways when it does.
  *  10. Phone (390 x 844, touch): the top bar, upload pill and Objects tab do not overlap; the Grand
  *      Tour button can be tapped; the card is a bottom sheet and the object stays visible above it.
  *
@@ -246,7 +246,8 @@ async function main() {
       while (performance.now() - t0 < 9000) {
         const s = a.store.getState()
         const title = document.querySelector('[data-testid=arrival-title]')
-        samples.push({ t: Math.round(performance.now() - t0), flying: s.isFlying, panel: s.panelOpen, title: title ? +Number(getComputedStyle(title).opacity).toFixed(2) : null })
+        const box = title?.getBoundingClientRect()
+        samples.push({ t: Math.round(performance.now() - t0), flying: s.isFlying, panel: s.panelOpen, title: title ? +Number(getComputedStyle(title).opacity).toFixed(2) : null, title_x: box ? Math.round(box.left + box.width / 2) : null })
         await new Promise((r) => setTimeout(r, 50))
       }
       return samples
@@ -259,6 +260,9 @@ async function main() {
     const titleWhenPanelOpened = timeline.find((x) => x.panel)?.title
     result.card_timing = { landed_ms: landedAt, title_shown_ms: titleShownAt, panel_opened_ms: panelOpenedAt, title_gone_ms: titleGoneAt, panel_open_while_flying: panelWhileFlying, title_opacity_when_panel_opened: titleWhenPanelOpened }
     checks.card_closed_during_flight_and_title = landedAt !== undefined && !panelWhileFlying && panelOpenedAt > titleShownAt && panelOpenedAt > landedAt
+    const xs = timeline.filter((x) => x.title_x !== null).map((x) => x.title_x)
+    result.card_timing.title_centre_x_px = { min: Math.min(...xs), max: Math.max(...xs), samples: xs.length }
+    checks.title_does_not_move_when_card_opens = xs.length > 10 && Math.max(...xs) - Math.min(...xs) <= 2
     checks.card_opens_as_title_fades = panelOpenedAt !== undefined && titleGoneAt !== undefined && panelOpenedAt <= titleGoneAt && titleGoneAt - panelOpenedAt < 1200
     await page.screenshot({ path: path.join(SHOTS, '8_card_after_title.png') })
 

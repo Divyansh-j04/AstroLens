@@ -506,6 +506,7 @@ recall@k = share of questions with a gold chunk in the first k results; MRR@10 =
 | After 5 | Match badge only on the object the photo is about (it used to show on any object among the photo's guesses, e.g. "15% match" on Earth after a cat photo) | Done (bug fix) |
 | After 5 | After a photo result the card appears without counting or sliding (the scan, heatmap and flight already animate) | Done |
 | After 5 | Phone layout: two-row top bar, upload pill and Objects tab below it, the card as a bottom sheet with the scene shifted up so the object stays visible, the tour caption with the corner controls out of its way | Done |
+| After 5 | The arrival title keeps its place while the card slides in (it used to jump sideways mid-fade) | Done (bug fix) |
 | After 5 | The glass panel stays closed while flying to an object and slides in as the arrival title fades (a waiting card also opens by itself 6 s after the camera stops, if no title came); the card's counting and sliding start when it opens | Done |
 | After 5 | + / − buttons step aside for the Objects drawer; in True distances, planet and moon names that would pile up on what they orbit are hidden | Done (bug fix) |
 
@@ -603,7 +604,7 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Reduce motion on | no custom cursor (system pointer), camera not pulled back, warp 0, answer complete at once, scan line still |
 | Browser console errors | 0 |
 
-**Layout check (after Phase 5).** Source: `ml/results/layout_check.json`, written by `frontend/scripts/check-layout.mjs` (Playwright, Microsoft Edge, 1440 × 900, then a 390 × 844 touch phone); 18 of 18 checks passed, screenshots in `ml/results/layout_screens/`. Before the fix, the Objects drawer opened on top of the chat while typing and stayed on top of the card after an object was picked.
+**Layout check (after Phase 5).** Source: `ml/results/layout_check.json`, written by `frontend/scripts/check-layout.mjs` (Playwright, Microsoft Edge, 1440 × 900, then a 390 × 844 touch phone); 19 of 19 checks passed, screenshots in `ml/results/layout_screens/`. Before the fix, the Objects drawer opened on top of the chat while typing and stayed on top of the card after an object was picked.
 
 | Step | Drawer | Panel | Overlap |
 | --- | --- | --- | --- |
@@ -625,7 +626,8 @@ Fixes from the hands-on review (same file; the /classify answer is faked in the 
 | True distances, Earth, zoomed out 10× seven times (zoom −2.47 to 3.53) | no two names overlapping at any step |
 | Phone: top bar, upload pill, Objects tab, corner note, zoom buttons | no overlaps; Grand Tour tapped and its caption clear of everything |
 | Phone: card sheet / Saturn (after the card opened) | sheet open from 354 px (58% of the 844 px screen); Saturn's centre at 177 px, above it |
-| Flying from the overview to Mars (sampled every 50 ms) | landed at 1.32 s and the title appeared at once; the panel stayed closed throughout the flight and opened at 4.07 s as the title began to fade (title still fully visible); title gone at 4.84 s |
+| Flying from the overview to Mars (sampled every 50 ms) | landed at 1.21 s and the title appeared at once; the panel stayed closed throughout the flight and opened at 3.96 s as the title began to fade (title still fully visible); title gone at 4.77 s |
+| The title's horizontal centre over those 65 samples, while the card slid in | 720 px every time (it no longer re-centres when the panel opens) |
 
 **Table E: time taken per step (deployed, median of 10 runs)**
 
@@ -1025,3 +1027,6 @@ Fixes from the hands-on review (same file; the /classify answer is faked in the 
   - At the author's request the glass panel stays closed while flying to an object and slides in as the arrival title fades; the card's counting and sliding now start when it opens (before, they played while it was hidden).
   - Found and fixed on the way: picking an object in the Objects drawer brought the old panel straight back (the drawer restoring the panel it had covered).
   - Checks: layout 18 of 18, interface 20 of 20 and 25 of 25; the Phase 3 check against the real server still passes (its saved results left as they were); pytest 62 passed.
+- **Nov 19, 2026 (after Phase 5: title stays put):**
+  - The arrival title no longer jumps sideways when the card slides in (reported by the author); it keeps the place it had when it appeared.
+  - Layout check 19 of 19 (`ml/results/layout_check.json`); interface checks re-run and still 20 of 20 and 25 of 25 (their saved results kept, as only the title's position changed); pytest 62 passed.
