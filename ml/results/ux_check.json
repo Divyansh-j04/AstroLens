@@ -1,0 +1,130 @@
+{
+  "script": "frontend/scripts/check-ux.mjs",
+  "date": "2026-11-18",
+  "long_flight": {
+    "target": "orion_nebula",
+    "landed_on": "orion_nebula",
+    "seconds": 5.5,
+    "peak_warp": 1,
+    "fov_widened_by_deg": 8,
+    "peak_edge_darkness": 1,
+    "warp_after_landing": 0
+  },
+  "arrival_title": {
+    "name": "Orion Nebula",
+    "subtitle": "Diffuse emission nebula · 1,267 light-years away",
+    "expected_subtitle": "Diffuse emission nebula · 1,267 light-years away"
+  },
+  "subtitles": {
+    "objects": 36,
+    "wrong": [],
+    "examples": [
+      "Gas giant · 5.2 AU from the Sun",
+      "Moon of Mars · 9,375 km from Mars",
+      "G-type main-sequence star (G2V)",
+      "Globular star cluster · 24,100 light-years away"
+    ]
+  },
+  "short_flight": {
+    "target": "jupiter",
+    "landed_on": "jupiter",
+    "seconds": 1.2,
+    "peak_warp": 0,
+    "fov_widened_by_deg": 0,
+    "peak_edge_darkness": 0,
+    "warp_after_landing": 0
+  },
+  "counting": {
+    "early": [
+      "32,022 km",
+      "5.270 AU",
+      "5.80 hours",
+      "161 with formal designations (as of 2026)"
+    ],
+    "settled": [
+      "58,232 km",
+      "9.583 AU",
+      "10.54 hours",
+      "293 with formal designations (as of 2026)"
+    ],
+    "expected": [
+      "58,232 km",
+      "9.583 AU",
+      "10.54 hours",
+      "293 with formal designations (as of 2026)"
+    ]
+  },
+  "scale_gap_from_right_px": {
+    "panel_open": 430,
+    "panel_closed": 56
+  },
+  "distance_scale": {
+    "at_saturn": {
+      "log_zoom": -2.507,
+      "marker_bottom_pct": 22.68,
+      "expected_pct": 22.68,
+      "value_text": "465,856 km"
+    },
+    "after_3_zoom_outs": {
+      "log_zoom": -1.075,
+      "marker_bottom_pct": 31.98,
+      "expected_pct": 31.98,
+      "value_text": "0.08 AU"
+    }
+  },
+  "scale_mark_flight": {
+    "target": "pleiades",
+    "landed_on": "pleiades",
+    "seconds": 4.6,
+    "peak_warp": 1,
+    "fov_widened_by_deg": 8,
+    "peak_edge_darkness": 1,
+    "warp_after_landing": 0,
+    "scale_after": {
+      "log_zoom": 6.711,
+      "marker_bottom_pct": 82.54,
+      "expected_pct": 82.54,
+      "value_text": "81 light-years"
+    }
+  },
+  "console_errors": [],
+  "reduced_motion": {
+    "flight": {
+      "target": "orion_nebula",
+      "landed_on": "orion_nebula",
+      "seconds": 5.5,
+      "peak_warp": 0,
+      "fov_widened_by_deg": 0,
+      "peak_edge_darkness": 0,
+      "warp_after_landing": 0
+    },
+    "facts_right_after_landing": [
+      "1,267 light-years",
+      "Magnitude 4.0, visible to the naked eye",
+      "65 × 60 arcminutes",
+      "Orion, in the 'sword' below the belt"
+    ],
+    "title_shown": true
+  },
+  "checks": {
+    "long_flight_warps": true,
+    "warp_off_after_landing": true,
+    "arrival_title_right": true,
+    "arrival_title_goes_away": true,
+    "all_subtitles_right": true,
+    "short_flight_no_warp": true,
+    "numbers_count_up": true,
+    "facts_end_exactly_as_written": true,
+    "scale_hidden_in_normal_view": true,
+    "scale_moves_clear_of_panel": true,
+    "scale_marker_matches_zoom": true,
+    "scale_marker_rises_on_zoom_out": true,
+    "scale_mark_flies_there": true,
+    "scale_mark_flight_warps": true,
+    "reduced_motion_no_warp": true,
+    "reduced_motion_numbers_final_at_once": true,
+    "reduced_motion_title_still_shown": true,
+    "no_console_errors": true
+  },
+  "passed": true
+}

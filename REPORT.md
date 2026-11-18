@@ -61,6 +61,7 @@ The page is static files on Vercel. The server, with the trained model, the text
 - **Placing deep-space objects from sky coordinates.** With right ascension α, declination δ (in radians) and distance d: x = d·cos δ·cos α, y = d·cos δ·sin α, z = d·sin δ (x points to α = 0h, z to the north celestial pole). Three.js uses y as "up", so the page uses (x, z, −y). Code: `frontend/src/scene/scale.js` (`skyToScene`).
 - **Display distance.** Real distances run from 444 ly (Pleiades) to 24,100 ly (M13), so the page uses d = 4 × √(light-years): Pleiades 84 units, M13 621 units. Directions are exact; only distances are compressed. The **True distances** switch (below) shows the real ones.
 - **True distances (added after Phase 5).** With the switch on, every object sits at its real distance: moons round their planets (Phobos 9,375 km from Mars), planets round the Sun (Neptune 30 AU), nebulae and clusters out to M13 at 24,100 light-years. That is about 14 powers of ten, too much for one fixed set of 3D coordinates (the graphics card uses 32-bit numbers). So real positions are kept in AU in JavaScript's 64-bit numbers, and every frame the scene is drawn relative to the object being looked at (the focus) and scaled by the zoom: the camera always sits 50 drawn units from the focus, and the zoom says how many AU that is. Zooming out 10 times shrinks the drawn world 10 times. Code: `frontend/src/scene/universe.js`.
+- **Interface motion (added after Phase 5).** Long flights (a switch between the solar-system and deep-space views, or a true-distance flight across at least four powers of ten) go to warp: stars stretch into streaks, the view widens by 8 degrees and the screen edges darken, then everything snaps back on arrival. On landing, the object's name appears letter by letter with a line built from `objects.json` ("Gas giant · 5.2 AU from the Sun"). The card's numbers count up and its lines slide in one after another. In the True distances view a power-of-ten ruler on the right shows the current zoom on a power-of-ten scale from about 150 km to 40,000 light-years, with marks for the Moon, Neptune, the Pleiades and M13 that fly there when clicked. With the browser's or phone's "reduce motion" setting on, the warp, the letter animation, the counting and the sliding are skipped. Code: `frontend/src/scene/warp.js`, `StarField.jsx`, `CameraRig.jsx`, `frontend/src/ui/ArrivalTitle.jsx`, `DistanceScale.jsx`, `WarpVignette.jsx`, `frontend/src/panel/CountUp.jsx`.
   - **Zoom without a limit.** The mouse wheel and new **+ / −** buttons (factor 3 per press) change the zoom from about 150 km to about 40,000 light-years. The readout shows the camera's distance from the Sun in km, AU or light-years.
   - **One space.** Planets and deep-space objects share one space, so zooming out from Jupiter passes the planets' orbits, then the Sun shrinks to a dot labelled "Solar System (you are here)", and the Pleiades and Beehive come into view; past 3,000 AU the page switches to deep-space mode.
   - **Fly-to in the true view** is a "powers of ten" flight: zoom out until start and target are both in view, travel, zoom back in.
@@ -487,6 +488,11 @@ recall@k = share of questions with a gold chunk in the first k results; MRR@10 =
 | After 5 | 16 significant moons: 3D spheres round their planets, cards, command matcher and chat texts | Done (15 surface maps still placeholders) |
 | After 5 | MiniLM fine-tuned on astronomy questions (contrastive learning, plain PyTorch); the app's search now uses it (Table F) | Done (training questions for 885 of 1,961 paragraphs) |
 | After 5 | True distances for everything (moons, planets, nebulae, clusters) in one space, with unlimited zoom, + / − buttons, a distance readout and "powers of ten" fly-to | Done |
+| After 5 | Warp-speed flights: star streaks, wider view and dark edges on long flights only | Done |
+| After 5 | Arrival title: name letter by letter and a line built from `objects.json`, then fades into the card | Done |
+| After 5 | Card numbers count up to the value in `objects.json`; card lines slide in one after another | Done |
+| After 5 | Distance scale (True distances only): power-of-ten ruler with the current zoom and clickable marks for the Moon, Neptune, the Pleiades and M13 | Done |
+| After 5 | All four follow the "reduce motion" setting | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -550,6 +556,22 @@ The times are on the author's laptop, with the server on the same machine; the d
 | Browser console errors | 0 | |
 
 The first − presses read slightly less than 5.20 AU because zooming out from Jupiter moves the camera back along its line of sight, which here points a little towards the Sun. Landing at the Orion Nebula (1,267 ly away, radius 13 ly in `objects.json`) leaves the camera 4 radii (52 ly) in front of it, on Earth's side: 1,267 − 52 = 1,215.
+
+**Interface motion check (after Phase 5).** Source: `ml/results/ux_check.json`, written by `frontend/scripts/check-ux.mjs` (Playwright driving Microsoft Edge, headless, real GPU, 1440 × 900) against the local page; 18 of 18 checks passed. Screenshots are in `ml/results/ux_screens/`.
+
+| Check | Measured |
+| --- | --- |
+| Long flight (Sun → Orion Nebula, 5.5 s): highest warp / view widened / edge darkness | 1 / 8 degrees / 1; warp back to 0 on landing |
+| Short flight (Mars → Jupiter, 1.2 s) | warp 0, view not widened |
+| Arrival title at the Orion Nebula | "Orion Nebula", "Diffuse emission nebula · 1,267 light-years away"; gone again after the hold |
+| Arrival line for all 36 objects, compared with the same rule written separately in the check script | 36 of 36 match |
+| Saturn card 0.25 s after choosing it / once settled | "32,022 km", "5.270 AU", "5.80 hours", "161 …" (still counting) / exactly as in `objects.json` |
+| Distance scale in the normal view | hidden |
+| Distance scale marker vs the zoom, at Saturn / after 3 presses of − | 22.68% vs 22.68% (465,856 km) / 31.98% vs 31.98% (0.08 AU) |
+| Gap between the scale and the screen's right edge, panel open / closed | 430 px / 56 px (clear of the panel and the edge tabs) |
+| Clicking the Pleiades mark | flew to the Pleiades in 4.6 s, with warp 1 |
+| Reduce motion on: flight to the Orion Nebula / Jupiter card after 0.1 s / arrival title | warp 0 / final values at once / still shown |
+| Browser console errors | 0 |
 
 **Table E: time taken per step (deployed, median of 10 runs)**
 
@@ -750,6 +772,8 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | GSAP | An animation library that moves a value smoothly from A to B over time; it moves the camera during a fly-to | Phase 1 |
 | Zustand | A tiny shared memory for the page: one store holding the mode, chosen object, flight status and panel state | Phase 1 |
 | Shader (GLSL) | A very short program that runs on the graphics card; ours draws each star as a soft dot of its own size and colour | Phase 1 |
+| GSAP stagger | Starts the same animation on a list of elements one after another, a fixed delay apart; used for the arrival title's letters and the card's lines | After Phase 5 |
+| "Reduce motion" (`prefers-reduced-motion`) | A setting in the operating system or phone that asks web pages to cut down animation; the page reads it before each decorative animation and skips it when it is on | After Phase 5 |
 | Sprite | A flat picture in a 3D scene that always turns to face the camera; used for nebulae and clusters | Phase 1 |
 | Additive blending | Adds a picture's light on top of what is behind it, so black sky in a nebula photo becomes invisible | Phase 1 |
 | Wikimedia Commons API | Wikipedia's media library; its API gives each image a resized copy plus its licence and author | Phase 1 |
@@ -856,6 +880,11 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Nov 17, 2026 | Nebulae drawn as particle clouds made from their photo: every pixel brighter than 7% becomes a particle of its colour (about 170 pixels across), with an illustrative depth (sampled at 420 px across, about 100,000 to 140,000 particles per nebula); head-on (within about 10 to 30 degrees of the line from Earth) the original 960 px photo is shown, and the cloud takes over as the camera orbits away; particles grow and dim when seen edge-on; only the selected object turns 3D | Gives volume when orbiting while keeping the familiar photo head-on; a first version sampled at 170 px looked low-resolution head-on, and no particle layout matches a photo's sharpness, so the photo is kept for the head-on view; edge-on growing and dimming fixed a dusty, washed-out side view; showing one object in 3D at a time stops the Orion and Horsehead clouds (3 degrees apart) piling up and keeps 60 fps |
 | Nov 17, 2026 | Star clusters drawn as generated 3D star balls (Pleiades and Beehive about 400 stars; M13 and Omega Centauri 22,000 and 30,000), cross-fading with their photo by camera distance (60 to 150 units) | Real depth when flying around a cluster, while the overview still shows the recognisable photo; generated with a fixed seed so the shape is the same on every visit; no catalogue download or new library needed |
 | Nov 16, 2026 | The app uses the model **without** augmentation, chosen on the validation set: clean photos plus 10 altered versions (`ml/scripts/robustness.py`); Table A reports both models | It scored higher on clean validation photos (92.6% against 88.0%) and on average over the altered ones (80.6% against 79.1%). Choosing on validation, not test, keeps the test scores fair. The augmented model was the original plan |
+| Nov 19, 2026 | The distance scale is shown only in the True distances view | The normal view is compressed ("not to scale"), so a km / AU / light-year ruler there would show wrong distances |
+| Nov 19, 2026 | Warp only on long flights (a scene-mode switch, or at least four powers of ten in the true view) | Streaks on a 1-second hop between neighbouring planets would feel noisy |
+| Nov 19, 2026 | The warp strength lives in a small module (`scene/warp.js`), not in the Zustand store | It changes 60 times a second; putting it in the store would re-draw the page every frame. Same pattern as `fade.js` |
+| Nov 19, 2026 | Only a number at the start of a fact counts up ("1,267 light-years"); "Apollo 11" is left as it is | Counting a number in the middle of a phrase looks odd, and this needs no extra data in `objects.json` |
+| Nov 19, 2026 | The scale sits 56 px in from the right edge and moves left of the glass panel when it is open | The Objects and Show card tabs on the edge, and the panel, would otherwise cover it |
 
 ## Progress log
 
@@ -904,3 +933,8 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
   - `radius_ly` added for the 10 nebulae and clusters (`objects.json`, required by the schema; sources in `ml/data/SOURCES.md`).
   - Browser check passed with 0 console errors (`ml/results/true_distance_check.json`).
   - Tests: pytest, 56 passed.
+- **Nov 19, 2026 (after Phase 5: interface motion):**
+  - Warp-speed flights, the arrival title, counting numbers on the card and the distance scale, all following "reduce motion".
+  - Browser check: 18 of 18 passed with 0 console errors (`ml/results/ux_check.json`, screenshots in `ml/results/ux_screens/`).
+  - Found while checking: the open glass panel covers the + / − zoom buttons (bottom right). Not changed here.
+  - Tests: pytest, 62 passed.

@@ -100,15 +100,20 @@ export function viewDirection(id) {
   return new THREE.Vector3(-dx * 0.85, 0.45, -dz * 0.85).normalize()
 }
 
+/** A distance in AU as text in the handiest unit: km, AU or light-years. */
+export function formatAU(au) {
+  if (au < 0.01) return `${Math.round(au * AU_KM).toLocaleString('en')} km`
+  if (au < 1000) return `${au < 10 ? au.toFixed(2) : Math.round(au).toLocaleString('en')} AU`
+  const ly = au / AU_PER_LY
+  return `${ly < 10 ? ly.toFixed(2) : Math.round(ly).toLocaleString('en')} light-years`
+}
+
 /** Camera distance from the Sun right now, as text: km, AU or light-years. */
 export function distanceText(camera) {
   const k = unitsPerAU()
   const f = view.focus
   const au = Math.hypot(camera.position.x / k + f[0], camera.position.y / k + f[1], camera.position.z / k + f[2])
-  if (au < 0.01) return `${Math.round(au * AU_KM).toLocaleString('en')} km from the Sun`
-  if (au < 1000) return `${au < 10 ? au.toFixed(2) : Math.round(au).toLocaleString('en')} AU from the Sun`
-  const ly = au / AU_PER_LY
-  return `${ly < 10 ? ly.toFixed(2) : Math.round(ly).toLocaleString('en')} light-years from the Sun`
+  return `${formatAU(au)} from the Sun`
 }
 
 /** How far apart (drawn units) an orbiting body is from what it orbits at the current zoom; used to

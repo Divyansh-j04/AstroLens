@@ -25,6 +25,7 @@ export const useStore = create((set, get) => ({
   trueScale: false, // "True distances": everything at its real distance (scene/universe.js)
   zoomRequest: { n: 0, factor: 1 }, // +/- buttons: each press bumps n
   arrived: null, // id of the nebula or cluster just flown to (shows the "it's 3D" hint), else null
+  landed: { n: 0, id: null }, // bumped when a fly-to reaches an object (plays the arrival title)
 
   selectObject: (id) =>
     set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1 })),
@@ -50,6 +51,7 @@ export const useStore = create((set, get) => ({
   openChat: () => set({ panelOpen: true, panelView: 'chat' }),
   setBrowserOpen: (browserOpen) => set({ browserOpen }),
   setArrived: (arrived) => set({ arrived }),
+  setLanded: (id) => set((s) => ({ landed: { n: s.landed.n + 1, id } })),
   setTrueScale: (trueScale) => set({ trueScale }),
   zoomBy: (factor) => set((s) => ({ zoomRequest: { n: s.zoomRequest.n + 1, factor } })),
   setUploadPanelOpen: (uploadPanelOpen) => set({ uploadPanelOpen }),

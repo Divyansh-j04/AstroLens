@@ -1,4 +1,8 @@
+import { useLayoutEffect, useRef } from 'react'
+import gsap from 'gsap'
 import { useStore } from '../store'
+import { reducedMotion } from '../motion'
+import CountUp from './CountUp'
 
 /** Confidence from the classifier for this object; shows nothing if it was not among the top 3 guesses. */
 function ConfidenceBadge({ objectId }) {
@@ -24,10 +28,25 @@ function ConfidenceBadge({ objectId }) {
 export default function BriefCard({ obj }) {
   const prediction = useStore((s) => s.prediction)
   const setPanelView = useStore((s) => s.setPanelView)
+  const ref = useRef(null)
+
+  // Each new object: the card's lines slide in one after another (GSAP stagger = the same animation
+  // started on each element in turn, a fixed delay apart).
+  useLayoutEffect(() => {
+    if (reducedMotion() || !ref.current) return undefined
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        '[data-reveal]',
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out', stagger: 0.06, clearProps: 'opacity,transform' },
+      )
+    }, ref)
+    return () => ctx.revert()
+  }, [obj.id])
 
   return (
-    <article data-testid="brief-card" className="flex flex-col gap-5">
-      <header>
+    <article ref={ref} data-testid="brief-card" className="flex flex-col gap-5">
+      <header data-reveal>
         <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400">
           {obj.constellation ? `In ${obj.constellation}` : 'Solar System'}
         </p>
@@ -44,18 +63,20 @@ export default function BriefCard({ obj }) {
 
       <dl className="grid gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10">
         {Object.entries(obj.facts).map(([label, value]) => (
-          <div key={label} className="bg-slate-950/50 px-3 py-2">
+          <div key={label} data-reveal className="bg-slate-950/50 px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wider text-slate-400">{label}</dt>
-            <dd className="text-sm text-slate-100">{value}</dd>
+            <dd data-testid="fact-value" className="text-sm text-slate-100">
+              <CountUp key={`${obj.id}:${label}`} text={value} />
+            </dd>
           </div>
         ))}
       </dl>
 
-      <p data-testid="card-summary" className="text-sm leading-relaxed text-slate-200">
+      <p data-reveal data-testid="card-summary" className="text-sm leading-relaxed text-slate-200">
         {obj.summary}
       </p>
 
-      <div className="flex gap-2">
+      <div data-reveal className="flex gap-2">
         <button
           type="button"
           onClick={() => setPanelView('chat')}

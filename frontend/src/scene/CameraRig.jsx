@@ -6,6 +6,8 @@ import { useStore } from '../store'
 import { OBJECTS_BY_ID } from '../objects'
 import { MODE_SWITCH_SECONDS, flightSeconds, homeView, objectView } from './scale'
 import { fade } from './fade'
+import { warp } from './warp'
+import { reducedMotion } from '../motion'
 import {
   MAX_LOG_ZOOM,
   MIN_LOG_ZOOM,
@@ -27,6 +29,8 @@ const DEEP_FROM_AU = 3000 // in the true view, beyond this camera distance from 
 const clampZoom = (z) => Math.min(MAX_LOG_ZOOM, Math.max(MIN_LOG_ZOOM, z))
 const smooth = (x) => x * x * (3 - 2 * x)
 const ORIGIN = new THREE.Vector3()
+const WARP_FOV = 8 // degrees the view widens at full warp
+const WARP_MIN_POWERS = 4 // true view: a flight warps when it zooms out and back in by at least this many powers of ten
 
 /**
  * flyTo: every time the store's flyRequest changes, animate the camera with GSAP.
@@ -40,6 +44,10 @@ const ORIGIN = new THREE.Vector3()
  * with the camera always RENDER_R drawn units from it. A fly-to is then a "powers of ten" flight:
  * zoom out until start and target are both in view, travel, zoom back in. Mouse-wheel zoom and the
  * +/- buttons change view.logZoom, so the zoom has no limit from Phobos's orbit to beyond M13.
+ *
+ * Warp: long flights (a scene-mode switch, or a true-view flight across many powers of ten) raise
+ * warp.value from 0 to 1 and back: the star shader stretches stars into streaks, the view widens by
+ * WARP_FOV degrees and WarpVignette darkens the screen edges. Skipped with "reduce motion" on.
  */
 export default function CameraRig() {
   const camera = useThree((s) => s.camera)
@@ -49,6 +57,31 @@ export default function CameraRig() {
   const zoomRequest = useStore((s) => s.zoomRequest)
   const revealRef = useRef(null)
   const zoomTween = useRef(null)
+  const baseFov = useRef(null)
+
+  // Warp: widen the view with warp.value (the stars and the edge overlay read it themselves).
+  useFrame(() => {
+    if (baseFov.current === null) baseFov.current = camera.fov
+    const fov = baseFov.current + WARP_FOV * warp.value
+    if (Math.abs(camera.fov - fov) > 1e-3) {
+      camera.fov = fov
+      camera.updateProjectionMatrix()
+    }
+  })
+
+  /** Ramp warp up over the first 30% of a long flight, hold, and ease it off in the last 25%. */
+  const startWarp = (duration) => {
+    if (reducedMotion()) return () => {}
+    const tl = gsap
+      .timeline()
+      .to(warp, { value: 1, duration: duration * 0.3, ease: 'power2.in', overwrite: 'auto' })
+      .to(warp, { value: 1, duration: duration * 0.45 })
+      .to(warp, { value: 0, duration: duration * 0.25, ease: 'power2.out' })
+    return () => {
+      tl.kill()
+      gsap.to(warp, { value: 0, duration: 0.3, ease: 'power1.out', overwrite: 'auto' }) // interrupted: settle quickly
+    }
+  }
 
   useEffect(() => {
     debug.camera = camera
@@ -93,7 +126,7 @@ export default function CameraRig() {
 
   useEffect(() => {
     if (!controls || flyRequest === 0) return undefined
-    const { currentObjectId, mode, setMode, setFlying, setArrived } = useStore.getState()
+    const { currentObjectId, mode, setMode, setFlying, setArrived, setLanded } = useStore.getState()
     const obj = currentObjectId ? OBJECTS_BY_ID[currentObjectId] : null
     revealRef.current?.kill()
     zoomTween.current?.kill()
@@ -104,10 +137,12 @@ export default function CameraRig() {
     setFlying(true)
     setArrived(null)
     let stopReveal = () => {}
+    let stopWarp = () => {}
     const land = () => {
       controls.enabled = true
       controls.enableDamping = true
       setFlying(false)
+      if (obj) setLanded(obj.id)
       if (obj && obj.scene_mode === 'deep_space') setArrived(obj.id)
       stopReveal = startRevealFor(obj)
     }
@@ -139,8 +174,10 @@ export default function CameraRig() {
         },
         onComplete: land,
       })
+      if (zMid - z0 + (zMid - z1) >= WARP_MIN_POWERS) stopWarp = startWarp(duration)
       return () => {
         tween.kill()
+        stopWarp()
         stopReveal()
       }
     }
@@ -176,9 +213,11 @@ export default function CameraRig() {
     // Cross-fade planets and deep-space pictures (always, so an interrupted switch still finishes).
     const fadeTo = { solar: targetMode === 'solar_system' ? 1 : 0, deep: targetMode === 'deep_space' ? 1 : 0 }
     tl.to(fade, { ...fadeTo, duration: switching ? MODE_SWITCH_SECONDS : 0.6, ease: 'power1.inOut' }, 0)
+    if (switching) stopWarp = startWarp(tl.duration())
 
     return () => {
       tl.kill() // a new request interrupts the old flight
+      stopWarp()
       stopReveal()
     }
   }, [flyRequest, camera, controls]) // eslint-disable-line react-hooks/exhaustive-deps
