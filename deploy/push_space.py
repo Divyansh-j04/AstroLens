@@ -3,7 +3,8 @@
 1. Reads HF_TOKEN from .env (never printed).
 2. Creates the public Space <your username>/astrolens if it does not exist yet.
 3. Uploads only what the server needs: the Dockerfile, the Space README, the lock file, backend/app
-   (code, objects.json, classifier.json, the chat texts and index) and the app's model weights.
+   (code, objects.json, classifier.json, the chat texts and index), the classifier weights and, when the
+   index was built with it, the fine-tuned search model (backend/weights/minilm-astro).
    Nothing else from the project (no .env, no raw images, no other weights).
 4. Optionally sets ALLOWED_ORIGINS (the page's address) as a Space variable.
 5. With --wait, follows the build until the Space runs, and prints the build log if it fails.
@@ -46,6 +47,12 @@ def stage_files(target: Path) -> list[str]:
                     ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     (target / "backend" / "weights").mkdir(parents=True)
     shutil.copy2(weights, target / "backend" / "weights" / weights.name)
+    index_model = json.loads((ROOT / "backend" / "app" / "data" / "index" / "model.json").read_text(encoding="utf-8"))
+    if index_model["model"] == "fine-tuned":  # the index was built with it, so the server must load the same one
+        finetuned = ROOT / "backend" / "weights" / "minilm-astro"
+        if not finetuned.exists():
+            sys.exit(f"Missing {finetuned}; run ml/scripts/finetune_embedder.py first.")
+        shutil.copytree(finetuned, target / "backend" / "weights" / "minilm-astro")
     return sorted(str(p.relative_to(target)).replace("\\", "/") for p in target.rglob("*") if p.is_file())
 
 
