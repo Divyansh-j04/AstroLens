@@ -130,9 +130,12 @@ export default function ChatPanel({ obj }) {
   const pending = useStore((s) => s.chatPending)
   const sendChat = useStore((s) => s.sendChat)
   const setPanelView = useStore((s) => s.setPanelView)
-  const [draft, setDraft] = useState('')
+  const chatKey = obj?.id ?? GENERAL_CHAT
+  const draft = useStore((s) => s.drafts[chatKey] ?? '') // kept in the store, so closing the chat never loses it
+  const saveDraft = useStore((s) => s.setDraft)
+  const setDraft = (text) => saveDraft(chatKey, text)
   const endRef = useRef(null)
-  const messages = chats[obj?.id ?? GENERAL_CHAT] ?? []
+  const messages = chats[chatKey] ?? []
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }) // keep the newest message in view

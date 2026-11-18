@@ -3,13 +3,13 @@
   "date": "2026-11-18",
   "note": "/classify and /chat answers are faked in the browser",
   "opening": {
-    "samples": 15,
+    "samples": 16,
     "percent_first_last": [
       0,
       100
     ],
     "percent_never_goes_down": true,
-    "distinct_percent_values": 13,
+    "distinct_percent_values": 14,
     "letters_visible_over_time": [
       0,
       1,
@@ -21,7 +21,7 @@
       8,
       9
     ],
-    "loading_ms": 1103,
+    "loading_ms": 1118,
     "camera": {
       "home_distance": 118.53,
       "on_landing": 308.19,
@@ -108,15 +108,15 @@
   "scanning": {
     "scan_line_tops_px": [
       98,
-      103,
-      116,
-      137,
-      170,
-      206
+      102,
+      115,
+      135,
+      164,
+      202
     ],
     "scan_animation": "scan",
     "heatmap_reveal_peak_opacity": 0.9,
-    "heatmap_reveal_peak_at_ms": 438,
+    "heatmap_reveal_peak_at_ms": 380,
     "heatmap_reveal_final_opacity": 0,
     "show_heatmap_toggle_opacity": 0,
     "guesses": [
@@ -124,8 +124,8 @@
       "Jupiter 12%",
       "Uranus 5%"
     ],
-    "first_guess_visible_at_ms": 500,
-    "third_guess_visible_at_ms": 625
+    "first_guess_visible_at_ms": 442,
+    "third_guess_visible_at_ms": 630
   },
   "typed_chat": {
     "samples": 46,
@@ -139,12 +139,12 @@
       71,
       81,
       94,
-      107,
+      108,
       118,
       132
     ],
     "early": {
-      "t": 41,
+      "t": 42,
       "typing": "true",
       "chars": 8,
       "citations": 0,
@@ -158,7 +158,7 @@
       "sources_shown": false
     },
     "end": {
-      "t": 1874,
+      "t": 1881,
       "typing": "false",
       "chars": 133,
       "citations": 2,

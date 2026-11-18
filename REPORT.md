@@ -501,6 +501,8 @@ recall@k = share of questions with a gold chunk in the first k results; MRR@10 =
 | After 5 | Photo scanning effect: scan line while classifying, heatmap fades in and out once, guesses slide up | Done |
 | After 5 | Opening sequence: counter to 100%, title letter by letter, camera dive from the landing page | Done |
 | After 5 | Typed chat answers: word by word, citation numbers pop in, sources after; screen readers get the whole answer at once | Done |
+| After 5 | Objects drawer and glass panel never cover each other: opening one closes the other; picking an object shows its card; Escape closes the drawer and brings the panel back | Done (bug fix) |
+| After 5 | A half-typed chat question is kept per conversation (closing the chat or visiting another object no longer loses it) | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -595,6 +597,17 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Typed chat answer (133 characters) | 8 characters at 0.04 s, 49 at 0.62 s, all 133 at 1.87 s; first citation number appeared while typing; sources shown only after typing |
 | Reduce motion on | no custom cursor (system pointer), camera not pulled back, warp 0, answer complete at once, scan line still |
 | Browser console errors | 0 |
+
+**Layout check (after Phase 5).** Source: `ml/results/layout_check.json`, written by `frontend/scripts/check-layout.mjs` (Playwright, Microsoft Edge, 1440 × 900); 7 of 7 checks passed, screenshots in `ml/results/layout_screens/`. Before the fix, the Objects drawer opened on top of the chat while typing and stayed on top of the card after an object was picked.
+
+| Step | Drawer | Panel | Overlap |
+| --- | --- | --- | --- |
+| Typing in Saturn's chat ("How thick are the rin") | closed | chat | 0 px |
+| Objects drawer opened | open | tucked away (draft kept) | 0 px |
+| Jupiter picked in the drawer | closed | Jupiter's card | 0 px |
+| Chat, drawer opened, Escape | closed | chat back | 0 px |
+| Drawer open, then the chat opened | closed | chat | 0 px |
+| Back to Saturn's chat | closed | chat, draft still "How thick are the rin" | 0 px |
 
 **Table E: time taken per step (deployed, median of 10 runs)**
 
@@ -918,6 +931,8 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Nov 19, 2026 | Grand Tour captions are the first sentence of each `objects.json` summary | No new text to write or check; objects.json stays the only source of facts |
 | Nov 19, 2026 | The loading screen waits for its counter and title to finish (about 1 second) | Otherwise, with the files cached, it vanishes before the opening can be seen |
 | Nov 19, 2026 | The second interface check fakes /classify and /chat in the browser | It tests the animations, needs no server or Groq quota, and gives the same answer every run |
+| Nov 19, 2026 | The Objects drawer and the glass panel show one at a time instead of side by side | Both live on the right edge; side by side they would take half the screen at 1440 px and all of it on a laptop. Closing the drawer brings back the panel that was open |
+| Nov 19, 2026 | Half-typed chat questions live in the store, one per conversation | The chat box is removed when the panel shows the card, which used to throw the text away |
 
 ## Progress log
 
@@ -977,3 +992,6 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
   - Phase 3 check re-run against the real server: passed (its saved results were left as they were, so the numbers above do not change).
   - Phase 1 check: stops at the label-click step (see Limitations); not caused by this change.
   - Tests: pytest, 62 passed.
+- **Nov 19, 2026 (after Phase 5: layout fix):**
+  - The Objects drawer and the glass panel no longer overlap (reported by the author with a screenshot); half-typed chat questions are kept.
+  - Layout check 7 of 7 (`ml/results/layout_check.json`); interface checks still 20 of 20 and 25 of 25; pytest 62 passed.

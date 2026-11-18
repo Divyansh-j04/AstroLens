@@ -1,0 +1,71 @@
+{
+  "script": "frontend/scripts/check-layout.mjs",
+  "date": "2026-11-18",
+  "steps": {
+    "typing": {
+      "drawer_open": false,
+      "panel_open": true,
+      "panel_view": "chat",
+      "object": "saturn",
+      "overlap_px": 0,
+      "chat_draft": "How thick are the rin",
+      "card": null
+    },
+    "drawer_opened": {
+      "drawer_open": true,
+      "panel_open": false,
+      "panel_view": "chat",
+      "object": "saturn",
+      "overlap_px": 0,
+      "chat_draft": "How thick are the rin",
+      "card": null
+    },
+    "picked_jupiter": {
+      "drawer_open": false,
+      "panel_open": true,
+      "panel_view": "card",
+      "object": "jupiter",
+      "overlap_px": 0,
+      "chat_draft": null,
+      "card": "Jupiter"
+    },
+    "escape": {
+      "drawer_open": false,
+      "panel_open": true,
+      "panel_view": "chat",
+      "object": "jupiter",
+      "overlap_px": 0,
+      "chat_draft": "",
+      "card": null
+    },
+    "chat_opened_over_drawer": {
+      "drawer_open": false,
+      "panel_open": true,
+      "panel_view": "chat",
+      "object": "jupiter",
+      "overlap_px": 0,
+      "chat_draft": "",
+      "card": null
+    },
+    "back_to_saturn_chat": {
+      "drawer_open": false,
+      "panel_open": true,
+      "panel_view": "chat",
+      "object": "saturn",
+      "overlap_px": 0,
+      "chat_draft": "How thick are the rin",
+      "card": null
+    }
+  },
+  "console_errors": [],
+  "checks": {
+    "drawer_tucks_panel_away": true,
+    "picking_shows_card_on_top": true,
+    "escape_closes_drawer_and_brings_panel_back": true,
+    "opening_panel_closes_drawer": true,
+    "typed_question_kept": true,
+    "never_overlapping": true,
+    "no_console_errors": true
+  },
+  "passed": true
+}

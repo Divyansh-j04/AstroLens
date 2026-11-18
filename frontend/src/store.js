@@ -20,8 +20,11 @@ export const useStore = create((set, get) => ({
   flyRequest: 0, // counts fly requests, so "Home" or the same object can be asked for twice
   upload: { status: 'idle', error: null, previewUrl: null, slow: false }, // status: idle | loading | done | error
   chats: {}, // one conversation per object id (or '_general'): [{ role, content, citations?, refused?, error? }]
+  drafts: {}, // a half-typed question per conversation, kept while the chat is closed or another object is shown
   chatPending: false, // true while waiting for an answer
-  browserOpen: false, // the right-side object list (drawer)
+  browserOpen: false, // the right-side object list (drawer). It and the glass panel share the right edge,
+  // so only one shows at a time: opening one closes the other.
+  panelBeforeBrowser: false, // the panel was open when the drawer opened (closing the drawer brings it back)
   uploadPanelOpen: false, // the translucent upload panel next to the pill
   entered: SKIP_LANDING, // false while the landing page is shown
   trueScale: false, // "True distances": everything at its real distance (scene/universe.js)
@@ -32,7 +35,7 @@ export const useStore = create((set, get) => ({
   tour: NO_TOUR, // the Grand Tour: { active, step } (step = index in TOUR_STOPS)
 
   selectObject: (id) =>
-    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR })),
+    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false })),
   goHome: () =>
     set((s) => ({ currentObjectId: null, panelOpen: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR })),
   setHoverId: (hoverId) => set({ hoverId }),
@@ -50,7 +53,7 @@ export const useStore = create((set, get) => ({
   stopTour: (showCard = false) => set((s) => ({ tour: NO_TOUR, ...(showCard && s.currentObjectId ? { panelOpen: true, panelView: 'card' } : {}) })),
   setMode: (mode) => set({ mode }),
   setFlying: (isFlying) => set({ isFlying }),
-  setPanelOpen: (panelOpen) => set({ panelOpen }),
+  setPanelOpen: (panelOpen) => set(panelOpen ? { panelOpen, browserOpen: false } : { panelOpen }),
   setPanelView: (panelView) => set({ panelView }),
   setUpload: (patch) => set((s) => ({ upload: { ...s.upload, ...patch } })),
   // Remove the uploaded photo and everything that came from it (guesses, badge, heatmap).
@@ -65,8 +68,14 @@ export const useStore = create((set, get) => ({
       panelOpen: ['unknown', 'guesses'].includes(s.panelView) ? Boolean(s.currentObjectId) && s.panelOpen : s.panelOpen,
     }))
   },
-  openChat: () => set({ panelOpen: true, panelView: 'chat' }),
-  setBrowserOpen: (browserOpen) => set({ browserOpen }),
+  setDraft: (key, text) => set((s) => ({ drafts: { ...s.drafts, [key]: text } })),
+  openChat: () => set({ panelOpen: true, panelView: 'chat', browserOpen: false }),
+  setBrowserOpen: (open) =>
+    set((s) =>
+      open
+        ? { browserOpen: true, panelOpen: false, panelBeforeBrowser: s.panelOpen || s.panelBeforeBrowser }
+        : { browserOpen: false, panelOpen: s.panelOpen || s.panelBeforeBrowser, panelBeforeBrowser: false },
+    ),
   setArrived: (arrived) => set({ arrived }),
   setLanded: (id) => set((s) => ({ landed: { n: s.landed.n + 1, id } })),
   setTrueScale: (trueScale) => set({ trueScale }),
@@ -114,7 +123,7 @@ export const useStore = create((set, get) => ({
     const history = before.filter((m) => !m.error).slice(-HISTORY_SENT).map(({ role, content }) => ({ role, content }))
     const add = (msg) => set((s) => ({ chats: { ...s.chats, [key]: [...(s.chats[key] ?? []), msg] } }))
     add({ role: 'user', content: question })
-    set({ chatPending: true, panelOpen: true, panelView: 'chat' })
+    set({ chatPending: true, panelOpen: true, panelView: 'chat', browserOpen: false })
     try {
       const r = await askChat(question, currentObjectId, history)
       add({ role: 'assistant', content: r.answer, citations: r.citations, refused: r.refused, latencyMs: r.latency_ms })
@@ -130,7 +139,7 @@ export const useStore = create((set, get) => ({
   applyPrediction: (prediction) =>
     set((s) =>
       prediction.is_unknown
-        ? { prediction, panelOpen: true, panelView: 'unknown' }
+        ? { prediction, panelOpen: true, panelView: 'unknown', browserOpen: false }
         : {
             prediction,
             currentObjectId: prediction.top3[0].id,
@@ -138,6 +147,7 @@ export const useStore = create((set, get) => ({
             panelView: 'card',
             flyRequest: s.flyRequest + 1,
             tour: NO_TOUR,
+            browserOpen: false,
           },
     ),
 }))

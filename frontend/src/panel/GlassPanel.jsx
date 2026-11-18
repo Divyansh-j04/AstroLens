@@ -15,9 +15,10 @@ export default function GlassPanel() {
   const prediction = useStore((s) => s.prediction)
   const obj = currentObjectId ? OBJECTS_BY_ID[currentObjectId] : null
 
-  // Escape closes the panel (keyboard users; the "Show" tab brings it back).
+  // Escape closes the panel (keyboard users; the "Show" tab brings it back). While the Objects
+  // drawer is open, Escape is the drawer's (it closes and the panel comes back).
   useEffect(() => {
-    const onKey = (e) => e.key === 'Escape' && setPanelOpen(false)
+    const onKey = (e) => e.key === 'Escape' && !useStore.getState().browserOpen && setPanelOpen(false)
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [setPanelOpen])
