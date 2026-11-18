@@ -575,7 +575,7 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Short flight (Mars → Jupiter, 1.2 s) | warp 0, view not widened |
 | Arrival title at the Orion Nebula | "Orion Nebula", "Diffuse emission nebula · 1,267 light-years away"; gone again after the hold |
 | Arrival line for all 36 objects, compared with the same rule written separately in the check script | 36 of 36 match |
-| Saturn card 0.25 s after choosing it / once settled | "32,670 km", "5.376 AU", "5.91 hours", "164 …" (still counting) / exactly as in `objects.json` |
+| Saturn card 0.25 s after choosing it / once settled | "33,306 km", "5.481 AU", "6.03 hours", "168 …" (still counting) / exactly as in `objects.json` |
 | Distance scale in the normal view | hidden |
 | Distance scale marker vs the zoom, at Saturn / after 4 presses of − | 22.68% vs 22.68% (465,856 km) / 35.08% vs 35.08% (0.25 AU) |
 | Gap between the scale and the screen's right edge, panel open / closed | 430 px / 56 px (clear of the panel and the edge tabs) |
@@ -589,12 +589,12 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 
 | Check | Measured |
 | --- | --- |
-| Loading counter / title | 0 → 100% in 13 steps, never going down; letters visible 0, 1, 2 … 9; loading screen gone after 1.1 s |
+| Loading counter / title | 0 → 100% in 14 steps, never going down; letters visible 0, 1, 2 … 9; loading screen gone after 1.1 s |
 | Camera behind the landing page / after "Explore the sky" | 308.19 units from its target (2.6 × the home 118.53) / back to 118.53, with warp 1 on the way |
 | Cursor | system pointer hidden; ring "idle" → "link" over Home; Home pulled 6.4 px right and 2.5 px down, back to 0 after leaving; "Fly to Jupiter" over Jupiter |
 | Grand Tour | Sun, Earth, Moon, Jupiter, Saturn, Orion Nebula, Pleiades in order; all 7 captions match the first sentence of the summary; panel closed throughout; the first stop moved on by itself after 6.9 s; Finish opened the Pleiades card; Escape and a user flight both ended it |
-| Scanning | the line's top moved 98 → 206 px in 0.6 s; heatmap reached 0.9 opacity at 0.44 s and returned to 0 (the toggle's heatmap stayed at 0); guesses "Saturn 78%", "Jupiter 12%", "Uranus 5%" fully shown at 0.50 s, 0.56 s and 0.63 s |
-| Typed chat answer (133 characters) | 8 characters at 0.04 s, 49 at 0.62 s, all 133 at 1.87 s; first citation number appeared while typing; sources shown only after typing |
+| Scanning | the line's top moved 98 → 202 px in 0.6 s; heatmap reached 0.9 opacity at 0.38 s and returned to 0 (the toggle's heatmap stayed at 0); guesses "Saturn 78%", "Jupiter 12%", "Uranus 5%": the first fully shown at 0.44 s, the third at 0.63 s |
+| Typed chat answer (133 characters) | 8 characters at 0.04 s, 49 at 0.62 s, all 133 at 1.88 s; first citation number appeared while typing; sources shown only after typing |
 | Reduce motion on | no custom cursor (system pointer), camera not pulled back, warp 0, answer complete at once, scan line still |
 | Browser console errors | 0 |
 
