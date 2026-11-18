@@ -7,7 +7,7 @@
  *   1. Warp: a flight that switches scene mode (Sun -> Orion Nebula) raises warp to 1, widens the
  *      view and darkens the edges; a short flight (Mars -> Jupiter) does not warp.
  *   2. Arrival title: on landing, the name and the line built from objects.json appear, then go.
- *   3. Counting: shortly after choosing an object the first fact is still counting; once settled,
+ *   3. Counting: shortly after the card opens (as the arrival title fades) the first fact is still counting; once settled,
  *      every fact on the card reads exactly as in objects.json.
  *   4. Distance bar (bottom-left corner): hidden in the normal view; in "True distances" its knob
  *      matches the zoom, moves right when zooming out, and the Pleiades chip flies there (with warp).
@@ -143,6 +143,8 @@ async function main() {
 
     // 3. Counting numbers on the card.
     await page.evaluate(() => window.astrolens.store.getState().selectObject('saturn'))
+    // The card opens as the arrival title fades (after the flight); the numbers count from then.
+    await page.waitForFunction(() => window.astrolens.store.getState().panelOpen, null, { timeout: 12000 })
     await page.waitForTimeout(250)
     const early = await cardFacts(page)
     await page.screenshot({ path: path.join(SHOTS, '3_card_counting.png') })

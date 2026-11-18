@@ -17,6 +17,8 @@
  *      from the photo's guesses shows "12% match".
  *   8. The + / - buttons step left of the open Objects drawer.
  *   9. True distances, zoomed far out: no two planet or moon names overlap.
+ *  11. Flying to an object: the panel stays closed during the flight and the arrival title, and
+ *      the card slides in as the title fades.
  *  10. Phone (390 x 844, touch): the top bar, upload pill and Objects tab do not overlap; the Grand
  *      Tour button can be tapped; the card is a bottom sheet and the object stays visible above it.
  *
@@ -136,6 +138,10 @@ async function main() {
     // 3. Pick Jupiter in the drawer.
     await page.locator('[data-testid=object-browser] button', { hasText: /^Jupiter/ }).first().click()
     await settle()
+    result.steps.flying_to_jupiter = await look(page) // the card waits for the flight and the arrival title
+    checks.drawer_pick_card_waits_for_flight = !result.steps.flying_to_jupiter.drawer_open && !result.steps.flying_to_jupiter.panel_open
+    await page.waitForFunction(() => window.astrolens.store.getState().panelOpen, null, { timeout: 12000 })
+    await settle()
     result.steps.picked_jupiter = await look(page)
     await page.screenshot({ path: path.join(SHOTS, '2_picked_jupiter.png') })
     const p = result.steps.picked_jupiter
@@ -228,6 +234,34 @@ async function main() {
     checks.names_never_pile_up = labelSteps.every((x) => x.overlapping_names.length === 0)
     await page.click('[data-testid=true-scale-toggle]')
     await page.waitForTimeout(600)
+    // 11. The card waits for the flight and the arrival title.
+    await page.click('[data-testid=home-button]')
+    await landed(page)
+    await page.waitForTimeout(500)
+    const timeline = await page.evaluate(async () => {
+      const a = window.astrolens
+      a.store.getState().selectObject('mars')
+      const t0 = performance.now()
+      const samples = []
+      while (performance.now() - t0 < 9000) {
+        const s = a.store.getState()
+        const title = document.querySelector('[data-testid=arrival-title]')
+        samples.push({ t: Math.round(performance.now() - t0), flying: s.isFlying, panel: s.panelOpen, title: title ? +Number(getComputedStyle(title).opacity).toFixed(2) : null })
+        await new Promise((r) => setTimeout(r, 50))
+      }
+      return samples
+    })
+    const landedAt = timeline.find((x, i) => i > 0 && timeline[i - 1].flying && !x.flying)?.t // flying -> landed
+    const titleShownAt = timeline.find((x) => x.title !== null && x.title > 0.9)?.t
+    const panelOpenedAt = timeline.find((x) => x.panel)?.t
+    const titleGoneAt = timeline.find((x, i) => i > 0 && timeline[i - 1].title !== null && x.title === null)?.t
+    const panelWhileFlying = timeline.filter((x) => x.flying).some((x) => x.panel)
+    const titleWhenPanelOpened = timeline.find((x) => x.panel)?.title
+    result.card_timing = { landed_ms: landedAt, title_shown_ms: titleShownAt, panel_opened_ms: panelOpenedAt, title_gone_ms: titleGoneAt, panel_open_while_flying: panelWhileFlying, title_opacity_when_panel_opened: titleWhenPanelOpened }
+    checks.card_closed_during_flight_and_title = landedAt !== undefined && !panelWhileFlying && panelOpenedAt > titleShownAt && panelOpenedAt > landedAt
+    checks.card_opens_as_title_fades = panelOpenedAt !== undefined && titleGoneAt !== undefined && panelOpenedAt <= titleGoneAt && titleGoneAt - panelOpenedAt < 1200
+    await page.screenshot({ path: path.join(SHOTS, '8_card_after_title.png') })
+
     // 10. Phone.
     const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 })
     const ph = await phone.newPage()
@@ -245,19 +279,20 @@ async function main() {
     await ph.tap('[data-testid=tour-stop]')
     await ph.evaluate(() => window.astrolens.store.getState().selectObject('saturn'))
     await landed(ph)
-    await ph.waitForTimeout(1200) // the picture slides up above the sheet
+    await ph.waitForFunction(() => window.astrolens.store.getState().panelOpen, null, { timeout: 12000 }) // the card opens as the title fades
+    await ph.waitForTimeout(1200) // the sheet slides up and the picture moves up above it
     const sheet = await ph.evaluate(() => {
       const a = window.astrolens
       const panel = document.querySelector('[data-testid=glass-panel]').getBoundingClientRect()
       const p = a.camera.position.clone().set(...a.currentPosition('saturn')).project(a.camera)
-      return { sheet_top_px: Math.round(panel.top), sheet_height_pct: Math.round((panel.height / innerHeight) * 100), saturn_centre_y_px: Math.round(((1 - p.y) / 2) * innerHeight), screen_height: innerHeight }
+      return { sheet_open: document.querySelector('[data-testid=glass-panel]').dataset.open === 'true', sheet_top_px: Math.round(panel.top), sheet_height_pct: Math.round((panel.height / innerHeight) * 100), saturn_centre_y_px: Math.round(((1 - p.y) / 2) * innerHeight), screen_height: innerHeight }
     })
     const sheetOverlaps = await overlapping(ph, { ...chrome, panel: '[data-testid=glass-panel][data-open=true]' })
     await ph.screenshot({ path: path.join(SHOTS, '7_phone_card_sheet.png') })
     result.phone = { start_overlaps: startOverlaps, tour_overlaps: tourOverlaps, sheet, sheet_overlaps: sheetOverlaps }
     checks.phone_top_area_clear = startOverlaps.length === 0
     checks.phone_tour_tappable_and_clear = tourOverlaps.length === 0
-    checks.phone_card_is_bottom_sheet_with_object_above = sheet.sheet_top_px > sheet.screen_height * 0.35 && sheet.saturn_centre_y_px < sheet.sheet_top_px - 40
+    checks.phone_card_is_bottom_sheet_with_object_above = sheet.sheet_open && sheet.sheet_top_px > sheet.screen_height * 0.35 && sheet.sheet_top_px < sheet.screen_height * 0.5 && sheet.saturn_centre_y_px < sheet.sheet_top_px - 40
     checks.phone_sheet_covers_no_controls = sheetOverlaps.every((x) => !x.includes('objectsTab') && !x.includes('upload') && !x.includes('topbar'))
     await phone.close()
 

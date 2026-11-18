@@ -20,6 +20,15 @@
       "chat_draft": "How thick are the rin",
       "card": null
     },
+    "flying_to_jupiter": {
+      "drawer_open": false,
+      "panel_open": false,
+      "panel_view": "card",
+      "object": "jupiter",
+      "overlap_px": 0,
+      "chat_draft": null,
+      "card": "Jupiter"
+    },
     "picked_jupiter": {
       "drawer_open": false,
       "panel_open": true,
@@ -99,10 +108,19 @@
       "overlapping_names": []
     }
   ],
+  "card_timing": {
+    "landed_ms": 1322,
+    "title_shown_ms": 1322,
+    "panel_opened_ms": 4072,
+    "title_gone_ms": 4838,
+    "panel_open_while_flying": false,
+    "title_opacity_when_panel_opened": 1
+  },
   "phone": {
     "start_overlaps": [],
     "tour_overlaps": [],
     "sheet": {
+      "sheet_open": true,
       "sheet_top_px": 354,
       "sheet_height_pct": 58,
       "saturn_centre_y_px": 177,
@@ -116,6 +134,7 @@
   "console_errors": [],
   "checks": {
     "drawer_tucks_panel_away": true,
+    "drawer_pick_card_waits_for_flight": true,
     "picking_shows_card_on_top": true,
     "escape_closes_drawer_and_brings_panel_back": true,
     "opening_panel_closes_drawer": true,
@@ -125,6 +144,8 @@
     "badge_only_on_photos_object": true,
     "zoom_buttons_beside_drawer": true,
     "names_never_pile_up": true,
+    "card_closed_during_flight_and_title": true,
+    "card_opens_as_title_fades": true,
     "phone_top_area_clear": true,
     "phone_tour_tappable_and_clear": true,
     "phone_card_is_bottom_sheet_with_object_above": true,

@@ -3,7 +3,7 @@
   "date": "2026-11-18",
   "note": "/classify and /chat answers are faked in the browser",
   "opening": {
-    "samples": 14,
+    "samples": 15,
     "percent_first_last": [
       0,
       100
@@ -17,9 +17,11 @@
       3,
       4,
       5,
+      6,
+      8,
       9
     ],
-    "loading_ms": 1086,
+    "loading_ms": 1109,
     "camera": {
       "home_distance": 118.53,
       "on_landing": 308.19,
@@ -48,7 +50,7 @@
         "name": "Sun",
         "text_matches_summary": true,
         "panel_open": false,
-        "advanced_by_itself_after_s": 7,
+        "advanced_by_itself_after_s": 6.9,
         "seconds_from_start": 8.3
       },
       {
@@ -107,14 +109,14 @@
     "scan_line_tops_px": [
       100,
       105,
-      116,
-      138,
-      169,
-      207
+      119,
+      142,
+      172,
+      214
     ],
     "scan_animation": "scan",
     "heatmap_reveal_peak_opacity": 0.9,
-    "heatmap_reveal_peak_at_ms": 395,
+    "heatmap_reveal_peak_at_ms": 381,
     "heatmap_reveal_final_opacity": 0,
     "show_heatmap_toggle_opacity": 0,
     "guesses": [
@@ -122,40 +124,41 @@
       "Jupiter 12%",
       "Uranus 5%"
     ],
-    "first_guess_visible_at_ms": 456,
-    "third_guess_visible_at_ms": 655
+    "first_guess_visible_at_ms": 442,
+    "third_guess_visible_at_ms": 628
   },
   "typed_chat": {
-    "samples": 43,
+    "samples": 46,
     "chars_over_time": [
       0,
-      18,
-      31,
-      44,
-      55,
-      68,
-      76,
-      86,
-      102,
-      117,
-      131
+      15,
+      30,
+      40,
+      54,
+      63,
+      71,
+      81,
+      94,
+      107,
+      118,
+      132
     ],
     "early": {
-      "t": 41,
+      "t": 45,
       "typing": "true",
       "chars": 8,
       "citations": 0,
       "sources_shown": false
     },
     "middle": {
-      "t": 621,
+      "t": 629,
       "typing": "true",
-      "chars": 50,
+      "chars": 49,
       "citations": 0,
       "sources_shown": false
     },
     "end": {
-      "t": 1880,
+      "t": 1878,
       "typing": "false",
       "chars": 133,
       "citations": 2,

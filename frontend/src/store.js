@@ -25,6 +25,7 @@ export const useStore = create((set, get) => ({
   browserOpen: false, // the right-side object list (drawer). It and the glass panel share the right edge,
   // so only one shows at a time: opening one closes the other.
   panelBeforeBrowser: false, // the panel was open when the drawer opened (closing the drawer brings it back)
+  panelPending: false, // a flight to an object is on its way: its card opens as the arrival title fades (ArrivalTitle.jsx)
   uploadPanelOpen: false, // the translucent upload panel next to the pill
   entered: SKIP_LANDING, // false while the landing page is shown
   trueScale: false, // "True distances": everything at its real distance (scene/universe.js)
@@ -37,17 +38,23 @@ export const useStore = create((set, get) => ({
   tour: NO_TOUR, // the Grand Tour: { active, step } (step = index in TOUR_STOPS)
 
   selectObject: (id) =>
-    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false, cardIntro: true })),
+    set((s) => ({ currentObjectId: id, panelOpen: false, panelPending: true, panelBeforeBrowser: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false, cardIntro: true })),
   // A guess from the photo's top 3 picked by the user: fly there, and the badge moves with it.
   selectGuess: (id) =>
-    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false, cardIntro: true, photoObjectId: id })),
+    set((s) => ({ currentObjectId: id, panelOpen: false, panelPending: true, panelBeforeBrowser: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false, cardIntro: true, photoObjectId: id })),
   goHome: () =>
-    set((s) => ({ currentObjectId: null, panelOpen: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR })),
+    set((s) => ({ currentObjectId: null, panelOpen: false, panelPending: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR })),
+  // The arrival title is fading: open the card that was waiting (behind the Objects drawer if that is open).
+  revealPanel: () =>
+    set((s) =>
+      !s.panelPending ? {} : s.browserOpen ? { panelPending: false, panelBeforeBrowser: true } : { panelPending: false, panelOpen: true },
+    ),
   setHoverId: (hoverId) => set({ hoverId }),
   // Grand Tour: fly to stop `step` with the panel closed (the caption tells the story instead).
   tourTo: (step) =>
     set((s) => ({
       tour: { active: true, step },
+      panelPending: false,
       currentObjectId: TOUR_STOPS[step],
       panelOpen: false,
       panelView: 'card',
@@ -59,7 +66,7 @@ export const useStore = create((set, get) => ({
   stopTour: (showCard = false) => set((s) => ({ tour: NO_TOUR, ...(showCard && s.currentObjectId ? { panelOpen: true, panelView: 'card' } : {}) })),
   setMode: (mode) => set({ mode }),
   setFlying: (isFlying) => set({ isFlying }),
-  setPanelOpen: (panelOpen) => set(panelOpen ? { panelOpen, browserOpen: false } : { panelOpen }),
+  setPanelOpen: (panelOpen) => set(panelOpen ? { panelOpen, browserOpen: false, panelPending: false } : { panelOpen }),
   setPanelView: (panelView) => set({ panelView }),
   setUpload: (patch) => set((s) => ({ upload: { ...s.upload, ...patch } })),
   // Remove the uploaded photo and everything that came from it (guesses, badge, heatmap).
@@ -76,7 +83,7 @@ export const useStore = create((set, get) => ({
     }))
   },
   setDraft: (key, text) => set((s) => ({ drafts: { ...s.drafts, [key]: text } })),
-  openChat: () => set({ panelOpen: true, panelView: 'chat', browserOpen: false }),
+  openChat: () => set({ panelOpen: true, panelView: 'chat', browserOpen: false, panelPending: false }),
   setBrowserOpen: (open) =>
     set((s) =>
       open
@@ -130,7 +137,7 @@ export const useStore = create((set, get) => ({
     const history = before.filter((m) => !m.error).slice(-HISTORY_SENT).map(({ role, content }) => ({ role, content }))
     const add = (msg) => set((s) => ({ chats: { ...s.chats, [key]: [...(s.chats[key] ?? []), msg] } }))
     add({ role: 'user', content: question })
-    set({ chatPending: true, panelOpen: true, panelView: 'chat', browserOpen: false })
+    set({ chatPending: true, panelOpen: true, panelView: 'chat', browserOpen: false, panelPending: false })
     try {
       const r = await askChat(question, currentObjectId, history)
       add({ role: 'assistant', content: r.answer, citations: r.citations, refused: r.refused, latencyMs: r.latency_ms })
@@ -150,7 +157,8 @@ export const useStore = create((set, get) => ({
         : {
             prediction,
             currentObjectId: prediction.top3[0].id,
-            panelOpen: true,
+            panelOpen: false, // the card opens as the arrival title fades
+            panelPending: true,
             panelView: 'card',
             flyRequest: s.flyRequest + 1,
             tour: NO_TOUR,

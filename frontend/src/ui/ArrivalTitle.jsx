@@ -8,7 +8,8 @@ const HOLD_SECONDS = 1.8 // how long the full title stays before fading out
 
 /**
  * On landing at an object: its name appears letter by letter in large type, then a line such as
- * "Gas giant · 5.2 AU from the Sun" (built from objects.json), then both fade away and leave the card.
+ * "Gas giant · 5.2 AU from the Sun" (built from objects.json), then both fade away; as they fade, the
+ * object's card slides in (the panel stays closed during the flight and the title).
  * Centred in the part of the screen the glass panel does not cover. With "reduce motion" on, the
  * title simply appears and disappears.
  */
@@ -27,8 +28,12 @@ export default function ArrivalTitle() {
   useLayoutEffect(() => {
     if (!shownId || !ref.current) return undefined
     const hide = () => setShownId(null)
+    const reveal = () => useStore.getState().revealPanel() // the card slides in as the title goes
     if (reducedMotion()) {
-      const timer = setTimeout(hide, (HOLD_SECONDS + 1) * 1000)
+      const timer = setTimeout(() => {
+        reveal()
+        hide()
+      }, (HOLD_SECONDS + 1) * 1000)
       return () => clearTimeout(timer)
     }
     const ctx = gsap.context(() => {
@@ -36,7 +41,8 @@ export default function ArrivalTitle() {
         .timeline({ onComplete: hide })
         .fromTo('[data-letter]', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', stagger: 0.045 })
         .fromTo('[data-subtitle]', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
-        .to(ref.current, { opacity: 0, y: -12, duration: 0.8, ease: 'power2.in' }, `+=${HOLD_SECONDS}`)
+        .call(reveal, null, `+=${HOLD_SECONDS}`)
+        .to(ref.current, { opacity: 0, y: -12, duration: 0.8, ease: 'power2.in' }, '<')
     }, ref)
     return () => ctx.revert()
   }, [shownId])

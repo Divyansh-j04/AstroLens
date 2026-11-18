@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { useStore } from '../store'
 import { reducedMotion } from '../motion'
@@ -26,17 +26,34 @@ function ConfidenceBadge({ objectId }) {
   )
 }
 
+// The flight whose card has played its intro (kept outside the component, so switching between the
+// card and the chat does not replay it).
+let introPlayedFor = null
+
 /** The short card for one object, built entirely from its objects.json entry. */
 export default function BriefCard({ obj }) {
   const prediction = useStore((s) => s.prediction)
   const cardIntro = useStore((s) => s.cardIntro) // false after a photo result: no slide-in or counting
+  const panelOpen = useStore((s) => s.panelOpen)
+  const flyRequest = useStore((s) => s.flyRequest)
   const setPanelView = useStore((s) => s.setPanelView)
   const ref = useRef(null)
+  const flight = `${obj.id}:${flyRequest}`
+  const [intro, setIntro] = useState(null) // the flight whose intro is playing now
 
-  // Each new object: the card's lines slide in one after another (GSAP stagger = the same animation
-  // started on each element in turn, a fixed delay apart).
+  // The panel stays closed during a flight, so the intro waits until it opens (once per flight).
+  useEffect(() => {
+    if (panelOpen && introPlayedFor !== flight) {
+      introPlayedFor = flight
+      setIntro(flight)
+    }
+  }, [panelOpen, flight])
+  const playing = intro === flight && cardIntro
+
+  // The card's lines slide in one after another (GSAP stagger = the same animation started on each
+  // element in turn, a fixed delay apart).
   useLayoutEffect(() => {
-    if (reducedMotion() || !ref.current || !useStore.getState().cardIntro) return undefined
+    if (!playing || reducedMotion() || !ref.current) return undefined
     const ctx = gsap.context(() => {
       gsap.fromTo(
         '[data-reveal]',
@@ -45,7 +62,7 @@ export default function BriefCard({ obj }) {
       )
     }, ref)
     return () => ctx.revert()
-  }, [obj.id])
+  }, [playing, flight])
 
   return (
     <article ref={ref} data-testid="brief-card" className="flex flex-col gap-5">
@@ -69,7 +86,7 @@ export default function BriefCard({ obj }) {
           <div key={label} data-reveal className="bg-slate-950/50 px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wider text-slate-400">{label}</dt>
             <dd data-testid="fact-value" className="text-sm text-slate-100">
-              <CountUp key={`${obj.id}:${label}`} text={value} animate={cardIntro} />
+              <CountUp key={`${flight}:${label}:${playing}`} text={value} animate={playing} />
             </dd>
           </div>
         ))}

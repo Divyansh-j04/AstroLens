@@ -10,10 +10,19 @@ import UnknownCard from './UnknownCard'
 export default function GlassPanel() {
   const currentObjectId = useStore((s) => s.currentObjectId)
   const panelOpen = useStore((s) => s.panelOpen)
+  const panelPending = useStore((s) => s.panelPending)
   const panelView = useStore((s) => s.panelView)
   const setPanelOpen = useStore((s) => s.setPanelOpen)
   const prediction = useStore((s) => s.prediction)
   const obj = currentObjectId ? OBJECTS_BY_ID[currentObjectId] : null
+
+  // Safety net: if a card is still waiting 6 s after the camera stopped (no arrival title came), open it.
+  const isFlying = useStore((s) => s.isFlying)
+  useEffect(() => {
+    if (!panelPending || isFlying) return undefined
+    const timer = setTimeout(() => useStore.getState().revealPanel(), 6000)
+    return () => clearTimeout(timer)
+  }, [panelPending, isFlying])
 
   // Escape closes the panel (keyboard users; the "Show" tab brings it back). While the Objects
   // drawer is open, Escape is the drawer's (it closes and the panel comes back).
@@ -58,7 +67,7 @@ export default function GlassPanel() {
           {body()}
         </div>
       </aside>
-      {!panelOpen && (
+      {!panelOpen && !panelPending && ( // no "Show card" tab while the card is on its way
         <button
           type="button"
           onClick={() => setPanelOpen(true)}

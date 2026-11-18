@@ -4,7 +4,7 @@
   "long_flight": {
     "target": "orion_nebula",
     "landed_on": "orion_nebula",
-    "seconds": 5.49,
+    "seconds": 5.5,
     "peak_warp": 1,
     "fov_widened_by_deg": 8,
     "peak_edge_darkness": 1,
@@ -36,10 +36,10 @@
   },
   "counting": {
     "early": [
-      "32,944 km",
-      "5.421 AU",
-      "5.96 hours",
-      "166 with formal designations (as of 2026)"
+      "32,022 km",
+      "5.270 AU",
+      "5.80 hours",
+      "161 with formal designations (as of 2026)"
     ],
     "settled": [
       "58,232 km",
