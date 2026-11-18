@@ -4,7 +4,7 @@
   "long_flight": {
     "target": "orion_nebula",
     "landed_on": "orion_nebula",
-    "seconds": 5.51,
+    "seconds": 5.49,
     "peak_warp": 1,
     "fov_widened_by_deg": 8,
     "peak_edge_darkness": 1,
@@ -36,10 +36,10 @@
   },
   "counting": {
     "early": [
-      "33,306 km",
-      "5.481 AU",
-      "6.03 hours",
-      "168 with formal designations (as of 2026)"
+      "32,944 km",
+      "5.421 AU",
+      "5.96 hours",
+      "166 with formal designations (as of 2026)"
     ],
     "settled": [
       "58,232 km",
@@ -62,20 +62,34 @@
     "log_zoom_before_click": -2.507,
     "log_zoom_after_click": -2.03
   },
-  "scale_gap_from_right_px": {
-    "panel_open": 430,
-    "panel_closed": 56
+  "scale_box_px": {
+    "panel_open": {
+      "left": 16,
+      "right": 304,
+      "top": 717,
+      "bottom": 816,
+      "width": 1440,
+      "height": 900
+    },
+    "panel_closed": {
+      "left": 16,
+      "right": 304,
+      "top": 717,
+      "bottom": 816,
+      "width": 1440,
+      "height": 900
+    }
   },
   "distance_scale": {
     "at_saturn": {
       "log_zoom": -2.507,
-      "marker_bottom_pct": 22.68,
+      "marker_left_pct": 22.68,
       "expected_pct": 22.68,
       "value_text": "465,856 km"
     },
     "after_4_zoom_outs": {
       "log_zoom": -0.598,
-      "marker_bottom_pct": 35.08,
+      "marker_left_pct": 35.08,
       "expected_pct": 35.08,
       "value_text": "0.25 AU"
     }
@@ -90,7 +104,7 @@
     "warp_after_landing": 0,
     "scale_after": {
       "log_zoom": 6.711,
-      "marker_bottom_pct": 82.54,
+      "marker_left_pct": 82.54,
       "expected_pct": 82.54,
       "value_text": "81 light-years"
     }
@@ -100,7 +114,7 @@
     "flight": {
       "target": "orion_nebula",
       "landed_on": "orion_nebula",
-      "seconds": 5.51,
+      "seconds": 5.5,
       "peak_warp": 0,
       "fov_widened_by_deg": 0,
       "peak_edge_darkness": 0,
@@ -126,9 +140,9 @@
     "scale_hidden_in_normal_view": true,
     "zoom_buttons_clickable_with_panel_open": true,
     "zoom_buttons_back_at_edge_when_closed": true,
-    "scale_moves_clear_of_panel": true,
+    "scale_in_bottom_left_corner": true,
     "scale_marker_matches_zoom": true,
-    "scale_marker_rises_on_zoom_out": true,
+    "scale_marker_moves_right_on_zoom_out": true,
     "scale_mark_flies_there": true,
     "scale_mark_flight_warps": true,
     "reduced_motion_no_warp": true,

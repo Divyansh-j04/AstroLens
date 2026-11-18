@@ -31,11 +31,16 @@ export const useStore = create((set, get) => ({
   zoomRequest: { n: 0, factor: 1 }, // +/- buttons: each press bumps n
   arrived: null, // id of the nebula or cluster just flown to (shows the "it's 3D" hint), else null
   landed: { n: 0, id: null }, // bumped when a fly-to reaches an object (plays the arrival title)
+  photoObjectId: null, // the object the last photo result is about (top guess, or a guess the user picked): its card shows the match badge
+  cardIntro: true, // false when the card was opened by a photo result (the scan already animates; the card just appears)
   hoverId: null, // the planet, moon, nebula or cluster under the mouse (the custom cursor shows "Fly to ...")
   tour: NO_TOUR, // the Grand Tour: { active, step } (step = index in TOUR_STOPS)
 
   selectObject: (id) =>
-    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false })),
+    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false, cardIntro: true })),
+  // A guess from the photo's top 3 picked by the user: fly there, and the badge moves with it.
+  selectGuess: (id) =>
+    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR, browserOpen: false, cardIntro: true, photoObjectId: id })),
   goHome: () =>
     set((s) => ({ currentObjectId: null, panelOpen: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR })),
   setHoverId: (hoverId) => set({ hoverId }),
@@ -47,6 +52,7 @@ export const useStore = create((set, get) => ({
       panelOpen: false,
       panelView: 'card',
       browserOpen: false,
+      cardIntro: true,
       flyRequest: s.flyRequest + 1,
     })),
   // End the tour where it is; `showCard` opens the card of the last stop.
@@ -64,6 +70,7 @@ export const useStore = create((set, get) => ({
     set((s) => ({
       upload: { status: 'idle', error: null, previewUrl: null, slow: false },
       prediction: null,
+      photoObjectId: null,
       panelView: ['unknown', 'guesses'].includes(s.panelView) ? 'card' : s.panelView,
       panelOpen: ['unknown', 'guesses'].includes(s.panelView) ? Boolean(s.currentObjectId) && s.panelOpen : s.panelOpen,
     }))
@@ -139,7 +146,7 @@ export const useStore = create((set, get) => ({
   applyPrediction: (prediction) =>
     set((s) =>
       prediction.is_unknown
-        ? { prediction, panelOpen: true, panelView: 'unknown', browserOpen: false }
+        ? { prediction, panelOpen: true, panelView: 'unknown', browserOpen: false, photoObjectId: null }
         : {
             prediction,
             currentObjectId: prediction.top3[0].id,
@@ -148,6 +155,8 @@ export const useStore = create((set, get) => ({
             flyRequest: s.flyRequest + 1,
             tour: NO_TOUR,
             browserOpen: false,
+            photoObjectId: prediction.top3[0].id,
+            cardIntro: false,
           },
     ),
 }))

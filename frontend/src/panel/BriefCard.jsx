@@ -7,7 +7,9 @@ import CountUp from './CountUp'
 /** Confidence from the classifier for this object; shows nothing if it was not among the top 3 guesses. */
 function ConfidenceBadge({ objectId }) {
   const prediction = useStore((s) => s.prediction)
-  const guess = prediction?.top3?.find((g) => g.id === objectId)
+  const photoObjectId = useStore((s) => s.photoObjectId)
+  // Only on the object the photo is about, not on every object that happened to be among its guesses.
+  const guess = objectId === photoObjectId ? prediction?.top3?.find((g) => g.id === objectId) : null
   if (!guess) return null
   const pct = Math.round(guess.prob * 100)
   // Bands from the plan: green above 80%, amber 55-80%, red below 55%.
@@ -27,13 +29,14 @@ function ConfidenceBadge({ objectId }) {
 /** The short card for one object, built entirely from its objects.json entry. */
 export default function BriefCard({ obj }) {
   const prediction = useStore((s) => s.prediction)
+  const cardIntro = useStore((s) => s.cardIntro) // false after a photo result: no slide-in or counting
   const setPanelView = useStore((s) => s.setPanelView)
   const ref = useRef(null)
 
   // Each new object: the card's lines slide in one after another (GSAP stagger = the same animation
   // started on each element in turn, a fixed delay apart).
   useLayoutEffect(() => {
-    if (reducedMotion() || !ref.current) return undefined
+    if (reducedMotion() || !ref.current || !useStore.getState().cardIntro) return undefined
     const ctx = gsap.context(() => {
       gsap.fromTo(
         '[data-reveal]',
@@ -66,7 +69,7 @@ export default function BriefCard({ obj }) {
           <div key={label} data-reveal className="bg-slate-950/50 px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wider text-slate-400">{label}</dt>
             <dd data-testid="fact-value" className="text-sm text-slate-100">
-              <CountUp key={`${obj.id}:${label}`} text={value} />
+              <CountUp key={`${obj.id}:${label}`} text={value} animate={cardIntro} />
             </dd>
           </div>
         ))}

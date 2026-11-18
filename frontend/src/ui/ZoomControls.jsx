@@ -8,6 +8,8 @@ export default function ZoomControls() {
   const zoomBy = useStore((s) => s.zoomBy)
   const isFlying = useStore((s) => s.isFlying)
   const panelOpen = useStore((s) => s.panelOpen)
+  const browserOpen = useStore((s) => s.browserOpen)
+  const touring = useStore((s) => s.tour.active)
   const button =
     'flex h-10 w-10 items-center justify-center text-xl leading-none text-slate-100 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-sky-400/60 disabled:opacity-40'
   return (
@@ -15,7 +17,8 @@ export default function ZoomControls() {
       data-testid="zoom-controls"
       // While the glass panel is open, sit just left of it (it would cover the buttons otherwise).
       className={`pointer-events-auto absolute bottom-4 z-20 flex flex-col overflow-hidden rounded-xl border border-white/15 bg-slate-950/50 backdrop-blur-[14px] transition-[right] duration-500 ease-out ${
-        panelOpen ? 'right-4 sm:right-[calc(max(26%,340px)+1rem)]' : 'right-4'
+        browserOpen ? 'right-4 sm:right-[19rem]' : panelOpen ? 'right-4 sm:right-[calc(max(26%,340px)+1rem)]' : 'right-4'
+      } ${touring ? 'max-sm:hidden' : ''
       }`}
     >
       <button type="button" data-testid="zoom-in" aria-label="Zoom in" disabled={isFlying} onClick={() => zoomBy(1 / STEP)} className={button}>

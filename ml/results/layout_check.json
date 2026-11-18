@@ -57,6 +57,62 @@
       "card": null
     }
   },
+  "photo": {
+    "saturn_facts_200ms_after_result": [
+      "58,232 km",
+      "9.583 AU",
+      "10.54 hours",
+      "293 with formal designations (as of 2026)"
+    ],
+    "badge_on_saturn": "78% match",
+    "badge_on_jupiter_flown_by_hand": null,
+    "badge_on_jupiter_picked_from_guesses": "12% match"
+  },
+  "zoom_vs_drawer_overlaps": [],
+  "true_view_names": [
+    {
+      "log_zoom": -2.47,
+      "overlapping_names": []
+    },
+    {
+      "log_zoom": -1.47,
+      "overlapping_names": []
+    },
+    {
+      "log_zoom": -0.47,
+      "overlapping_names": []
+    },
+    {
+      "log_zoom": 0.53,
+      "overlapping_names": []
+    },
+    {
+      "log_zoom": 1.53,
+      "overlapping_names": []
+    },
+    {
+      "log_zoom": 2.53,
+      "overlapping_names": []
+    },
+    {
+      "log_zoom": 3.53,
+      "overlapping_names": []
+    }
+  ],
+  "phone": {
+    "start_overlaps": [],
+    "tour_overlaps": [],
+    "sheet": {
+      "sheet_top_px": 354,
+      "sheet_height_pct": 58,
+      "saturn_centre_y_px": 177,
+      "screen_height": 844
+    },
+    "sheet_overlaps": [
+      "scaleNote x panel",
+      "zoom x panel"
+    ]
+  },
   "console_errors": [],
   "checks": {
     "drawer_tucks_panel_away": true,
@@ -65,6 +121,14 @@
     "opening_panel_closes_drawer": true,
     "typed_question_kept": true,
     "never_overlapping": true,
+    "photo_card_appears_without_counting": true,
+    "badge_only_on_photos_object": true,
+    "zoom_buttons_beside_drawer": true,
+    "names_never_pile_up": true,
+    "phone_top_area_clear": true,
+    "phone_tour_tappable_and_clear": true,
+    "phone_card_is_bottom_sheet_with_object_above": true,
+    "phone_sheet_covers_no_controls": true,
     "no_console_errors": true
   },
   "passed": true

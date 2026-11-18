@@ -61,7 +61,7 @@ The page is static files on Vercel. The server, with the trained model, the text
 - **Placing deep-space objects from sky coordinates.** With right ascension α, declination δ (in radians) and distance d: x = d·cos δ·cos α, y = d·cos δ·sin α, z = d·sin δ (x points to α = 0h, z to the north celestial pole). Three.js uses y as "up", so the page uses (x, z, −y). Code: `frontend/src/scene/scale.js` (`skyToScene`).
 - **Display distance.** Real distances run from 444 ly (Pleiades) to 24,100 ly (M13), so the page uses d = 4 × √(light-years): Pleiades 84 units, M13 621 units. Directions are exact; only distances are compressed. The **True distances** switch (below) shows the real ones.
 - **True distances (added after Phase 5).** With the switch on, every object sits at its real distance: moons round their planets (Phobos 9,375 km from Mars), planets round the Sun (Neptune 30 AU), nebulae and clusters out to M13 at 24,100 light-years. That is about 14 powers of ten, too much for one fixed set of 3D coordinates (the graphics card uses 32-bit numbers). So real positions are kept in AU in JavaScript's 64-bit numbers, and every frame the scene is drawn relative to the object being looked at (the focus) and scaled by the zoom: the camera always sits 50 drawn units from the focus, and the zoom says how many AU that is. Zooming out 10 times shrinks the drawn world 10 times. Code: `frontend/src/scene/universe.js`.
-- **Interface motion (added after Phase 5).** Long flights (a switch between the solar-system and deep-space views, or a true-distance flight across at least four powers of ten) go to warp: stars stretch into streaks, the view widens by 8 degrees and the screen edges darken, then everything snaps back on arrival. On landing, the object's name appears letter by letter with a line built from `objects.json` ("Gas giant · 5.2 AU from the Sun"). The card's numbers count up and its lines slide in one after another. In the True distances view a small glass card on the right, "Distance to target", shows on a filled power-of-ten gauge (about 150 km to 40,000 light-years) how far the camera is from what it looks at, with marks for the Moon, Neptune, the Pleiades and M13 that fly there when clicked. With the browser's or phone's "reduce motion" setting on, the warp, the letter animation, the counting and the sliding are skipped. Code: `frontend/src/scene/warp.js`, `StarField.jsx`, `CameraRig.jsx`, `frontend/src/ui/ArrivalTitle.jsx`, `DistanceScale.jsx`, `WarpVignette.jsx`, `frontend/src/panel/CountUp.jsx`.
+- **Interface motion (added after Phase 5).** Long flights (a switch between the solar-system and deep-space views, or a true-distance flight across at least four powers of ten) go to warp: stars stretch into streaks, the view widens by 8 degrees and the screen edges darken, then everything snaps back on arrival. On landing, the object's name appears letter by letter with a line built from `objects.json` ("Gas giant · 5.2 AU from the Sun"). The card's numbers count up and its lines slide in one after another. In the True distances view a thin power-of-ten bar in the bottom-left corner, under the camera readout, shows the zoom (how far the camera is from what it looks at, about 150 km to 40,000 light-years), with dots and chips for the Moon, Neptune, the Pleiades and M13 that fly there when clicked. With the browser's or phone's "reduce motion" setting on, the warp, the letter animation, the counting and the sliding are skipped. Code: `frontend/src/scene/warp.js`, `StarField.jsx`, `CameraRig.jsx`, `frontend/src/ui/ArrivalTitle.jsx`, `DistanceScale.jsx`, `WarpVignette.jsx`, `frontend/src/panel/CountUp.jsx`.
 - **More interface motion (added after Phase 5).** With a mouse, a ring cursor trails the pointer, grows over buttons and says "Fly to Jupiter" over a planet, moon, nebula or cluster; a few main buttons pull gently towards the pointer. A "Grand Tour" button flies Sun → Earth → Moon → Jupiter → Saturn → Orion Nebula → Pleiades with the panel closed, showing the first sentence of each summary from `objects.json` for 7 seconds at each stop. While a photo is classified a scan line sweeps over it, then the heatmap fades in and out once and the top 3 guesses slide up. The loading screen counts to 100% while the title appears letter by letter; behind the landing page the camera waits 2.6 times farther out and dives in when a door is chosen. Chat answers appear word by word, citation numbers pop in, and the sources follow. The custom cursor is off on touch screens; with "reduce motion" on, the cursor, camera pull-back and dive, typing and scan sweep are all skipped. Code: `frontend/src/ui/CustomCursor.jsx`, `TourCaption.jsx`, `LoadingScreen.jsx`, `frontend/src/tour.js`, `frontend/src/upload/UploadZone.jsx`, `frontend/src/panel/ChatPanel.jsx`, `frontend/src/scene/CameraRig.jsx`.
   - **Zoom without a limit.** The mouse wheel and new **+ / −** buttons (factor 3 per press) change the zoom from about 150 km to about 40,000 light-years. The readout shows the camera's distance from the Sun in km, AU or light-years.
   - **One space.** Planets and deep-space objects share one space, so zooming out from Jupiter passes the planets' orbits, then the Sun shrinks to a dot labelled "Solar System (you are here)", and the Pleiades and Beehive come into view; past 3,000 AU the page switches to deep-space mode.
@@ -495,7 +495,7 @@ recall@k = share of questions with a gold chunk in the first k results; MRR@10 =
 | After 5 | Distance scale (True distances only): power-of-ten ruler with the current zoom and clickable marks for the Moon, Neptune, the Pleiades and M13 | Done |
 | After 5 | All four follow the "reduce motion" setting | Done |
 | After 5 | + / − zoom buttons move left of the glass panel while it is open (it used to cover them) | Done (bug fix) |
-| After 5 | Distance scale redesigned as a glass card ("Distance to target") with a filled gauge, three unit ticks and round marks (the bare line over the scene was hard to read) | Done |
+| After 5 | Distance scale moved into the bottom-left corner as a thin bar under the camera readout, with jump chips (as a line, and then as a card on the right, it covered the middle of the scene: half of Earth was hidden) | Done |
 | After 5 | Custom cursor: trailing ring, grows over buttons, "Fly to …" over objects, magnetic main buttons; off on touch screens | Done |
 | After 5 | Grand Tour: 7 stops with captions from `objects.json`, 7 s each, Next / Stop / Escape | Done |
 | After 5 | Photo scanning effect: scan line while classifying, heatmap fades in and out once, guesses slide up | Done |
@@ -503,6 +503,10 @@ recall@k = share of questions with a gold chunk in the first k results; MRR@10 =
 | After 5 | Typed chat answers: word by word, citation numbers pop in, sources after; screen readers get the whole answer at once | Done |
 | After 5 | Objects drawer and glass panel never cover each other: opening one closes the other; picking an object shows its card; Escape closes the drawer and brings the panel back | Done (bug fix) |
 | After 5 | A half-typed chat question is kept per conversation (closing the chat or visiting another object no longer loses it) | Done |
+| After 5 | Match badge only on the object the photo is about (it used to show on any object among the photo's guesses, e.g. "15% match" on Earth after a cat photo) | Done (bug fix) |
+| After 5 | After a photo result the card appears without counting or sliding (the scan, heatmap and flight already animate) | Done |
+| After 5 | Phone layout: two-row top bar, upload pill and Objects tab below it, the card as a bottom sheet with the scene shifted up so the object stays visible, the tour caption with the corner controls out of its way | Done |
+| After 5 | + / − buttons step aside for the Objects drawer; in True distances, planet and moon names that would pile up on what they orbit are hidden | Done (bug fix) |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -575,13 +579,13 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Short flight (Mars → Jupiter, 1.2 s) | warp 0, view not widened |
 | Arrival title at the Orion Nebula | "Orion Nebula", "Diffuse emission nebula · 1,267 light-years away"; gone again after the hold |
 | Arrival line for all 36 objects, compared with the same rule written separately in the check script | 36 of 36 match |
-| Saturn card 0.25 s after choosing it / once settled | "33,306 km", "5.481 AU", "6.03 hours", "168 …" (still counting) / exactly as in `objects.json` |
+| Saturn card 0.25 s after choosing it / once settled | "32,944 km", "5.421 AU", "5.96 hours", "166 …" (still counting) / exactly as in `objects.json` |
 | Distance scale in the normal view | hidden |
-| Distance scale marker vs the zoom, at Saturn / after 4 presses of − | 22.68% vs 22.68% (465,856 km) / 35.08% vs 35.08% (0.25 AU) |
-| Gap between the scale and the screen's right edge, panel open / closed | 430 px / 56 px (clear of the panel and the edge tabs) |
+| Distance bar knob vs the zoom, at Saturn / after 4 presses of − | 22.68% vs 22.68% (465,856 km) / 35.08% vs 35.08% (0.25 AU) |
+| Where the distance bar sits, panel open / closed | bottom-left corner both times: 16–304 px from the left, 717–816 px down the 900 px screen |
 | + / − buttons with the glass panel open: gap from the right edge / one press of − | 390 px (left of the panel) / zoom −2.507 → −2.030 (10^0.477 = 3 times out) |
 | + / − buttons with the panel closed: gap from the right edge | 16 px (back at the edge) |
-| Clicking the Pleiades mark | flew to the Pleiades in 4.45 s, with warp 1 |
+| Clicking the Pleiades chip | flew to the Pleiades in 4.45 s, with warp 1 |
 | Reduce motion on: flight to the Orion Nebula / Jupiter card after 0.1 s / arrival title | warp 0 / final values at once / still shown |
 | Browser console errors | 0 |
 
@@ -589,16 +593,16 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 
 | Check | Measured |
 | --- | --- |
-| Loading counter / title | 0 → 100% in 14 steps, never going down; letters visible 0, 1, 2 … 9; loading screen gone after 1.1 s |
+| Loading counter / title | 0 → 100% in 13 steps, never going down; visible letters counted 0, 1, 2, 3, 4, 5, 9 as it was sampled; loading screen gone after 1.1 s |
 | Camera behind the landing page / after "Explore the sky" | 308.19 units from its target (2.6 × the home 118.53) / back to 118.53, with warp 1 on the way |
 | Cursor | system pointer hidden; ring "idle" → "link" over Home; Home pulled 6.4 px right and 2.5 px down, back to 0 after leaving; "Fly to Jupiter" over Jupiter |
-| Grand Tour | Sun, Earth, Moon, Jupiter, Saturn, Orion Nebula, Pleiades in order; all 7 captions match the first sentence of the summary; panel closed throughout; the first stop moved on by itself after 6.9 s; Finish opened the Pleiades card; Escape and a user flight both ended it |
-| Scanning | the line's top moved 98 → 202 px in 0.6 s; heatmap reached 0.9 opacity at 0.38 s and returned to 0 (the toggle's heatmap stayed at 0); guesses "Saturn 78%", "Jupiter 12%", "Uranus 5%": the first fully shown at 0.44 s, the third at 0.63 s |
-| Typed chat answer (133 characters) | 8 characters at 0.04 s, 49 at 0.62 s, all 133 at 1.88 s; first citation number appeared while typing; sources shown only after typing |
+| Grand Tour | Sun, Earth, Moon, Jupiter, Saturn, Orion Nebula, Pleiades in order; all 7 captions match the first sentence of the summary; panel closed throughout; the first stop moved on by itself after 7 s; Finish opened the Pleiades card; Escape and a user flight both ended it |
+| Scanning | the line's top moved 100 → 207 px in 0.6 s; heatmap reached 0.9 opacity at 0.40 s and returned to 0 (the toggle's heatmap stayed at 0); guesses "Saturn 78%", "Jupiter 12%", "Uranus 5%": the first fully shown at 0.46 s, the third at 0.66 s |
+| Typed chat answer (133 characters) | 8 characters at 0.04 s, 50 at 0.62 s, all 133 at 1.88 s; first citation number appeared while typing; sources shown only after typing |
 | Reduce motion on | no custom cursor (system pointer), camera not pulled back, warp 0, answer complete at once, scan line still |
 | Browser console errors | 0 |
 
-**Layout check (after Phase 5).** Source: `ml/results/layout_check.json`, written by `frontend/scripts/check-layout.mjs` (Playwright, Microsoft Edge, 1440 × 900); 7 of 7 checks passed, screenshots in `ml/results/layout_screens/`. Before the fix, the Objects drawer opened on top of the chat while typing and stayed on top of the card after an object was picked.
+**Layout check (after Phase 5).** Source: `ml/results/layout_check.json`, written by `frontend/scripts/check-layout.mjs` (Playwright, Microsoft Edge, 1440 × 900, then a 390 × 844 touch phone); 15 of 15 checks passed, screenshots in `ml/results/layout_screens/`. Before the fix, the Objects drawer opened on top of the chat while typing and stayed on top of the card after an object was picked.
 
 | Step | Drawer | Panel | Overlap |
 | --- | --- | --- | --- |
@@ -608,6 +612,17 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Chat, drawer opened, Escape | closed | chat back | 0 px |
 | Drawer open, then the chat opened | closed | chat | 0 px |
 | Back to Saturn's chat | closed | chat, draft still "How thick are the rin" | 0 px |
+
+Fixes from the hands-on review (same file; the /classify answer is faked in the browser: Saturn 78%, Jupiter 12%, Uranus 5%):
+
+| Check | Measured |
+| --- | --- |
+| Match badge: Saturn (the photo's object) / Jupiter flown to by hand / Jupiter picked from the photo's guesses | "78% match" / none / "12% match" |
+| Saturn's facts 0.2 s after the photo result | already final ("58,232 km", "9.583 AU", "10.54 hours", "293 …"): no counting while the scan animates |
+| + / − buttons with the Objects drawer open | no overlap; − still clickable |
+| True distances, Earth, zoomed out 10× seven times (zoom −2.47 to 3.53) | no two names overlapping at any step |
+| Phone: top bar, upload pill, Objects tab, corner note, zoom buttons | no overlaps; Grand Tour tapped and its caption clear of everything |
+| Phone: card sheet / Saturn | sheet from 354 px (58% of the 844 px screen); Saturn's centre at 177 px, above it |
 
 **Table E: time taken per step (deployed, median of 10 runs)**
 
@@ -933,6 +948,9 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Nov 19, 2026 | The second interface check fakes /classify and /chat in the browser | It tests the animations, needs no server or Groq quota, and gives the same answer every run |
 | Nov 19, 2026 | The Objects drawer and the glass panel show one at a time instead of side by side | Both live on the right edge; side by side they would take half the screen at 1440 px and all of it on a laptop. Closing the drawer brings back the panel that was open |
 | Nov 19, 2026 | Half-typed chat questions live in the store, one per conversation | The chat box is removed when the panel shows the card, which used to throw the text away |
+| Nov 19, 2026 | The distance scale became a thin bar in the bottom-left corner, under the camera readout | As a card on the right it hid the middle of the scene (half of Earth at both 1440 and 1366 px wide); the corner was mostly empty |
+| Nov 19, 2026 | The match badge shows only for the photo's object (its top guess, or a guess the user picks) | A badge on every object among the guesses suggested the photo matched them |
+| Nov 19, 2026 | On phones the card is a bottom sheet over 58% of the screen, and the picture slides up 29% (the camera's view offset) | A full-screen card hid the object it describes; moving the picture, not the camera, leaves flights and zoom untouched |
 
 ## Progress log
 
@@ -995,3 +1013,7 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 - **Nov 19, 2026 (after Phase 5: layout fix):**
   - The Objects drawer and the glass panel no longer overlap (reported by the author with a screenshot); half-typed chat questions are kept.
   - Layout check 7 of 7 (`ml/results/layout_check.json`); interface checks still 20 of 20 and 25 of 25; pytest 62 passed.
+- **Nov 19, 2026 (after Phase 5: hands-on review and fixes):**
+  - Every feature tried with the real server, classifier and chat at 1440 × 900, 1366 × 768 and a 390 × 844 phone; findings: the distance card covered the scene, a stale match badge, too many animations at once after a photo, and a crowded phone layout.
+  - Fixed: distance bar moved to the corner; badge only on the photo's object; calmer card after a photo; phone layout; zoom buttons beside the drawer; no piled-up names.
+  - Checks: layout 15 of 15 (`ml/results/layout_check.json`), interface 20 of 20 and 25 of 25; pytest 62 passed.

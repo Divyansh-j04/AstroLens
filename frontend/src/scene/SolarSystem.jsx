@@ -14,6 +14,7 @@ import { RADIUS_AU, TRUE_AU, orbitSeparation, toRender, trueOrbitAU, unitsPerAU,
 // and a planet or moon closer than HIDE_PX to what it orbits is hidden (it would sit on top of it).
 const MIN_PX = { sun: 6, planet: 3, moon: 2 }
 const HIDE_PX = 8
+const LABEL_PX = 48 // names need more room than bodies: closer than this to what they orbit, the name hides
 const ORIGIN = [0, 0, 0]
 const tmp = new THREE.Vector3()
 
@@ -74,6 +75,7 @@ function Body({ obj, texture, ringTexture }) {
       const hidden = !isSun && orbitSeparation(obj) < HIDE_PX * perPx
       // far out, the Sun's own label gives way to "Solar System (you are here)"
       view.hidden[obj.id] = hidden || (isSun && useStore.getState().mode === 'deep_space')
+      view.labelHidden[obj.id] = !isSun && orbitSeparation(obj) < LABEL_PX * perPx
       group.current.visible = !hidden
     } else {
       group.current.position.set(...POSITIONS[obj.id])

@@ -9,8 +9,8 @@
  *   2. Arrival title: on landing, the name and the line built from objects.json appear, then go.
  *   3. Counting: shortly after choosing an object the first fact is still counting; once settled,
  *      every fact on the card reads exactly as in objects.json.
- *   4. Distance scale: hidden in the normal view; in "True distances" its marker matches the zoom,
- *      rises when zooming out, and clicking the Pleiades mark flies there (with warp).
+ *   4. Distance bar (bottom-left corner): hidden in the normal view; in "True distances" its knob
+ *      matches the zoom, moves right when zooming out, and the Pleiades chip flies there (with warp).
  *   5. Reduce motion on: no warp, numbers appear final at once, the title still appears.
  *
  * Writes ml/results/ux_check.json and screenshots in ml/results/ux_screens/.
@@ -166,14 +166,19 @@ async function main() {
         const expectedPct = ((a.view.logZoom - -6) / (9.4 - -6)) * 100
         return {
           log_zoom: +a.view.logZoom.toFixed(3),
-          marker_bottom_pct: +parseFloat(marker.style.bottom).toFixed(2),
+          marker_left_pct: +parseFloat(marker.style.left).toFixed(2),
           expected_pct: +expectedPct.toFixed(2),
           value_text: document.querySelector('[data-testid=distance-scale-value]').textContent,
         }
       })
     const atSaturn = await readScale()
-    const scaleRight = () => page.$eval('[data-testid=distance-scale]', (e) => Math.round(window.innerWidth - e.getBoundingClientRect().right))
-    const rightWithPanel = await scaleRight()
+    // The bar sits in the bottom-left corner, clear of the middle of the scene and of the panel.
+    const scaleBox = () =>
+      page.$eval('[data-testid=distance-scale]', (e) => {
+        const r = e.getBoundingClientRect()
+        return { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom), width: innerWidth, height: innerHeight }
+      })
+    const boxWithPanel = await scaleBox()
     // The +/- buttons must be clickable with the glass panel open (Playwright's click fails if anything covers them).
     const zoomRight = () => page.$eval('[data-testid=zoom-controls]', (e) => Math.round(window.innerWidth - e.getBoundingClientRect().right))
     const zoomRightWithPanel = await zoomRight()
@@ -181,16 +186,17 @@ async function main() {
     await page.click('[data-testid=zoom-out]', { timeout: 5000 })
     await page.waitForTimeout(700)
     const afterClick = (await readScale()).log_zoom
-    // Close the panel: the scale and the buttons slide back to the edge.
+    // Close the panel: the buttons slide back to the edge.
     await page.evaluate(() => window.astrolens.store.getState().setPanelOpen(false))
     await page.waitForTimeout(700)
-    const rightWithoutPanel = await scaleRight()
+    const boxWithoutPanel = await scaleBox()
     const zoomRightWithoutPanel = await zoomRight()
     result.zoom_buttons = { gap_from_right_px: { panel_open: zoomRightWithPanel, panel_closed: zoomRightWithoutPanel }, log_zoom_before_click: beforeClick, log_zoom_after_click: afterClick }
     checks.zoom_buttons_clickable_with_panel_open = zoomRightWithPanel >= 340 && afterClick > beforeClick + 0.4
     checks.zoom_buttons_back_at_edge_when_closed = zoomRightWithoutPanel === 16
-    result.scale_gap_from_right_px = { panel_open: rightWithPanel, panel_closed: rightWithoutPanel }
-    checks.scale_moves_clear_of_panel = rightWithPanel >= 340 + 56 && rightWithoutPanel === 56 // 56 px clears the edge tabs
+    result.scale_box_px = { panel_open: boxWithPanel, panel_closed: boxWithoutPanel }
+    const inCorner = (b) => b.left <= 20 && b.right <= 340 && b.top >= b.height * 0.55 // left edge, lower part of the screen
+    checks.scale_in_bottom_left_corner = inCorner(boxWithPanel) && inCorner(boxWithoutPanel)
     for (let i = 0; i < 3; i++) {
       await page.click('[data-testid=zoom-out]')
       await page.waitForTimeout(700)
@@ -198,8 +204,8 @@ async function main() {
     const zoomedOut = await readScale()
     await page.screenshot({ path: path.join(SHOTS, '4_distance_scale.png') })
     result.distance_scale = { at_saturn: atSaturn, after_4_zoom_outs: zoomedOut }
-    checks.scale_marker_matches_zoom = Math.abs(atSaturn.marker_bottom_pct - atSaturn.expected_pct) < 0.5
-    checks.scale_marker_rises_on_zoom_out = zoomedOut.marker_bottom_pct > atSaturn.marker_bottom_pct + 5
+    checks.scale_marker_matches_zoom = Math.abs(atSaturn.marker_left_pct - atSaturn.expected_pct) < 0.5
+    checks.scale_marker_moves_right_on_zoom_out = zoomedOut.marker_left_pct > atSaturn.marker_left_pct + 5
 
     const markFlight = await flyAndMeasure(page, 'pleiades', '[data-testid=scale-mark-pleiades]')
     await page.waitForTimeout(500)

@@ -5,7 +5,7 @@ import { useStore } from '../store'
 export function GuessList() {
   const prediction = useStore((s) => s.prediction)
   const currentObjectId = useStore((s) => s.currentObjectId)
-  const selectObject = useStore((s) => s.selectObject)
+  const selectGuess = useStore((s) => s.selectGuess)
   if (!prediction) return null
 
   return (
@@ -18,7 +18,7 @@ export function GuessList() {
             <button
               type="button"
               data-testid={`guess-${g.id}`}
-              onClick={() => selectObject(g.id)}
+              onClick={() => selectGuess(g.id)}
               className={`w-full rounded-lg border px-3 py-2 text-left hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-sky-400/60 ${
                 current ? 'border-sky-300/50 bg-sky-400/10' : 'border-white/15'
               }`}

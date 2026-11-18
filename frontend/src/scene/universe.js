@@ -25,6 +25,7 @@ export const view = {
   logZoom: 1.6, // log10 of the camera's distance from the focus, in AU
   hidden: {}, // object id -> true when it is too small or too far to draw (labels follow this)
   readout: '', // camera distance from the Sun, as text (for the zoom controls)
+  labelHidden: {}, // object id -> true when its name would pile up on what it orbits (the body still shows)
 }
 
 /** Real position of every object in AU (scene axes). Planets and moons keep the display layout's

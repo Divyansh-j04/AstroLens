@@ -57,7 +57,7 @@ export default function ObjectBrowser() {
         type="button"
         data-testid="browser-tab"
         onClick={() => setOpen(true)}
-        className={`absolute top-24 z-40 rounded-l-lg border border-r-0 border-white/15 bg-slate-950/40 px-2 py-4 text-xs tracking-wider text-slate-200 backdrop-blur-[14px] [writing-mode:vertical-rl] hover:bg-slate-900/60 ${
+        className={`absolute top-40 z-40 rounded-l-lg sm:top-24 border border-r-0 border-white/15 bg-slate-950/40 px-2 py-4 text-xs tracking-wider text-slate-200 backdrop-blur-[14px] [writing-mode:vertical-rl] hover:bg-slate-900/60 ${
           cardShown ? 'right-0 sm:right-[max(26%,340px)]' : 'right-0'
         }`}
       >

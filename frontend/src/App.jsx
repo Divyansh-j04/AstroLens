@@ -9,7 +9,6 @@ import RevealHint from './ui/RevealHint'
 import ZoomControls from './ui/ZoomControls'
 import WarpVignette from './ui/WarpVignette'
 import ArrivalTitle from './ui/ArrivalTitle'
-import DistanceScale from './ui/DistanceScale'
 import TourCaption from './ui/TourCaption'
 import CustomCursor from './ui/CustomCursor'
 import { useStore } from './store'
@@ -24,7 +23,6 @@ export default function App() {
       {entered && (
         <>
           <ArrivalTitle />
-          <DistanceScale />
           <TopBar />
           <UploadZone />
           <ScaleNote />

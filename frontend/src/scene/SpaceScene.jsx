@@ -5,6 +5,7 @@ import StarField from './StarField'
 import SolarSystem from './SolarSystem'
 import DeepSpace from './DeepSpace'
 import CameraRig from './CameraRig'
+import ViewShift from './ViewShift'
 import { useStore } from '../store'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
@@ -49,6 +50,7 @@ export default function SpaceScene() {
           autoRotateSpeed={0.35}
         />
         <CameraRig />
+        <ViewShift />
       </Canvas>
     </div>
   )

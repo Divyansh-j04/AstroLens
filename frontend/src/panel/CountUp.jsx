@@ -8,14 +8,14 @@ const LEADING_NUMBER = /^\d[\d,]*(?:\.\d+)?/
 
 /** Shows a fact, counting its leading number up from 0 to its value (about 1 second). The text
  * around the number never changes, and the number always ends exactly as written in objects.json. */
-export default function CountUp({ text }) {
+export default function CountUp({ text, animate = true }) {
   const ref = useRef(null)
   const match = text.match(LEADING_NUMBER)
   const written = match?.[0]
 
   useLayoutEffect(() => {
     const el = ref.current
-    if (!written || !el || reducedMotion()) return undefined
+    if (!written || !el || !animate || reducedMotion()) return undefined
     const value = parseFloat(written.replace(/,/g, ''))
     const decimals = (written.split('.')[1] || '').length
     const withCommas = written.includes(',')
@@ -36,7 +36,7 @@ export default function CountUp({ text }) {
       tween.kill()
       el.textContent = written
     }
-  }, [written])
+  }, [written, animate])
 
   if (!written) return text
   return (

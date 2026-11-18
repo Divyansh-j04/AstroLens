@@ -38,8 +38,10 @@ export default function GlassPanel() {
       <aside
         data-testid="glass-panel"
         data-open={panelOpen}
-        className={`absolute right-0 top-0 z-30 flex h-full w-full flex-col border-l border-white/10 bg-slate-950/30 shadow-2xl backdrop-blur-[14px] transition-transform duration-500 ease-out sm:w-[26%] sm:min-w-[340px] ${
-          panelOpen ? 'translate-x-0' : 'translate-x-full'
+        // Phones: a sheet over the bottom 58% of the screen, so the object stays visible above it
+        // (the scene shifts up to make room: scene/ViewShift.jsx). Larger screens: the right-hand panel.
+        className={`absolute bottom-0 right-0 z-30 flex h-[58%] w-full flex-col rounded-t-2xl border-t border-white/10 bg-slate-950/60 shadow-2xl backdrop-blur-[14px] transition-transform duration-500 ease-out sm:top-0 sm:h-full sm:w-[26%] sm:min-w-[340px] sm:rounded-none sm:border-l sm:border-t-0 sm:bg-slate-950/30 ${
+          panelOpen ? 'translate-x-0 translate-y-0' : 'translate-y-full sm:translate-x-full sm:translate-y-0'
         }`}
       >
         <div className="flex justify-end p-2">

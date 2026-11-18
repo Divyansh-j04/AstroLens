@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useStore } from '../store'
 import { view } from '../scene/universe'
 import CommandBar from './CommandBar'
+import DistanceScale from './DistanceScale'
 
 /** Title, the command bar (go to an object or ask a question) and the Home button. */
 export default function TopBar() {
@@ -12,7 +13,8 @@ export default function TopBar() {
 
   return (
     <header className="pointer-events-none absolute left-0 top-0 z-20 flex flex-wrap items-center gap-3 p-4">
-      <h1 className="pointer-events-auto mr-2 text-base font-semibold tracking-[0.3em] text-slate-100">
+      {/* the title is hidden on phones so the bar fits in two rows */}
+      <h1 className="pointer-events-auto mr-2 hidden text-base font-semibold tracking-[0.3em] text-slate-100 sm:block">
         <button type="button" data-testid="to-landing" onClick={showLanding} title="Back to the start page" className="hover:text-sky-200">
           ASTROLENS
         </button>
@@ -63,9 +65,14 @@ export function ScaleNote() {
   const trueScale = useStore((s) => s.trueScale)
   const setTrueScale = useStore((s) => s.setTrueScale)
   const isFlying = useStore((s) => s.isFlying)
+  const touring = useStore((s) => s.tour.active)
   const solar = mode === 'solar_system'
   return (
-    <div data-testid="scale-note" className="pointer-events-none absolute bottom-4 left-4 z-20 flex max-w-xs flex-col gap-2">
+    // On phones the Grand Tour caption needs this corner, so the note steps aside during the tour.
+    <div
+      data-testid="scale-note"
+      className={`pointer-events-none absolute bottom-4 left-4 z-20 flex max-w-xs flex-col gap-2 ${touring ? 'max-sm:hidden' : ''}`}
+    >
       <button
         type="button"
         role="switch"
@@ -83,13 +90,16 @@ export function ScaleNote() {
         True distances
       </button>
       {trueScale && <DistanceReadout />}
+      {trueScale && <DistanceScale />}
       <p className="text-[11px] leading-snug text-slate-400">
         <span className="font-semibold text-slate-200">{solar ? 'Solar system view' : 'Deep space view'}</span>
+        <span className="hidden sm:inline">
         {trueScale
           ? ' · Every distance is real, from moons to the farthest cluster. Zoom out (wheel or −) to travel from the planets to the nebulae. Planets, moons and pictures are drawn larger so they stay visible.'
           : solar
             ? ' · Not to scale. Planet sizes and distances are compressed so everything fits on screen.'
             : ' · Not to scale. Directions are real sky positions; distances use a square-root display scale.'}
+        </span>
       </p>
     </div>
   )

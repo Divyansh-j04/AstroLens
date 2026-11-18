@@ -45,7 +45,7 @@ export default function ArrivalTitle() {
   if (!obj) return null
   return (
     <div
-      className={`pointer-events-none absolute inset-y-0 left-0 right-0 z-20 flex items-start justify-center pt-[16vh] ${
+      className={`pointer-events-none absolute inset-y-0 left-0 right-0 z-20 flex items-start justify-center pt-[24vh] sm:pt-[16vh] ${
         panelOpen ? 'sm:right-[max(26%,340px)]' : ''
       }`}
     >

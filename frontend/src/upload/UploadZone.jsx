@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { useStore } from '../store'
 import { reducedMotion } from '../motion'
@@ -11,9 +11,12 @@ const DRAG_THRESHOLD = 5 // px of movement before a press counts as a drag, not 
 const POS_KEY = 'astrolens.uploadPill' // per-viewer convenience: where the pill was left
 
 const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi)
+const PHONE = 640 // px: below this width the top bar takes the full width
+/** Just under the top bar (it is two rows tall on a phone). */
+const belowTopBar = () => (document.querySelector('main > header')?.getBoundingClientRect().bottom ?? 60) + 8
 const keepOnScreen = ({ x, y }) => ({
   x: clamp(x, MARGIN, window.innerWidth - PILL_W - MARGIN),
-  y: clamp(y, MARGIN, window.innerHeight - PILL_H - MARGIN),
+  y: clamp(y, window.innerWidth < PHONE ? belowTopBar() : MARGIN, window.innerHeight - PILL_H - MARGIN),
 })
 
 function loadPosition() {
@@ -23,7 +26,7 @@ function loadPosition() {
   } catch {
     // storage blocked or empty: use the default spot
   }
-  return { x: 16, y: 72 }
+  return null // nothing saved: placed under the top bar once it is on screen
 }
 
 function savePosition(p) {
@@ -47,12 +50,14 @@ export default function UploadZone() {
   const upload = useStore((s) => s.upload)
   const prediction = useStore((s) => s.prediction)
   const clearUpload = useStore((s) => s.clearUpload)
-  const selectObject = useStore((s) => s.selectObject)
+  const selectGuess = useStore((s) => s.selectGuess)
   const uploadPhoto = useStore((s) => s.uploadPhoto)
   const open = useStore((s) => s.uploadPanelOpen)
   const setPanel = useStore((s) => s.setUploadPanelOpen)
   const setOpen = (v) => setPanel(typeof v === 'function' ? v(useStore.getState().uploadPanelOpen) : v)
-  const [pos, setPos] = useState(loadPosition)
+  const [pos, setPos] = useState(() => loadPosition() ?? { x: 16, y: 72 })
+  // After the first paint the top bar can be measured: start just under it (it is two rows tall on a phone).
+  useLayoutEffect(() => setPos((p) => (loadPosition() ? keepOnScreen(p) : { x: 16, y: belowTopBar() })), [])
   const [dragging, setDragging] = useState(false) // a file is being dragged over
   const [showHeatmap, setShowHeatmap] = useState(false)
   const inputRef = useRef(null)
@@ -292,7 +297,7 @@ export default function UploadZone() {
                 <li key={g.id}>
                   <button
                     type="button"
-                    onClick={() => selectObject(g.id)}
+                    onClick={() => selectGuess(g.id)}
                     className="flex w-full items-center gap-2 rounded-md px-1 py-0.5 text-left text-[11px] text-slate-200 hover:bg-white/10"
                   >
                     <span className="w-20 truncate">{g.name}</span>

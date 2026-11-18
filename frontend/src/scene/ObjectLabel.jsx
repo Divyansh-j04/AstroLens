@@ -26,7 +26,7 @@ export default function ObjectLabel({ obj, offsetY = 0 }) {
   const ruleRef = useRef(rule)
   useFrame(({ camera }) => {
     let next
-    if (view.active) next = view.hidden[obj.id] ? 'off' : 'on'
+    if (view.active) next = view.hidden[obj.id] || view.labelHidden[obj.id] ? 'off' : 'on'
     else if (crowded) {
       const p = POSITIONS[obj.parent]
       next = camera.position.distanceTo({ x: p[0], y: p[1], z: p[2] }) < NEAR_PLANET ? 'mode' : 'off'

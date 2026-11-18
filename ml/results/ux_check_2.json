@@ -3,13 +3,13 @@
   "date": "2026-11-18",
   "note": "/classify and /chat answers are faked in the browser",
   "opening": {
-    "samples": 16,
+    "samples": 14,
     "percent_first_last": [
       0,
       100
     ],
     "percent_never_goes_down": true,
-    "distinct_percent_values": 14,
+    "distinct_percent_values": 13,
     "letters_visible_over_time": [
       0,
       1,
@@ -17,11 +17,9 @@
       3,
       4,
       5,
-      6,
-      8,
       9
     ],
-    "loading_ms": 1118,
+    "loading_ms": 1086,
     "camera": {
       "home_distance": 118.53,
       "on_landing": 308.19,
@@ -50,7 +48,7 @@
         "name": "Sun",
         "text_matches_summary": true,
         "panel_open": false,
-        "advanced_by_itself_after_s": 6.9,
+        "advanced_by_itself_after_s": 7,
         "seconds_from_start": 8.3
       },
       {
@@ -107,16 +105,16 @@
   },
   "scanning": {
     "scan_line_tops_px": [
-      98,
-      102,
-      115,
-      135,
-      164,
-      202
+      100,
+      105,
+      116,
+      138,
+      169,
+      207
     ],
     "scan_animation": "scan",
     "heatmap_reveal_peak_opacity": 0.9,
-    "heatmap_reveal_peak_at_ms": 380,
+    "heatmap_reveal_peak_at_ms": 395,
     "heatmap_reveal_final_opacity": 0,
     "show_heatmap_toggle_opacity": 0,
     "guesses": [
@@ -124,41 +122,40 @@
       "Jupiter 12%",
       "Uranus 5%"
     ],
-    "first_guess_visible_at_ms": 442,
-    "third_guess_visible_at_ms": 630
+    "first_guess_visible_at_ms": 456,
+    "third_guess_visible_at_ms": 655
   },
   "typed_chat": {
-    "samples": 46,
+    "samples": 43,
     "chars_over_time": [
       0,
-      15,
-      30,
-      40,
-      54,
-      63,
-      71,
-      81,
-      94,
-      108,
-      118,
-      132
+      18,
+      31,
+      44,
+      55,
+      68,
+      76,
+      86,
+      102,
+      117,
+      131
     ],
     "early": {
-      "t": 42,
+      "t": 41,
       "typing": "true",
       "chars": 8,
       "citations": 0,
       "sources_shown": false
     },
     "middle": {
-      "t": 624,
+      "t": 621,
       "typing": "true",
-      "chars": 49,
+      "chars": 50,
       "citations": 0,
       "sources_shown": false
     },
     "end": {
-      "t": 1881,
+      "t": 1880,
       "typing": "false",
       "chars": 133,
       "citations": 2,
