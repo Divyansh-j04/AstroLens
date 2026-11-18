@@ -493,6 +493,7 @@ recall@k = share of questions with a gold chunk in the first k results; MRR@10 =
 | After 5 | Card numbers count up to the value in `objects.json`; card lines slide in one after another | Done |
 | After 5 | Distance scale (True distances only): power-of-ten ruler with the current zoom and clickable marks for the Moon, Neptune, the Pleiades and M13 | Done |
 | After 5 | All four follow the "reduce motion" setting | Done |
+| After 5 | + / − zoom buttons move left of the glass panel while it is open (it used to cover them) | Done (bug fix) |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -557,7 +558,7 @@ The times are on the author's laptop, with the server on the same machine; the d
 
 The first − presses read slightly less than 5.20 AU because zooming out from Jupiter moves the camera back along its line of sight, which here points a little towards the Sun. Landing at the Orion Nebula (1,267 ly away, radius 13 ly in `objects.json`) leaves the camera 4 radii (52 ly) in front of it, on Earth's side: 1,267 − 52 = 1,215.
 
-**Interface motion check (after Phase 5).** Source: `ml/results/ux_check.json`, written by `frontend/scripts/check-ux.mjs` (Playwright driving Microsoft Edge, headless, real GPU, 1440 × 900) against the local page; 18 of 18 checks passed. Screenshots are in `ml/results/ux_screens/`.
+**Interface motion check (after Phase 5).** Source: `ml/results/ux_check.json`, written by `frontend/scripts/check-ux.mjs` (Playwright driving Microsoft Edge, headless, real GPU, 1440 × 900) against the local page; 20 of 20 checks passed. Screenshots are in `ml/results/ux_screens/`.
 
 | Check | Measured |
 | --- | --- |
@@ -565,11 +566,13 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Short flight (Mars → Jupiter, 1.2 s) | warp 0, view not widened |
 | Arrival title at the Orion Nebula | "Orion Nebula", "Diffuse emission nebula · 1,267 light-years away"; gone again after the hold |
 | Arrival line for all 36 objects, compared with the same rule written separately in the check script | 36 of 36 match |
-| Saturn card 0.25 s after choosing it / once settled | "32,022 km", "5.270 AU", "5.80 hours", "161 …" (still counting) / exactly as in `objects.json` |
+| Saturn card 0.25 s after choosing it / once settled | "32,670 km", "5.376 AU", "5.91 hours", "164 …" (still counting) / exactly as in `objects.json` |
 | Distance scale in the normal view | hidden |
-| Distance scale marker vs the zoom, at Saturn / after 3 presses of − | 22.68% vs 22.68% (465,856 km) / 31.98% vs 31.98% (0.08 AU) |
+| Distance scale marker vs the zoom, at Saturn / after 4 presses of − | 22.68% vs 22.68% (465,856 km) / 35.08% vs 35.08% (0.25 AU) |
 | Gap between the scale and the screen's right edge, panel open / closed | 430 px / 56 px (clear of the panel and the edge tabs) |
-| Clicking the Pleiades mark | flew to the Pleiades in 4.6 s, with warp 1 |
+| + / − buttons with the glass panel open: gap from the right edge / one press of − | 390 px (left of the panel) / zoom −2.507 → −2.030 (10^0.477 = 3 times out) |
+| + / − buttons with the panel closed: gap from the right edge | 16 px (back at the edge) |
+| Clicking the Pleiades mark | flew to the Pleiades in 4.45 s, with warp 1 |
 | Reduce motion on: flight to the Orion Nebula / Jupiter card after 0.1 s / arrival title | warp 0 / final values at once / still shown |
 | Browser console errors | 0 |
 
@@ -935,6 +938,6 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
   - Tests: pytest, 56 passed.
 - **Nov 19, 2026 (after Phase 5: interface motion):**
   - Warp-speed flights, the arrival title, counting numbers on the card and the distance scale, all following "reduce motion".
-  - Browser check: 18 of 18 passed with 0 console errors (`ml/results/ux_check.json`, screenshots in `ml/results/ux_screens/`).
-  - Found while checking: the open glass panel covers the + / − zoom buttons (bottom right). Not changed here.
+  - Fixed a bug the check found: the open glass panel covered the + / − zoom buttons (bottom right); they now sit just left of the panel while it is open.
+  - Browser check: 20 of 20 passed with 0 console errors (`ml/results/ux_check.json`, screenshots in `ml/results/ux_screens/`).
   - Tests: pytest, 62 passed.

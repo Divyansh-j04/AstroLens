@@ -36,10 +36,10 @@
   },
   "counting": {
     "early": [
-      "32,022 km",
-      "5.270 AU",
-      "5.80 hours",
-      "161 with formal designations (as of 2026)"
+      "32,670 km",
+      "5.376 AU",
+      "5.91 hours",
+      "164 with formal designations (as of 2026)"
     ],
     "settled": [
       "58,232 km",
@@ -54,6 +54,14 @@
       "293 with formal designations (as of 2026)"
     ]
   },
+  "zoom_buttons": {
+    "gap_from_right_px": {
+      "panel_open": 390,
+      "panel_closed": 16
+    },
+    "log_zoom_before_click": -2.507,
+    "log_zoom_after_click": -2.03
+  },
   "scale_gap_from_right_px": {
     "panel_open": 430,
     "panel_closed": 56
@@ -65,17 +73,17 @@
       "expected_pct": 22.68,
       "value_text": "465,856 km"
     },
-    "after_3_zoom_outs": {
-      "log_zoom": -1.075,
-      "marker_bottom_pct": 31.98,
-      "expected_pct": 31.98,
-      "value_text": "0.08 AU"
+    "after_4_zoom_outs": {
+      "log_zoom": -0.598,
+      "marker_bottom_pct": 35.08,
+      "expected_pct": 35.08,
+      "value_text": "0.25 AU"
     }
   },
   "scale_mark_flight": {
     "target": "pleiades",
     "landed_on": "pleiades",
-    "seconds": 4.6,
+    "seconds": 4.45,
     "peak_warp": 1,
     "fov_widened_by_deg": 8,
     "peak_edge_darkness": 1,
@@ -116,6 +124,8 @@
     "numbers_count_up": true,
     "facts_end_exactly_as_written": true,
     "scale_hidden_in_normal_view": true,
+    "zoom_buttons_clickable_with_panel_open": true,
+    "zoom_buttons_back_at_edge_when_closed": true,
     "scale_moves_clear_of_panel": true,
     "scale_marker_matches_zoom": true,
     "scale_marker_rises_on_zoom_out": true,

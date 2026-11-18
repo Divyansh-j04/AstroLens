@@ -174,10 +174,21 @@ async function main() {
     const atSaturn = await readScale()
     const scaleRight = () => page.$eval('[data-testid=distance-scale]', (e) => Math.round(window.innerWidth - e.getBoundingClientRect().right))
     const rightWithPanel = await scaleRight()
-    // The open glass panel covers the +/- buttons (bottom right), so close it to zoom; the scale slides back to the edge.
+    // The +/- buttons must be clickable with the glass panel open (Playwright's click fails if anything covers them).
+    const zoomRight = () => page.$eval('[data-testid=zoom-controls]', (e) => Math.round(window.innerWidth - e.getBoundingClientRect().right))
+    const zoomRightWithPanel = await zoomRight()
+    const beforeClick = (await readScale()).log_zoom
+    await page.click('[data-testid=zoom-out]', { timeout: 5000 })
+    await page.waitForTimeout(700)
+    const afterClick = (await readScale()).log_zoom
+    // Close the panel: the scale and the buttons slide back to the edge.
     await page.evaluate(() => window.astrolens.store.getState().setPanelOpen(false))
     await page.waitForTimeout(700)
     const rightWithoutPanel = await scaleRight()
+    const zoomRightWithoutPanel = await zoomRight()
+    result.zoom_buttons = { gap_from_right_px: { panel_open: zoomRightWithPanel, panel_closed: zoomRightWithoutPanel }, log_zoom_before_click: beforeClick, log_zoom_after_click: afterClick }
+    checks.zoom_buttons_clickable_with_panel_open = zoomRightWithPanel >= 340 && afterClick > beforeClick + 0.4
+    checks.zoom_buttons_back_at_edge_when_closed = zoomRightWithoutPanel === 16
     result.scale_gap_from_right_px = { panel_open: rightWithPanel, panel_closed: rightWithoutPanel }
     checks.scale_moves_clear_of_panel = rightWithPanel >= 340 + 56 && rightWithoutPanel === 56 // 56 px clears the edge tabs
     for (let i = 0; i < 3; i++) {
@@ -186,7 +197,7 @@ async function main() {
     }
     const zoomedOut = await readScale()
     await page.screenshot({ path: path.join(SHOTS, '4_distance_scale.png') })
-    result.distance_scale = { at_saturn: atSaturn, after_3_zoom_outs: zoomedOut }
+    result.distance_scale = { at_saturn: atSaturn, after_4_zoom_outs: zoomedOut }
     checks.scale_marker_matches_zoom = Math.abs(atSaturn.marker_bottom_pct - atSaturn.expected_pct) < 0.5
     checks.scale_marker_rises_on_zoom_out = zoomedOut.marker_bottom_pct > atSaturn.marker_bottom_pct + 5
 
