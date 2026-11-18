@@ -2,7 +2,7 @@
 
 Upload a photo of a planet, nebula or star cluster. AstroLens recognises it, flies a 3D camera to it, shows a short fact card and a heatmap of what it looked at, and answers your questions from NASA and Wikipedia texts with numbered sources. You can also type where to go ("the red planet", "M42", even "jupitr").
 
-**Live page:** https://astrolens-rho.vercel.app · **Code:** https://github.com/Divyansh-j04/Astro-Lens · Course project for CSE471 (Computer Vision) and CSE472 (Natural Language Processing). Full write-up: [REPORT.md](REPORT.md).
+**Live page:** https://astrolens-rho.vercel.app · **Code:** https://github.com/Divyansh-j04/AstroLens · Course project for CSE471 (Computer Vision) and CSE472 (Natural Language Processing). Full write-up: [REPORT.md](REPORT.md).
 
 > The live page shows the 3D scene only. The server is not deployed yet, so photo upload, chat and typed commands work only when you run AstroLens locally (see [Run it locally](#run-it-locally)).
 
@@ -107,3 +107,7 @@ All training images, chat texts and scene pictures are free-licence (public doma
 - The normal 3D view compresses sizes and distances; in the true view, small bodies and far pictures are drawn larger than real so they stay visible. The planets do not move along their orbits.
 
 More in [REPORT.md, section 11](REPORT.md#11-limitations-and-future-work).
+
+## Licence
+
+The code in this repository is released under the [MIT licence](LICENSE). The images, texts and star catalogue it uses keep their own free licences, listed in [ml/data/SOURCES.md](ml/data/SOURCES.md) and in the section above.
