@@ -1,17 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
 import { OBJECTS_BY_ID } from '../objects'
 import { GENERAL_CHAT, useStore } from '../store'
+import { reducedMotion } from '../motion'
+
+const SECONDS_PER_PIECE = 0.035 // typing speed: a word and its space take about 0.07 s
+const MAX_TYPING_SECONDS = 5 // long answers type faster, never longer than this
+const typedAlready = new WeakSet() // answers already typed out once (reopening the chat never retypes them)
+
+const cleanAnswer = (text) => text.replace(/\*\*(.+?)\*\*/g, '$1') // the model sometimes writes **bold**
+const answerPieces = (text) => cleanAnswer(text).split(/(\[\d+\]|\s+)/g).filter(Boolean) // words, spaces, [n]
 
 // Starter questions when the chat is opened without an object (each object's first suggested question).
 const STARTER_OBJECTS = ['mars', 'saturn', 'eagle_nebula', 'crab_nebula']
 
-/** "[2]" in an answer becomes a small link to source 2; plain text is kept as it is. */
-function AnswerText({ text, citations }) {
+/**
+ * "[2]" in an answer becomes a small link to source 2; plain text is kept as it is.
+ * `shown` limits how many pieces are visible (the typing effect); each citation pops in as it appears.
+ */
+function AnswerText({ text, citations, shown = Infinity, hidden = false }) {
   const byNumber = Object.fromEntries((citations ?? []).map((c) => [c.n, c]))
-  const clean = text.replace(/\*\*(.+?)\*\*/g, '$1') // the model sometimes writes **bold**
   return (
-    <p className="whitespace-pre-line text-sm leading-relaxed text-slate-100">
-      {clean.split(/(\[\d+\])/g).map((part, i) => {
+    <p aria-hidden={hidden || undefined} className="whitespace-pre-line text-sm leading-relaxed text-slate-100">
+      {answerPieces(text).slice(0, shown).map((part, i) => {
         const m = part.match(/^\[(\d+)\]$/)
         const c = m && byNumber[Number(m[1])]
         if (!c) return <span key={i}>{part}</span>
@@ -22,7 +33,7 @@ function AnswerText({ text, citations }) {
             target="_blank"
             rel="noreferrer"
             title={`${c.title} - ${c.section}`}
-            className="mx-0.5 rounded bg-sky-400/20 px-1 align-super text-[10px] text-sky-200 hover:bg-sky-400/40"
+            className="mx-0.5 inline-block animate-pop rounded bg-sky-400/20 px-1 align-super text-[10px] text-sky-200 hover:bg-sky-400/40 motion-reduce:animate-none"
           >
             {c.n}
           </a>
@@ -53,7 +64,39 @@ function SourceList({ citations }) {
   )
 }
 
-function Message({ msg }) {
+/**
+ * One message. A new answer types itself out piece by piece (data-typing="true" meanwhile), its
+ * citation numbers pop in, and its sources appear once it has finished. Screen readers get the
+ * whole answer at once. Error messages and "reduce motion" show the text straight away.
+ */
+function Message({ msg, onGrow }) {
+  const total = msg.role === 'assistant' ? answerPieces(msg.content).length : 0
+  const instant = msg.role !== 'assistant' || msg.error || typedAlready.has(msg) || reducedMotion()
+  const [shown, setShown] = useState(instant ? total : 0)
+  const typing = shown < total
+
+  useEffect(() => {
+    if (!typing) {
+      typedAlready.add(msg)
+      return undefined
+    }
+    const state = { k: shown }
+    const tween = gsap.to(state, {
+      k: total,
+      duration: Math.min(MAX_TYPING_SECONDS, total * SECONDS_PER_PIECE),
+      ease: 'none',
+      onUpdate: () => {
+        setShown(Math.floor(state.k))
+        onGrow()
+      },
+      onComplete: () => setShown(total),
+    })
+    return () => {
+      tween.kill()
+      typedAlready.add(msg) // left the chat mid-answer: show it whole next time
+    }
+  }, [typing]) // eslint-disable-line react-hooks/exhaustive-deps
+
   if (msg.role === 'user') {
     return (
       <li className="self-end rounded-2xl rounded-br-sm bg-sky-500/30 px-3 py-2 text-sm text-white" data-testid="chat-question">
@@ -65,12 +108,18 @@ function Message({ msg }) {
     <li
       data-testid="chat-answer"
       data-refused={msg.refused ? 'true' : 'false'}
+      data-typing={typing}
       className={`rounded-2xl rounded-bl-sm border px-3 py-2 ${
         msg.error ? 'border-rose-300/30 bg-rose-500/10' : 'border-white/10 bg-slate-900/50'
       }`}
     >
-      <AnswerText text={msg.content} citations={msg.citations} />
-      {msg.citations && <SourceList citations={msg.citations} />}
+      <AnswerText text={msg.content} citations={msg.citations} shown={shown} hidden={typing} />
+      {typing && <span className="sr-only">{cleanAnswer(msg.content)}</span>}
+      {!typing && msg.citations && (
+        <div className="animate-fade-in motion-reduce:animate-none">
+          <SourceList citations={msg.citations} />
+        </div>
+      )}
     </li>
   )
 }
@@ -88,6 +137,7 @@ export default function ChatPanel({ obj }) {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }) // keep the newest message in view
   }, [messages.length, pending])
+  const followTyping = () => endRef.current?.scrollIntoView({ block: 'end' }) // an answer is growing
 
   const submit = (text) => {
     if (!text.trim() || pending) return
@@ -124,7 +174,7 @@ export default function ChatPanel({ obj }) {
 
       <ul className="flex flex-col gap-3" data-testid="chat-messages">
         {messages.map((m, i) => (
-          <Message key={i} msg={m} />
+          <Message key={i} msg={m} onGrow={followTyping} />
         ))}
         {pending && (
           <li data-testid="chat-typing" className="flex items-center gap-2 text-xs text-slate-400">
@@ -157,6 +207,7 @@ export default function ChatPanel({ obj }) {
         <button
           type="submit"
           data-testid="chat-send"
+          data-magnetic
           disabled={pending || !draft.trim()}
           className="rounded-lg bg-sky-500/80 px-3 py-2 text-sm font-medium text-white hover:bg-sky-400 disabled:opacity-40"
         >

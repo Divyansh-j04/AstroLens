@@ -1,0 +1,212 @@
+{
+  "script": "frontend/scripts/check-ux2.mjs",
+  "date": "2026-11-18",
+  "note": "/classify and /chat answers are faked in the browser",
+  "opening": {
+    "samples": 15,
+    "percent_first_last": [
+      0,
+      100
+    ],
+    "percent_never_goes_down": true,
+    "distinct_percent_values": 13,
+    "letters_visible_over_time": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      9
+    ],
+    "loading_ms": 1103,
+    "camera": {
+      "home_distance": 118.53,
+      "on_landing": 308.19,
+      "after_dive": 118.53,
+      "peak_warp": 1,
+      "flying_after": false
+    }
+  },
+  "cursor": {
+    "system_pointer": "none",
+    "idle": "idle",
+    "over_home_button": "link",
+    "home_button_pull_px": [
+      6.4,
+      2.5
+    ],
+    "home_button_after_leaving": "matrix(1, 0, 0, 1, 0, 0)",
+    "over_jupiter": "object",
+    "label": "Fly to Jupiter"
+  },
+  "tour": {
+    "stops": [
+      {
+        "step": 1,
+        "at": "sun",
+        "name": "Sun",
+        "text_matches_summary": true,
+        "panel_open": false,
+        "advanced_by_itself_after_s": 6.9,
+        "seconds_from_start": 8.3
+      },
+      {
+        "step": 2,
+        "at": "earth",
+        "name": "Earth",
+        "text_matches_summary": true,
+        "panel_open": false
+      },
+      {
+        "step": 3,
+        "at": "moon",
+        "name": "Moon",
+        "text_matches_summary": true,
+        "panel_open": false
+      },
+      {
+        "step": 4,
+        "at": "jupiter",
+        "name": "Jupiter",
+        "text_matches_summary": true,
+        "panel_open": false
+      },
+      {
+        "step": 5,
+        "at": "saturn",
+        "name": "Saturn",
+        "text_matches_summary": true,
+        "panel_open": false
+      },
+      {
+        "step": 6,
+        "at": "orion_nebula",
+        "name": "Orion Nebula",
+        "text_matches_summary": true,
+        "panel_open": false
+      },
+      {
+        "step": 7,
+        "at": "pleiades",
+        "name": "Pleiades",
+        "text_matches_summary": true,
+        "panel_open": false
+      }
+    ],
+    "after_finish": {
+      "tour_active": false,
+      "caption_gone": true,
+      "panel_open": true,
+      "card": "Pleiades"
+    },
+    "escape_ends": true,
+    "user_flight_ends": true
+  },
+  "scanning": {
+    "scan_line_tops_px": [
+      98,
+      103,
+      116,
+      137,
+      170,
+      206
+    ],
+    "scan_animation": "scan",
+    "heatmap_reveal_peak_opacity": 0.9,
+    "heatmap_reveal_peak_at_ms": 438,
+    "heatmap_reveal_final_opacity": 0,
+    "show_heatmap_toggle_opacity": 0,
+    "guesses": [
+      "Saturn 78%",
+      "Jupiter 12%",
+      "Uranus 5%"
+    ],
+    "first_guess_visible_at_ms": 500,
+    "third_guess_visible_at_ms": 625
+  },
+  "typed_chat": {
+    "samples": 46,
+    "chars_over_time": [
+      0,
+      15,
+      30,
+      40,
+      54,
+      63,
+      71,
+      81,
+      94,
+      107,
+      118,
+      132
+    ],
+    "early": {
+      "t": 41,
+      "typing": "true",
+      "chars": 8,
+      "citations": 0,
+      "sources_shown": false
+    },
+    "middle": {
+      "t": 624,
+      "typing": "true",
+      "chars": 49,
+      "citations": 0,
+      "sources_shown": false
+    },
+    "end": {
+      "t": 1874,
+      "typing": "false",
+      "chars": 133,
+      "citations": 2,
+      "sources_shown": true
+    },
+    "final_text_matches": true
+  },
+  "reduced_motion": {
+    "camera_on_landing_vs_home": [
+      118.53,
+      118.53
+    ],
+    "custom_cursor": false,
+    "system_pointer": "auto",
+    "dive_peak_warp": 0,
+    "answer_right_away": {
+      "typing": "false",
+      "text": "Saturn's rings are made mostly of water ice, with some rock and dust 1. They are very wide but usually only about ten metres thick 2."
+    },
+    "scan_animation": "none"
+  },
+  "console_errors": [],
+  "checks": {
+    "opening_counter_reaches_100": true,
+    "opening_title_letter_by_letter": true,
+    "opening_camera_pulled_back_on_landing": true,
+    "opening_dive_returns_with_warp": true,
+    "cursor_hides_system_pointer": true,
+    "cursor_grows_over_buttons": true,
+    "cursor_magnetic_pull_and_release": true,
+    "cursor_fly_to_label": true,
+    "tour_visits_all_stops_in_order": true,
+    "tour_captions_from_objects_json": true,
+    "tour_panel_closed_during_tour": true,
+    "tour_advances_by_itself": true,
+    "tour_finish_opens_last_card": true,
+    "tour_escape_or_user_flight_ends_it": true,
+    "scan_line_sweeps": true,
+    "scan_heatmap_fades_in_and_out": true,
+    "scan_guesses_slide_up_in_turn": true,
+    "chat_answer_types_out": true,
+    "chat_citations_appear_during_typing": true,
+    "chat_sources_after_typing": true,
+    "reduced_motion_no_pull_back_or_warp": true,
+    "reduced_motion_system_pointer": true,
+    "reduced_motion_answer_at_once": true,
+    "reduced_motion_scan_line_still": true,
+    "no_console_errors": true
+  },
+  "passed": true
+}

@@ -79,6 +79,7 @@ export default function BriefCard({ obj }) {
       <div data-reveal className="flex gap-2">
         <button
           type="button"
+          data-magnetic
           onClick={() => setPanelView('chat')}
           className="flex-1 rounded-lg bg-sky-500/80 px-3 py-2 text-sm font-medium text-white hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
         >

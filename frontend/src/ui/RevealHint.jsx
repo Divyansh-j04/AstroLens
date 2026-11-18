@@ -7,6 +7,7 @@ const SHOW_SECONDS = 6
 /** "Drag to look around: it's 3D" note shown on arriving at a nebula or cluster. */
 export default function RevealHint() {
   const arrived = useStore((s) => s.arrived)
+  const touring = useStore((s) => s.tour.active) // the tour caption sits in the same spot
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -26,13 +27,13 @@ export default function RevealHint() {
     }
   }, [arrived])
 
-  const obj = arrived ? OBJECTS_BY_ID[arrived] : null
+  const obj = arrived && !touring ? OBJECTS_BY_ID[arrived] : null
   return (
     <p
       data-testid="reveal-hint"
-      data-visible={visible}
+      data-visible={visible && !touring}
       className={`pointer-events-none absolute bottom-16 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/15 bg-slate-950/60 px-4 py-2 text-sm text-slate-100 shadow-lg backdrop-blur-[14px] transition-opacity duration-700 ${
-        visible ? 'opacity-100' : 'opacity-0'
+        visible && !touring ? 'opacity-100' : 'opacity-0'
       }`}
     >
       ↻ Drag to look around {obj ? obj.name : 'it'}: it&apos;s 3D

@@ -7,35 +7,34 @@ import { AU_KM, AU_PER_LY, MAX_LOG_ZOOM, MIN_LOG_ZOOM, formatAU, trueOrbitAU, vi
 // Objects marked on the scale (ids only; names and distances come from objects.json).
 const MARKED = ['moon', 'neptune', 'pleiades', 'hercules_cluster']
 
-// Unit ticks, as distances in AU.
+// One tick per unit, so the labels never crowd the object marks.
 const TICKS = [
   { au: 1000 / AU_KM, label: '1,000 km' },
-  { au: 1e6 / AU_KM, label: '1 million km' },
   { au: 1, label: '1 AU' },
-  { au: 100, label: '100 AU' },
   { au: AU_PER_LY, label: '1 light-year' },
-  { au: 1000 * AU_PER_LY, label: '1,000 light-years' },
 ]
 
-/** Height on the bar (0% bottom to 100% top) for a distance in AU, on a power-of-ten scale. */
+/** Height on the gauge (0% bottom to 100% top) for a distance in AU, on a power-of-ten scale. */
 const percent = (au) => ((Math.log10(au) - MIN_LOG_ZOOM) / (MAX_LOG_ZOOM - MIN_LOG_ZOOM)) * 100
 
 /** How far each marked object is: a moon from its planet, a planet from the Sun, a nebula or cluster from us. */
 const markDistanceAU = (obj) => (obj.scene_mode === 'deep_space' ? obj.distance_ly * AU_PER_LY : trueOrbitAU(obj))
 
 /**
- * "True distances" only: a thin power-of-ten ruler along the right edge, from 150 km to 40,000
- * light-years. The marker shows the current zoom (how far the camera is from what it looks at) and
- * moves as you zoom. Marks show how far the Moon, Neptune, the Pleiades and M13 are; clicking one
- * flies there. In the normal view the scene is compressed, so a real-distance ruler would be wrong
- * and the bar is hidden.
+ * "True distances" only: a small glass card on the right with a power-of-ten gauge from 150 km to
+ * 40,000 light-years. The filled part and the glowing knob show the distance from the camera to
+ * what it looks at; they move as you zoom. Marks show how far the Moon, Neptune, the Pleiades and
+ * M13 are, and clicking one flies there. (The readout bottom left is a different distance: from
+ * the Sun.) In the normal view the scene is compressed, so a real-distance gauge would be wrong
+ * and the card is hidden.
  */
 export default function DistanceScale() {
   const trueScale = useStore((s) => s.trueScale)
   const panelOpen = useStore((s) => s.panelOpen)
   const isFlying = useStore((s) => s.isFlying)
   const selectObject = useStore((s) => s.selectObject)
-  const markerRef = useRef(null)
+  const knobRef = useRef(null)
+  const fillRef = useRef(null)
   const valueRef = useRef(null)
 
   // Follow the zoom on every animation tick (it changes every frame while zooming or flying).
@@ -43,7 +42,9 @@ export default function DistanceScale() {
     if (!trueScale) return undefined
     const update = () => {
       const au = 10 ** view.logZoom
-      if (markerRef.current) markerRef.current.style.bottom = `${percent(au)}%` // dynamic value
+      const pct = `${Math.min(100, Math.max(0, percent(au)))}%` // dynamic values
+      if (knobRef.current) knobRef.current.style.bottom = pct
+      if (fillRef.current) fillRef.current.style.height = pct
       if (valueRef.current) valueRef.current.textContent = formatAU(au)
     }
     update()
@@ -56,24 +57,25 @@ export default function DistanceScale() {
     <nav
       data-testid="distance-scale"
       aria-label="Distance scale"
-      className={`pointer-events-none absolute bottom-32 top-28 z-20 hidden w-44 flex-col transition-[right] duration-500 ease-out sm:flex ${
-        panelOpen ? 'right-[calc(max(26%,340px)+3.5rem)]' : 'right-14' // clear of the Objects / Show card tabs
+      className={`absolute top-1/2 z-20 hidden h-[min(56vh,440px)] w-52 -translate-y-1/2 flex-col rounded-2xl border border-white/10 bg-slate-950/55 px-4 pb-4 pt-3 shadow-2xl backdrop-blur-[14px] transition-[right] duration-500 ease-out sm:flex ${
+        panelOpen ? 'right-[calc(max(26%,340px)+3.5rem)]' : 'right-14' // clear of the panel and the Objects / Show card tabs
       }`}
     >
-      <p className="mb-2 text-right text-[10px] uppercase tracking-[0.2em] text-slate-400">
-        Zoom · <span ref={valueRef} data-testid="distance-scale-value" className="normal-case tracking-normal text-sky-200" />
-      </p>
-      <div className="relative flex-1">
-        {/* the line */}
-        <span className="absolute bottom-0 right-20 top-0 w-px bg-gradient-to-t from-white/10 via-white/30 to-white/10" />
+      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Distance to target</p>
+      <p ref={valueRef} data-testid="distance-scale-value" className="text-sm font-medium tabular-nums text-sky-200" />
+
+      <div className="relative mt-4 flex-1">
+        {/* the gauge: an empty track, and the part filled up to the current distance */}
+        <span className="absolute bottom-0 left-[7px] top-0 w-0.5 rounded-full bg-white/10" />
+        <span ref={fillRef} className="absolute bottom-0 left-[7px] w-0.5 rounded-full bg-gradient-to-t from-sky-500/10 to-sky-300/80" />
 
         {TICKS.map((t) => (
           <span
             key={t.label}
-            className="absolute right-0 flex w-20 translate-y-1/2 items-center gap-1 whitespace-nowrap text-[10px] text-slate-500"
+            className="absolute left-[4px] flex translate-y-1/2 items-center gap-2 whitespace-nowrap text-[10px] italic text-slate-500"
             style={{ bottom: `${percent(t.au)}%` }}
           >
-            <span className="h-px w-2 bg-white/30" />
+            <span className="h-px w-2 bg-white/25" />
             {t.label}
           </span>
         ))}
@@ -88,20 +90,20 @@ export default function DistanceScale() {
               disabled={isFlying}
               onClick={() => selectObject(id)}
               title={`Fly to ${obj.name} (${formatAU(markDistanceAU(obj))} away)`}
-              className="group pointer-events-auto absolute right-[4.75rem] flex translate-y-1/2 whitespace-nowrap items-center gap-2 rounded-full py-0.5 pl-2 pr-0 text-[11px] text-slate-300 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60 disabled:cursor-default disabled:opacity-60"
+              className="group absolute left-0 flex translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-full pr-2 text-[11px] text-slate-200 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60 disabled:cursor-default disabled:opacity-60"
               style={{ bottom: `${percent(markDistanceAU(obj))}%` }}
             >
+              <span className="h-4 w-4 rounded-full border border-white/40 bg-slate-950 transition-colors group-hover:border-sky-300 group-hover:bg-sky-400/30" />
               {obj.name}
-              <span className="h-2 w-2 rounded-full border border-white/50 bg-slate-900 group-hover:bg-sky-300" />
             </button>
           )
         })}
 
-        {/* where we are now */}
+        {/* where the camera is now */}
         <span
-          ref={markerRef}
+          ref={knobRef}
           data-testid="distance-scale-marker"
-          className="absolute right-[4.375rem] h-0.5 w-5 translate-y-1/2 rounded-full bg-sky-300 shadow-[0_0_10px_rgba(125,211,252,0.9)]"
+          className="pointer-events-none absolute left-[2px] h-3 w-3 translate-y-1/2 rounded-full bg-sky-300 shadow-[0_0_12px_3px_rgba(125,211,252,0.7)]"
         />
       </div>
     </nav>

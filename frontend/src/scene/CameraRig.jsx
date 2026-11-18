@@ -30,6 +30,8 @@ const clampZoom = (z) => Math.min(MAX_LOG_ZOOM, Math.max(MIN_LOG_ZOOM, z))
 const smooth = (x) => x * x * (3 - 2 * x)
 const ORIGIN = new THREE.Vector3()
 const WARP_FOV = 8 // degrees the view widens at full warp
+const DIVE_FACTOR = 2.6 // behind the landing page the camera waits this many times farther out
+const DIVE_SECONDS = 2.4 // the dive into the scene when a landing-page door is chosen
 const WARP_MIN_POWERS = 4 // true view: a flight warps when it zooms out and back in by at least this many powers of ten
 
 /**
@@ -48,6 +50,9 @@ const WARP_MIN_POWERS = 4 // true view: a flight warps when it zooms out and bac
  * Warp: long flights (a scene-mode switch, or a true-view flight across many powers of ten) raise
  * warp.value from 0 to 1 and back: the star shader stretches stars into streaks, the view widens by
  * WARP_FOV degrees and WarpVignette darkens the screen edges. Skipped with "reduce motion" on.
+ *
+ * Dive: behind the landing page the camera waits DIVE_FACTOR times farther out; choosing a door
+ * dives back in (with warp). Any flight request interrupts the dive. Skipped with "reduce motion".
  */
 export default function CameraRig() {
   const camera = useThree((s) => s.camera)
@@ -55,9 +60,11 @@ export default function CameraRig() {
   const flyRequest = useStore((s) => s.flyRequest)
   const trueScale = useStore((s) => s.trueScale)
   const zoomRequest = useStore((s) => s.zoomRequest)
+  const entered = useStore((s) => s.entered)
   const revealRef = useRef(null)
   const zoomTween = useRef(null)
   const baseFov = useRef(null)
+  const dive = useRef({ pulled: false, stop: () => {} })
 
   // Warp: widen the view with warp.value (the stars and the edge overlay read it themselves).
   useFrame(() => {
@@ -87,6 +94,45 @@ export default function CameraRig() {
     debug.camera = camera
     debug.controls = controls
   }, [camera, controls])
+
+  // Landing page: pull the camera back (once). Leaving it: dive back in.
+  useEffect(() => {
+    if (!controls || view.active || reducedMotion()) return
+    const offset = camera.position.clone().sub(controls.target)
+    if (!entered) {
+      if (dive.current.pulled) return
+      dive.current.stop()
+      camera.position.copy(controls.target).add(offset.multiplyScalar(DIVE_FACTOR))
+      controls.update()
+      dive.current.pulled = true
+      return
+    }
+    if (!dive.current.pulled) return
+    dive.current.pulled = false
+    const end = controls.target.clone().add(offset.divideScalar(DIVE_FACTOR))
+    const { setFlying } = useStore.getState()
+    controls.enabled = false
+    controls.enableDamping = false
+    setFlying(true)
+    const stopWarp = startWarp(DIVE_SECONDS)
+    const tween = gsap.to(camera.position, {
+      x: end.x,
+      y: end.y,
+      z: end.z,
+      duration: DIVE_SECONDS,
+      ease: 'power3.inOut',
+      onUpdate: () => controls.update(),
+      onComplete: () => {
+        controls.enabled = true
+        controls.enableDamping = true
+        setFlying(false)
+      },
+    })
+    dive.current.stop = () => {
+      tween.kill()
+      stopWarp()
+    }
+  }, [entered, camera, controls])
 
   // True view, every frame: turn any change of camera distance (mouse wheel) into zoom, keep the
   // camera RENDER_R from the focus, switch the scene mode by distance, and update the readout.
@@ -130,6 +176,8 @@ export default function CameraRig() {
     const obj = currentObjectId ? OBJECTS_BY_ID[currentObjectId] : null
     revealRef.current?.kill()
     zoomTween.current?.kill()
+    dive.current.stop() // a flight asked for during the dive takes over from where the camera is
+    dive.current.stop = () => {}
 
     // Lock the mouse controls so the user and the animation never fight over the camera.
     controls.enabled = false

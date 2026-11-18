@@ -90,7 +90,8 @@ async function main() {
         ([id, n]) => {
           const s = window.astrolens.store.getState()
           const got = (s.chats[id] ?? []).filter((m) => m.role === 'assistant').length
-          return !s.chatPending && got >= n && document.querySelectorAll('[data-testid=chat-answer]').length === got
+          // ... and has finished typing it out (answers appear word by word)
+          return !s.chatPending && got >= n && document.querySelectorAll('[data-testid=chat-answer]').length === got && !document.querySelector('[data-typing=true]')
         },
         [objectId, count],
         { timeout: 120000 },

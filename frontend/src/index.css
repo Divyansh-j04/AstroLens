@@ -1,7 +1,40 @@
 @import "tailwindcss";
 
+/* Animations used as Tailwind classes: animate-scan, animate-pop, animate-fade-in. */
+@theme {
+  --animate-scan: scan 1.5s ease-in-out infinite;
+  --animate-pop: pop 0.35s ease-out both;
+  --animate-fade-in: fade-in 0.45s ease-out both;
+
+  /* the photo scanner's line sweeps from above the photo to below it */
+  @keyframes scan {
+    0% { top: -30%; }
+    100% { top: 100%; }
+  }
+  /* a citation number grows past full size and settles */
+  @keyframes pop {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.25); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;
   background: #000;
+}
+
+/* Custom cursor (ui/CustomCursor.jsx) is on: hide the system pointer, except the text cursor in typing fields. */
+.custom-cursor,
+.custom-cursor * {
+  cursor: none !important;
+}
+.custom-cursor input,
+.custom-cursor textarea {
+  cursor: text !important;
 }

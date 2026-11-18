@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
 import { useStore } from '../store'
+import { reducedMotion } from '../motion'
 
 const PILL_W = 168 // px, used to keep the pill on screen
 const PILL_H = 44
@@ -36,11 +38,16 @@ function savePosition(p) {
  * Upload pill: a small button the user can drag anywhere. Clicking it opens a translucent panel
  * to drop or choose a photo; after classifying it shows the photo, a Grad-CAM toggle and a
  * "Remove photo" button. Dropping a file straight onto the pill uploads it too.
+ *
+ * Scanning effect: while the photo is classified, a line sweeps over it. When the answer arrives,
+ * the heatmap fades in over the photo for a moment and fades out again (on its own layer, so the
+ * "Show heatmap" toggle is unchanged), and the top 3 guesses slide up one after another.
  */
 export default function UploadZone() {
   const upload = useStore((s) => s.upload)
   const prediction = useStore((s) => s.prediction)
   const clearUpload = useStore((s) => s.clearUpload)
+  const selectObject = useStore((s) => s.selectObject)
   const uploadPhoto = useStore((s) => s.uploadPhoto)
   const open = useStore((s) => s.uploadPanelOpen)
   const setPanel = useStore((s) => s.setUploadPanelOpen)
@@ -51,6 +58,8 @@ export default function UploadZone() {
   const inputRef = useRef(null)
   const rootRef = useRef(null)
   const drag = useRef(null) // pointer drag of the pill itself
+  const revealRef = useRef(null) // the heatmap layer that fades in and out once after a scan
+  const guessesRef = useRef(null)
 
   // Keep the pill on screen when the window is resized.
   useEffect(() => {
@@ -107,6 +116,23 @@ export default function UploadZone() {
 
   const loading = upload.status === 'loading'
   const heatmap = upload.status === 'done' && prediction ? `data:image/png;base64,${prediction.gradcam_png_base64}` : null
+
+  // A new answer: the heatmap flashes in and out once, and the guesses slide up one after another.
+  useEffect(() => {
+    if (!heatmap || !open || reducedMotion()) return undefined
+    const tl = gsap.timeline()
+    if (revealRef.current)
+      tl.fromTo(revealRef.current, { opacity: 0 }, { opacity: 0.9, duration: 0.5, ease: 'power2.out' })
+        .to(revealRef.current, { opacity: 0, duration: 0.7, ease: 'power2.in' }, '+=0.9')
+    if (guessesRef.current)
+      tl.fromTo(
+        guessesRef.current.children,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', stagger: 0.09, clearProps: 'opacity,transform' },
+        0.25,
+      )
+    return () => tl.kill()
+  }, [heatmap]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Open the panel on the side with more room.
   const openLeft = pos.x + PILL_W / 2 > window.innerWidth / 2
@@ -220,10 +246,17 @@ export default function UploadZone() {
                     }`}
                   />
                 )}
+                {heatmap && <img ref={revealRef} data-testid="gradcam-reveal" src={heatmap} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-0" />}
                 {loading && (
-                  <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/55 text-slate-100">
-                    <span data-testid="upload-spinner" className="h-8 w-8 animate-spin rounded-full border-2 border-white/25 border-t-sky-300" />
-                    <span>{upload.slow ? 'Waking up the server… this can take up to a minute' : 'Classifying…'}</span>
+                  <span className="absolute inset-0 overflow-hidden bg-sky-950/40 text-slate-100">
+                    {/* the scan: a soft band with a bright leading edge, sweeping down the photo */}
+                    <span
+                      data-testid="upload-scan"
+                      className="absolute inset-x-0 h-1/4 animate-scan border-b border-sky-200/90 bg-gradient-to-b from-transparent to-sky-300/35 motion-reduce:top-1/2 motion-reduce:animate-none"
+                    />
+                    <span className="absolute inset-x-0 bottom-2 px-2 text-center text-[11px] tracking-wide">
+                      {upload.slow ? 'Waking up the server… this can take up to a minute' : 'Scanning…'}
+                    </span>
                   </span>
                 )}
               </>
@@ -252,6 +285,26 @@ export default function UploadZone() {
           )}
           {heatmap && showHeatmap && (
             <p className="text-[11px] leading-snug text-slate-400">Bright areas are the parts of the photo that mattered most for the top guess.</p>
+          )}
+          {heatmap && (
+            <ol ref={guessesRef} data-testid="upload-guesses" className="flex flex-col gap-1">
+              {prediction.top3.map((g) => (
+                <li key={g.id}>
+                  <button
+                    type="button"
+                    onClick={() => selectObject(g.id)}
+                    className="flex w-full items-center gap-2 rounded-md px-1 py-0.5 text-left text-[11px] text-slate-200 hover:bg-white/10"
+                  >
+                    <span className="w-20 truncate">{g.name}</span>
+                    <span className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
+                      {/* width is a dynamic value */}
+                      <span className="block h-full rounded-full bg-sky-400/80" style={{ width: `${Math.round(g.prob * 100)}%` }} />
+                    </span>
+                    <span className="w-8 text-right tabular-nums text-slate-400">{Math.round(g.prob * 100)}%</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
           )}
           {upload.status === 'error' && (
             <p data-testid="upload-error" role="alert" className="rounded-lg border border-rose-300/30 bg-rose-500/15 px-3 py-2 text-xs text-rose-100">

@@ -10,6 +10,8 @@ import ZoomControls from './ui/ZoomControls'
 import WarpVignette from './ui/WarpVignette'
 import ArrivalTitle from './ui/ArrivalTitle'
 import DistanceScale from './ui/DistanceScale'
+import TourCaption from './ui/TourCaption'
+import CustomCursor from './ui/CustomCursor'
 import { useStore } from './store'
 import './debug'
 
@@ -30,10 +32,12 @@ export default function App() {
           <ObjectBrowser />
           <RevealHint />
           <ZoomControls />
+          <TourCaption />
         </>
       )}
       <Landing />
       <LoadingScreen />
+      <CustomCursor />
     </main>
   )
 }

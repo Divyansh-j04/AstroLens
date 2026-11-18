@@ -70,8 +70,15 @@ function Marker({ obj, texture }) {
           e.stopPropagation()
           selectObject(obj.id)
         }}
-        onPointerOver={() => active() && setHovered(true)}
-        onPointerOut={() => setHovered(false)}
+        onPointerOver={() => {
+          if (!active()) return
+          setHovered(true)
+          useStore.getState().setHoverId(obj.id) // the custom cursor shows "Fly to ..."
+        }}
+        onPointerOut={() => {
+          setHovered(false)
+          if (useStore.getState().hoverId === obj.id) useStore.getState().setHoverId(null)
+        }}
       >
         <spriteMaterial
           ref={material}

@@ -61,7 +61,8 @@ The page is static files on Vercel. The server, with the trained model, the text
 - **Placing deep-space objects from sky coordinates.** With right ascension α, declination δ (in radians) and distance d: x = d·cos δ·cos α, y = d·cos δ·sin α, z = d·sin δ (x points to α = 0h, z to the north celestial pole). Three.js uses y as "up", so the page uses (x, z, −y). Code: `frontend/src/scene/scale.js` (`skyToScene`).
 - **Display distance.** Real distances run from 444 ly (Pleiades) to 24,100 ly (M13), so the page uses d = 4 × √(light-years): Pleiades 84 units, M13 621 units. Directions are exact; only distances are compressed. The **True distances** switch (below) shows the real ones.
 - **True distances (added after Phase 5).** With the switch on, every object sits at its real distance: moons round their planets (Phobos 9,375 km from Mars), planets round the Sun (Neptune 30 AU), nebulae and clusters out to M13 at 24,100 light-years. That is about 14 powers of ten, too much for one fixed set of 3D coordinates (the graphics card uses 32-bit numbers). So real positions are kept in AU in JavaScript's 64-bit numbers, and every frame the scene is drawn relative to the object being looked at (the focus) and scaled by the zoom: the camera always sits 50 drawn units from the focus, and the zoom says how many AU that is. Zooming out 10 times shrinks the drawn world 10 times. Code: `frontend/src/scene/universe.js`.
-- **Interface motion (added after Phase 5).** Long flights (a switch between the solar-system and deep-space views, or a true-distance flight across at least four powers of ten) go to warp: stars stretch into streaks, the view widens by 8 degrees and the screen edges darken, then everything snaps back on arrival. On landing, the object's name appears letter by letter with a line built from `objects.json` ("Gas giant · 5.2 AU from the Sun"). The card's numbers count up and its lines slide in one after another. In the True distances view a power-of-ten ruler on the right shows the current zoom on a power-of-ten scale from about 150 km to 40,000 light-years, with marks for the Moon, Neptune, the Pleiades and M13 that fly there when clicked. With the browser's or phone's "reduce motion" setting on, the warp, the letter animation, the counting and the sliding are skipped. Code: `frontend/src/scene/warp.js`, `StarField.jsx`, `CameraRig.jsx`, `frontend/src/ui/ArrivalTitle.jsx`, `DistanceScale.jsx`, `WarpVignette.jsx`, `frontend/src/panel/CountUp.jsx`.
+- **Interface motion (added after Phase 5).** Long flights (a switch between the solar-system and deep-space views, or a true-distance flight across at least four powers of ten) go to warp: stars stretch into streaks, the view widens by 8 degrees and the screen edges darken, then everything snaps back on arrival. On landing, the object's name appears letter by letter with a line built from `objects.json` ("Gas giant · 5.2 AU from the Sun"). The card's numbers count up and its lines slide in one after another. In the True distances view a small glass card on the right, "Distance to target", shows on a filled power-of-ten gauge (about 150 km to 40,000 light-years) how far the camera is from what it looks at, with marks for the Moon, Neptune, the Pleiades and M13 that fly there when clicked. With the browser's or phone's "reduce motion" setting on, the warp, the letter animation, the counting and the sliding are skipped. Code: `frontend/src/scene/warp.js`, `StarField.jsx`, `CameraRig.jsx`, `frontend/src/ui/ArrivalTitle.jsx`, `DistanceScale.jsx`, `WarpVignette.jsx`, `frontend/src/panel/CountUp.jsx`.
+- **More interface motion (added after Phase 5).** With a mouse, a ring cursor trails the pointer, grows over buttons and says "Fly to Jupiter" over a planet, moon, nebula or cluster; a few main buttons pull gently towards the pointer. A "Grand Tour" button flies Sun → Earth → Moon → Jupiter → Saturn → Orion Nebula → Pleiades with the panel closed, showing the first sentence of each summary from `objects.json` for 7 seconds at each stop. While a photo is classified a scan line sweeps over it, then the heatmap fades in and out once and the top 3 guesses slide up. The loading screen counts to 100% while the title appears letter by letter; behind the landing page the camera waits 2.6 times farther out and dives in when a door is chosen. Chat answers appear word by word, citation numbers pop in, and the sources follow. The custom cursor is off on touch screens; with "reduce motion" on, the cursor, camera pull-back and dive, typing and scan sweep are all skipped. Code: `frontend/src/ui/CustomCursor.jsx`, `TourCaption.jsx`, `LoadingScreen.jsx`, `frontend/src/tour.js`, `frontend/src/upload/UploadZone.jsx`, `frontend/src/panel/ChatPanel.jsx`, `frontend/src/scene/CameraRig.jsx`.
   - **Zoom without a limit.** The mouse wheel and new **+ / −** buttons (factor 3 per press) change the zoom from about 150 km to about 40,000 light-years. The readout shows the camera's distance from the Sun in km, AU or light-years.
   - **One space.** Planets and deep-space objects share one space, so zooming out from Jupiter passes the planets' orbits, then the Sun shrinks to a dot labelled "Solar System (you are here)", and the Pleiades and Beehive come into view; past 3,000 AU the page switches to deep-space mode.
   - **Fly-to in the true view** is a "powers of ten" flight: zoom out until start and target are both in view, travel, zoom back in.
@@ -494,6 +495,12 @@ recall@k = share of questions with a gold chunk in the first k results; MRR@10 =
 | After 5 | Distance scale (True distances only): power-of-ten ruler with the current zoom and clickable marks for the Moon, Neptune, the Pleiades and M13 | Done |
 | After 5 | All four follow the "reduce motion" setting | Done |
 | After 5 | + / − zoom buttons move left of the glass panel while it is open (it used to cover them) | Done (bug fix) |
+| After 5 | Distance scale redesigned as a glass card ("Distance to target") with a filled gauge, three unit ticks and round marks (the bare line over the scene was hard to read) | Done |
+| After 5 | Custom cursor: trailing ring, grows over buttons, "Fly to …" over objects, magnetic main buttons; off on touch screens | Done |
+| After 5 | Grand Tour: 7 stops with captions from `objects.json`, 7 s each, Next / Stop / Escape | Done |
+| After 5 | Photo scanning effect: scan line while classifying, heatmap fades in and out once, guesses slide up | Done |
+| After 5 | Opening sequence: counter to 100%, title letter by letter, camera dive from the landing page | Done |
+| After 5 | Typed chat answers: word by word, citation numbers pop in, sources after; screen readers get the whole answer at once | Done |
 
 **Phase 1 scene check.** Source: `ml/results/phase1_scene_check.json`, written by `node scripts/check-phase1.mjs` (run from `frontend/`). The script opened the page in Microsoft Edge 157 (headless) on the author's laptop, which used the real GPU (NVIDIA GeForce RTX 4060 Laptop GPU, through Direct3D 11). The viewport was 1440 × 900. The script picked each object in the dropdown, alternating Solar System and deep space, so 19 of the 20 flights were mode switches.
 
@@ -576,6 +583,19 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Reduce motion on: flight to the Orion Nebula / Jupiter card after 0.1 s / arrival title | warp 0 / final values at once / still shown |
 | Browser console errors | 0 |
 
+**Interface motion check 2 (after Phase 5).** Source: `ml/results/ux_check_2.json`, written by `frontend/scripts/check-ux2.mjs` (Playwright driving Microsoft Edge, headless, real GPU, 1440 × 900) against the local page; 25 of 25 checks passed. The server's /classify and /chat answers were faked inside the browser, because this check is about the animations (the real classifier and chat have their own checks). Screenshots are in `ml/results/ux2_screens/`.
+
+| Check | Measured |
+| --- | --- |
+| Loading counter / title | 0 → 100% in 13 steps, never going down; letters visible 0, 1, 2 … 9; loading screen gone after 1.1 s |
+| Camera behind the landing page / after "Explore the sky" | 308.19 units from its target (2.6 × the home 118.53) / back to 118.53, with warp 1 on the way |
+| Cursor | system pointer hidden; ring "idle" → "link" over Home; Home pulled 6.4 px right and 2.5 px down, back to 0 after leaving; "Fly to Jupiter" over Jupiter |
+| Grand Tour | Sun, Earth, Moon, Jupiter, Saturn, Orion Nebula, Pleiades in order; all 7 captions match the first sentence of the summary; panel closed throughout; the first stop moved on by itself after 6.9 s; Finish opened the Pleiades card; Escape and a user flight both ended it |
+| Scanning | the line's top moved 98 → 206 px in 0.6 s; heatmap reached 0.9 opacity at 0.44 s and returned to 0 (the toggle's heatmap stayed at 0); guesses "Saturn 78%", "Jupiter 12%", "Uranus 5%" fully shown at 0.50 s, 0.56 s and 0.63 s |
+| Typed chat answer (133 characters) | 8 characters at 0.04 s, 49 at 0.62 s, all 133 at 1.87 s; first citation number appeared while typing; sources shown only after typing |
+| Reduce motion on | no custom cursor (system pointer), camera not pulled back, warp 0, answer complete at once, scan line still |
+| Browser console errors | 0 |
+
 **Table E: time taken per step (deployed, median of 10 runs)**
 
 | Step | ms |
@@ -587,6 +607,8 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 
 ## 11. Limitations and future work
 
+- The Phase 1 browser check (`frontend/scripts/check-phase1.mjs`) no longer finishes: since the 16 moons were added it also clicks each moon's name label from the overview, where moon labels are hidden by design. Its last recorded result (`ml/results/phase1_scene_check.json`) is from before the moons. The flights to all 36 objects still pass in it; the label-click step needs updating.
+- The Phase 4 check now waits for answers to finish typing; it was not re-run after this change because it needs the language model (Groq).
 - 36 objects: the 20 from the plan plus 16 significant moons added after Phase 5 (Phobos, Deimos; Io, Europa, Ganymede, Callisto; Titan, Enceladus, Mimas, Rhea, Iapetus; Miranda, Ariel, Titania, Oberon; Triton). The moons are in the 3D scene, the cards and the command matcher, but not in the photo classifier (no training photos were collected for them). Phobos and Deimos are drawn larger than the square-root rule gives (minimum radius 0.06 units), and 15 moons still show plain-colour placeholder surfaces until their maps download.
 - The classifier knows 14 of the original 20 objects. Ring Nebula, Horsehead Nebula, Pleiades, Beehive Cluster, M13 and Omega Centauri had too few free-licence photos (under 50 after review) and are left out of the classifier; they are still in the scene and the chat.
 - Several classes are below the planned 80 images (Uranus 76, Carina 75, Eagle 62), and the test set has only 9 to 21 images per class, so per-class scores move a lot with one image.
@@ -777,6 +799,8 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Shader (GLSL) | A very short program that runs on the graphics card; ours draws each star as a soft dot of its own size and colour | Phase 1 |
 | GSAP stagger | Starts the same animation on a list of elements one after another, a fixed delay apart; used for the arrival title's letters and the card's lines | After Phase 5 |
 | "Reduce motion" (`prefers-reduced-motion`) | A setting in the operating system or phone that asks web pages to cut down animation; the page reads it before each decorative animation and skips it when it is on | After Phase 5 |
+| CSS keyframes | A short list of in-between states the browser plays as an animation by itself (the scan line, the citation pop); declared once in `frontend/src/index.css` | After Phase 5 |
+| Faked server answers (Playwright `page.route`) | The test browser answers the page's requests itself with a fixed reply, so a page check runs without the real server | After Phase 5 |
 | Sprite | A flat picture in a 3D scene that always turns to face the camera; used for nebulae and clusters | Phase 1 |
 | Additive blending | Adds a picture's light on top of what is behind it, so black sky in a nebula photo becomes invisible | Phase 1 |
 | Wikimedia Commons API | Wikipedia's media library; its API gives each image a resized copy plus its licence and author | Phase 1 |
@@ -888,6 +912,12 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
 | Nov 19, 2026 | The warp strength lives in a small module (`scene/warp.js`), not in the Zustand store | It changes 60 times a second; putting it in the store would re-draw the page every frame. Same pattern as `fade.js` |
 | Nov 19, 2026 | Only a number at the start of a fact counts up ("1,267 light-years"); "Apollo 11" is left as it is | Counting a number in the middle of a phrase looks odd, and this needs no extra data in `objects.json` |
 | Nov 19, 2026 | The scale sits 56 px in from the right edge and moves left of the glass panel when it is open | The Objects and Show card tabs on the edge, and the panel, would otherwise cover it |
+| Nov 19, 2026 | The distance scale became a glass card with a filled gauge and only three unit ticks | The first version, a bare line with grey labels, read as a stray line over the nebula photos, and two labels overlapped |
+| Nov 19, 2026 | After a scan the heatmap fades in and out on its own layer instead of switching the "Show heatmap" toggle on | The photo stays the default view, and the toggle (and the Phase 3 check of it) behaves as before |
+| Nov 19, 2026 | The custom cursor is off on touch screens and with "reduce motion"; the text cursor stays in typing fields | A trailing ring is meaningless on touch and is extra motion; hiding the text cursor makes typing harder |
+| Nov 19, 2026 | Grand Tour captions are the first sentence of each `objects.json` summary | No new text to write or check; objects.json stays the only source of facts |
+| Nov 19, 2026 | The loading screen waits for its counter and title to finish (about 1 second) | Otherwise, with the files cached, it vanishes before the opening can be seen |
+| Nov 19, 2026 | The second interface check fakes /classify and /chat in the browser | It tests the animations, needs no server or Groq quota, and gives the same answer every run |
 
 ## Progress log
 
@@ -940,4 +970,10 @@ The first − presses read slightly less than 5.20 AU because zooming out from J
   - Warp-speed flights, the arrival title, counting numbers on the card and the distance scale, all following "reduce motion".
   - Fixed a bug the check found: the open glass panel covered the + / − zoom buttons (bottom right); they now sit just left of the panel while it is open.
   - Browser check: 20 of 20 passed with 0 console errors (`ml/results/ux_check.json`, screenshots in `ml/results/ux_screens/`).
+  - Tests: pytest, 62 passed.
+- **Nov 19, 2026 (after Phase 5: interface motion, part 2):**
+  - Distance scale redesigned as a glass card; custom cursor; Grand Tour; photo scanning effect; opening sequence; typed chat answers.
+  - Browser check: 25 of 25 passed with 0 console errors (`ml/results/ux_check_2.json`); the first interface check still passes 20 of 20.
+  - Phase 3 check re-run against the real server: passed (its saved results were left as they were, so the numbers above do not change).
+  - Phase 1 check: stops at the label-click step (see Limitations); not caused by this change.
   - Tests: pytest, 62 passed.

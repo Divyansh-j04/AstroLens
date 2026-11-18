@@ -1,10 +1,12 @@
 import { create } from 'zustand'
 import { askChat, classifyImage, SLOW_AFTER_MS, UploadError } from './api'
+import { TOUR_STOPS } from './tour'
 
 export const GENERAL_CHAT = '_general' // conversation key when no object is selected
 const HISTORY_SENT = 4 // earlier messages sent with a question, so follow-ups make sense
 let uploadId = 0 // only the latest upload may update the page
 // "?app" in the address skips the landing page (used by the browser check scripts).
+const NO_TOUR = { active: false, step: 0 } // any flight the user asks for ends the Grand Tour
 const SKIP_LANDING = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('app')
 
 // The single shared store for the page (Zustand). Every component reads from here.
@@ -26,11 +28,26 @@ export const useStore = create((set, get) => ({
   zoomRequest: { n: 0, factor: 1 }, // +/- buttons: each press bumps n
   arrived: null, // id of the nebula or cluster just flown to (shows the "it's 3D" hint), else null
   landed: { n: 0, id: null }, // bumped when a fly-to reaches an object (plays the arrival title)
+  hoverId: null, // the planet, moon, nebula or cluster under the mouse (the custom cursor shows "Fly to ...")
+  tour: NO_TOUR, // the Grand Tour: { active, step } (step = index in TOUR_STOPS)
 
   selectObject: (id) =>
-    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1 })),
+    set((s) => ({ currentObjectId: id, panelOpen: true, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR })),
   goHome: () =>
-    set((s) => ({ currentObjectId: null, panelOpen: false, panelView: 'card', flyRequest: s.flyRequest + 1 })),
+    set((s) => ({ currentObjectId: null, panelOpen: false, panelView: 'card', flyRequest: s.flyRequest + 1, tour: NO_TOUR })),
+  setHoverId: (hoverId) => set({ hoverId }),
+  // Grand Tour: fly to stop `step` with the panel closed (the caption tells the story instead).
+  tourTo: (step) =>
+    set((s) => ({
+      tour: { active: true, step },
+      currentObjectId: TOUR_STOPS[step],
+      panelOpen: false,
+      panelView: 'card',
+      browserOpen: false,
+      flyRequest: s.flyRequest + 1,
+    })),
+  // End the tour where it is; `showCard` opens the card of the last stop.
+  stopTour: (showCard = false) => set((s) => ({ tour: NO_TOUR, ...(showCard && s.currentObjectId ? { panelOpen: true, panelView: 'card' } : {}) })),
   setMode: (mode) => set({ mode }),
   setFlying: (isFlying) => set({ isFlying }),
   setPanelOpen: (panelOpen) => set({ panelOpen }),
@@ -120,6 +137,7 @@ export const useStore = create((set, get) => ({
             panelOpen: true,
             panelView: 'card',
             flyRequest: s.flyRequest + 1,
+            tour: NO_TOUR,
           },
     ),
 }))

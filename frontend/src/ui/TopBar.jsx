@@ -7,6 +7,8 @@ import CommandBar from './CommandBar'
 export default function TopBar() {
   const goHome = useStore((s) => s.goHome)
   const showLanding = useStore((s) => s.showLanding)
+  const tourTo = useStore((s) => s.tourTo)
+  const tourActive = useStore((s) => s.tour.active)
 
   return (
     <header className="pointer-events-none absolute left-0 top-0 z-20 flex flex-wrap items-center gap-3 p-4">
@@ -19,10 +21,22 @@ export default function TopBar() {
       <button
         type="button"
         data-testid="home-button"
+        data-magnetic
         onClick={goHome}
         className="pointer-events-auto rounded-md border border-white/15 bg-slate-900/70 px-3 py-1.5 text-sm text-slate-100 backdrop-blur hover:bg-slate-800/80 focus:outline-none focus:ring-2 focus:ring-sky-400/60"
       >
         Home
+      </button>
+      <button
+        type="button"
+        data-testid="tour-button"
+        data-magnetic
+        disabled={tourActive}
+        onClick={() => tourTo(0)}
+        title="Fly through the Solar System and out to the nebulae, with a caption at each stop"
+        className="pointer-events-auto rounded-md border border-sky-300/30 bg-sky-500/15 px-3 py-1.5 text-sm text-sky-100 backdrop-blur hover:bg-sky-500/25 focus:outline-none focus:ring-2 focus:ring-sky-400/60 disabled:opacity-50"
+      >
+        Grand Tour
       </button>
     </header>
   )
